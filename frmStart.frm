@@ -273,6 +273,7 @@ Next a
 TempDBInstance.ApptBitmap_StartDate = DateSerial(NewTaxYear + 1, 1, 1)
 TempDBInstance.ApptBitmap_Count = DateSerial(NewTaxYear + 1, 12, 31) - TempDBInstance.ApptBitmap_StartDate + 1
 ReDim TempDBInstance.ApptBitmap(TempDBInstance.ApptBitmap_Count - 1, Appointment_NumSlotsUB)
+ReDim TempDBInstance.Subtitles(TempDBInstance.ApptBitmap_Count - 1)
 DB_ClearAndRebuildApptBitmap TempDBInstance
 
 'Now that the bitmap has been updated, restore the subtitles by month/day (no other logic used)
