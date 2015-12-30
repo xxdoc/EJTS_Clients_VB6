@@ -2,6 +2,7 @@ Attribute VB_Name = "modDB"
 Option Explicit
 
 'This module should NEVER reference ActiveDBInstance (use LocalDBInstance instead)
+'Also, be careful when calling frmmain.SetChangedFlagAndIndication, since that is only relevant to ActiveDBInstance
 
 Public Const CurDBFileSpecVersion = "EJTS-v07"
 
@@ -595,7 +596,7 @@ ERR_HANDLER:
 End Function
 
 'Function DB_GetSetting(LocalDBInstance As EJTSClientsDB, ByVal n$, Optional CreateAsValueIfNone As Variant, Optional CreateAsTypeIfNone As enumSettingType, Optional FormatForScreen As Boolean = False) As Variant
-Function DB_GetSetting(LocalDBInstance As EJTSClientsDB, ByVal n$, Optional FormatForScreen As Boolean = False) As Variant
+Function DB_GetSetting(LocalDBInstance As EJTSClientsDB, ByVal n$, Optional FormatForScreen As Boolean = False, Optional DontCallSetChangedFlag As Boolean) As Variant
 'errheader>
 Const PROC_NAME = "modDB" & "." & "DB_GetSetting": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
 '<errheader
@@ -630,10 +631,11 @@ Else
 End If
 
 'If we get to this point, then we didn't find an existing setting match. So create a new name/value pair with default value
-If Not DB_SetDefaultSettingValue(LocalDBInstance, n$) Then
+If DB_SetDefaultSettingValue(LocalDBInstance, n$, DontCallSetChangedFlag) Then
+    DB_GetSetting = DB_GetSetting(LocalDBInstance, n$, , DontCallSetChangedFlag)
+Else
     Err.Raise 1, , "No setting found with name '" & n$ & "' and no default value available to create it."
 End If
-DB_GetSetting = DB_GetSetting(LocalDBInstance, n$)
 
 CLEAN_UP:
     'Your code here
@@ -645,7 +647,7 @@ ERR_HANDLER:
 '<errfooter
 End Function
 
-Sub DB_SetSetting(LocalDBInstance As EJTSClientsDB, ByVal n$, v As Variant, Optional CreateAsTypeIfNone As enumSettingType)
+Sub DB_SetSetting(LocalDBInstance As EJTSClientsDB, ByVal n$, v As Variant, Optional CreateAsTypeIfNone As enumSettingType, Optional DontCallSetChangedFlag As Boolean)
 'errheader>
 Const PROC_NAME = "modDB" & "." & "DB_SetSetting": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
 '<errheader
@@ -728,9 +730,11 @@ If found Then
     Else
         'If we're read-only, then the setting will only persist in the current session
         '  This is a better option than preventing settings from even being changed
-        If LocalDBInstance.IsWriteable Then
-            If LocalDBInstance.Settings(a).sName <> s.sName Or LocalDBInstance.Settings(a).sType <> s.sType Or LocalDBInstance.Settings(a).sValue <> s.sValue Then
-                frmMain.SetChangedFlagAndIndication
+        If Not DontCallSetChangedFlag Then
+            If LocalDBInstance.IsWriteable Then
+                If LocalDBInstance.Settings(a).sName <> s.sName Or LocalDBInstance.Settings(a).sType <> s.sType Or LocalDBInstance.Settings(a).sValue <> s.sValue Then
+                    frmMain.SetChangedFlagAndIndication
+                End If
             End If
         End If
         LocalDBInstance.Settings(a) = s
@@ -748,7 +752,9 @@ Else
         LocalDBInstance.Settings_Count = LocalDBInstance.Settings_Count + 1
         'If we're read-only, then the setting will only persist in the current session
         '  This is a better option than preventing settings from even being changed
-        If LocalDBInstance.IsWriteable Then frmMain.SetChangedFlagAndIndication
+        If Not DontCallSetChangedFlag Then
+            If LocalDBInstance.IsWriteable Then frmMain.SetChangedFlagAndIndication
+        End If
     End If
 End If
 
@@ -762,59 +768,59 @@ ERR_HANDLER:
 '<errfooter
 End Sub
 
-Function DB_SetDefaultSettingValue(LocalDBInstance As EJTSClientsDB, n$) As Boolean
+Function DB_SetDefaultSettingValue(LocalDBInstance As EJTSClientsDB, n$, Optional DontCallSetChangedFlag As Boolean) As Boolean
 'errheader>
 Const PROC_NAME = "modDB" & "." & "DB_SetDefaultSettingValue": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
 '<errheader
 
 DB_SetDefaultSettingValue = True
 If n$ = "GLOBAL_DataFolder" Then
-    DB_SetSetting LocalDBInstance, n$, "", sStr
+    DB_SetSetting LocalDBInstance, n$, "", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_TabOrder_ApptEdit" Then
-    DB_SetSetting LocalDBInstance, n$, "txtField,0|txtField,1|txtField,2|txtField,3|txtField,4|btnSave|btnCancel|lstClients|btnMoveUp|btnMoveDown|btnAdd|btnRemove", sStr
+    DB_SetSetting LocalDBInstance, n$, "txtField,0|txtField,1|txtField,2|txtField,3|txtField,4|btnSave|btnCancel|lstClients|btnMoveUp|btnMoveDown|btnAdd|btnRemove", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_TabOrder_BookkeepingEdit" Then
-    DB_SetSetting LocalDBInstance, n$, "txtField,0|txtField,1|txtField,2|btnSave|btnCancel", sStr
+    DB_SetSetting LocalDBInstance, n$, "txtField,0|txtField,1|txtField,2|btnSave|btnCancel", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_TabOrder_ExtraChargeEdit" Then
-    DB_SetSetting LocalDBInstance, n$, "txtField,0|txtField,1|txtField,2|txtField,3|txtField,4|btnSave|btnCancel", sStr
+    DB_SetSetting LocalDBInstance, n$, "txtField,0|txtField,1|txtField,2|txtField,3|txtField,4|btnSave|btnCancel", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_TabOrder_ClientPost" Then
-    DB_SetSetting LocalDBInstance, n$, "optInType,0|optInType,1|optInType,2|optInType,3|txtField,124|txtField,103|txtField,100|txtField,102|txtField,107|txtField,109|txtField,104|txtField,119|txtField,111|txtField,105|txtField,112|txtField,123|txtField,110|txtField,114|txtField,115|txtField,116|txtField,117|txtField,126|txtField,127|txtField,101|txtField,108|txtField,128|txtField,129|txtField,134|txtField,131|chkEFile|txtField,130|txtField,106|txtField,113|btnSavePost|btnCancel", sStr
+    DB_SetSetting LocalDBInstance, n$, "optInType,0|optInType,1|optInType,2|optInType,3|txtField,124|txtField,103|txtField,100|txtField,102|txtField,107|txtField,109|txtField,104|txtField,119|txtField,111|txtField,105|txtField,112|txtField,123|txtField,110|txtField,114|txtField,115|txtField,116|txtField,117|txtField,126|txtField,127|txtField,101|txtField,108|txtField,128|txtField,129|txtField,134|txtField,131|chkEFile|txtField,130|txtField,106|txtField,113|btnSavePost|btnCancel", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_TabOrder_ClientEdit" Then
-    DB_SetSetting LocalDBInstance, n$, "txtField,100|txtField,101|txtField,102|txtField,103|txtField,105|txtField,135|txtField,106|txtField,104|txtField,107|txtField,108|txtField,109|txtField,110|txtField,112|txtField,136|txtField,113|txtField,111|txtField,114|txtField,115|txtField,116|txtField,117|txtField,118|txtField,119|txtField,120|txtField,121|txtField,122|txtField,123|txtField,124|txtField,126|txtField,127|txtField,128|txtField,129|txtField,130|txtField,131|txtField,132|txtField,133|btnSavePost|btnCancel", sStr
+    DB_SetSetting LocalDBInstance, n$, "txtField,100|txtField,101|txtField,102|txtField,103|txtField,105|txtField,135|txtField,106|txtField,104|txtField,107|txtField,108|txtField,109|txtField,110|txtField,112|txtField,136|txtField,113|txtField,111|txtField,114|txtField,115|txtField,116|txtField,117|txtField,118|txtField,119|txtField,120|txtField,121|txtField,122|txtField,123|txtField,124|txtField,126|txtField,127|txtField,128|txtField,129|txtField,130|txtField,131|txtField,132|txtField,133|btnSavePost|btnCancel", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_SearchSyntax_Fields" Then
-    DB_SetSetting LocalDBInstance, n$, "id|name|lname,lastname,ln|fname,firstname,fn|ph,phone|street|city|state|zip,zipcode|email|notes|slots|flags|lymin|lyfee|lyflags,lyf|compdate,date|min|statelist|fee|chg,charge|agi|fedresult|stateresult|opnotes", sStr
+    DB_SetSetting LocalDBInstance, n$, "id|name|lname,lastname,ln|fname,firstname,fn|ph,phone|street|city|state|zip,zipcode|email|notes|slots|flags|lymin|lyfee|lyflags,lyf|compdate,date|min|statelist|fee|chg,charge|agi|fedresult|stateresult|opnotes", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_SearchSyntax_Flags" Then
-    DB_SetSetting LocalDBInstance, n$, "i,in,inc|c,co,cmp,comp|a,ap,appt|d,do|m,mi|nf,nntf|e,x,ex,ext|ipte,ipts|n,nn,new|ef|rbp,rel", sStr
+    DB_SetSetting LocalDBInstance, n$, "i,in,inc|c,co,cmp,comp|a,ap,appt|d,do|m,mi|nf,nntf|e,x,ex,ext|ipte,ipts|n,nn,new|ef|rbp,rel", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_DefaultState" Then
-    DB_SetSetting LocalDBInstance, n$, "CA", sStr
+    DB_SetSetting LocalDBInstance, n$, "CA", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_LocalAreaCode" Then
-    DB_SetSetting LocalDBInstance, n$, "909", sStr
+    DB_SetSetting LocalDBInstance, n$, "909", sStr, DontCallSetChangedFlag
 ElseIf n$ = "GLOBAL_PullFilesWeekdaysToSkip" Then
-    DB_SetSetting LocalDBInstance, n$, "Sun", sStr
+    DB_SetSetting LocalDBInstance, n$, "Sun", sStr, DontCallSetChangedFlag
 '------------------------------
 ElseIf n$ = "Reminder call if appt scheduled more than" Then
-    DB_SetSetting LocalDBInstance, n$, 30, sLng
+    DB_SetSetting LocalDBInstance, n$, 30, sLng, DontCallSetChangedFlag
 ElseIf n$ Like "Schedule Template ?? (*)" Then
-    DB_SetSetting LocalDBInstance, n$, String$(Appointment_NumSlots, "A"), sStr
+    DB_SetSetting LocalDBInstance, n$, String$(Appointment_NumSlots, "A"), sStr, DontCallSetChangedFlag
 ElseIf n$ = "Schedule Template B starting date" Then
-    DB_SetSetting LocalDBInstance, n$, DateSerial(Year(Date), 1, 15), sDate
+    DB_SetSetting LocalDBInstance, n$, DateSerial(Year(Date), 1, 15), sDate, DontCallSetChangedFlag
 ElseIf n$ = "Schedule Template C starting date" Then
-    DB_SetSetting LocalDBInstance, n$, DateSerial(Year(Date), 4, 15), sDate
+    DB_SetSetting LocalDBInstance, n$, DateSerial(Year(Date), 4, 15), sDate, DontCallSetChangedFlag
 ElseIf n$ Like "_SatCheck-Txt*" Then
-    DB_SetSetting LocalDBInstance, n$, 0, sLng
+    DB_SetSetting LocalDBInstance, n$, 0, sLng, DontCallSetChangedFlag
 ElseIf n$ Like "_SatCheck-LastDayOfTaxSeason" Then
-    DB_SetSetting LocalDBInstance, n$, False, sBool
+    DB_SetSetting LocalDBInstance, n$, False, sBool, DontCallSetChangedFlag
 ElseIf n$ = "Prep fee threshold - receive organizer" Then
-    DB_SetSetting LocalDBInstance, n$, 0, sLng
+    DB_SetSetting LocalDBInstance, n$, 0, sLng, DontCallSetChangedFlag
 ElseIf n$ = "Prep fee threshold - new client SAF" Then
-    DB_SetSetting LocalDBInstance, n$, 0, sLng
+    DB_SetSetting LocalDBInstance, n$, 0, sLng, DontCallSetChangedFlag
 ElseIf n$ = "_MailingList-PaperSize" Then
-    DB_SetSetting LocalDBInstance, n$, 0, sLng
+    DB_SetSetting LocalDBInstance, n$, 0, sLng, DontCallSetChangedFlag
 ElseIf n$ Like "_Statistics-RememberSelection-*" Then
-    DB_SetSetting LocalDBInstance, n$, False, sBool
+    DB_SetSetting LocalDBInstance, n$, False, sBool, DontCallSetChangedFlag
 ElseIf n$ Like "_Statistics-LastView-*" Then
-    DB_SetSetting LocalDBInstance, n$, "", sStr
+    DB_SetSetting LocalDBInstance, n$, "", sStr, DontCallSetChangedFlag
 ElseIf n$ Like "Bell curve for statistics tab, range * *" Then
-    DB_SetSetting LocalDBInstance, n$, 0, sLng
+    DB_SetSetting LocalDBInstance, n$, 0, sLng, DontCallSetChangedFlag
 Else
     DB_SetDefaultSettingValue = False
 End If

@@ -89,6 +89,8 @@ Attribute VB_Exposed = False
 Option Explicit
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
+'Any calls to DB_GetSetting, DB_SetSetting, or DB_SetDefaultSettingValue should have DontCallSetChangedFlag=True
+
 Private Sub Form_Load()
 'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
 ''--..--''--..--''--..--''--..--''--..--''--..--''--.
@@ -244,14 +246,14 @@ Erase TempDBInstance.Appointments
 
 'Clear out all Saturday Check stuff
 For a = 0 To 8
-    DB_SetSetting TempDBInstance, "_SatCheck-Txt" & a, 0, sLng
+    DB_SetSetting TempDBInstance, "_SatCheck-Txt" & a, 0, sLng, True
 Next a
-DB_SetSetting TempDBInstance, "_SatCheck-LastDayOfTaxSeason", False, sBool
+DB_SetSetting TempDBInstance, "_SatCheck-LastDayOfTaxSeason", False, sBool, True
 
 'Set schedule template range A (early January) to equal last year's range C (end of December)
 For a = 0 To 6
-    s$ = DB_GetSetting(TempDBInstance, "Schedule Template C" & (a + 1) & " (" & WeekdayName(a + 1, False, vbMonday) & ")")
-    DB_SetSetting TempDBInstance, "Schedule Template A" & (a + 1) & " (" & WeekdayName(a + 1, False, vbMonday) & ")", s$, sStr
+    s$ = DB_GetSetting(TempDBInstance, "Schedule Template C" & (a + 1) & " (" & WeekdayName(a + 1, False, vbMonday) & ")", , True)
+    DB_SetSetting TempDBInstance, "Schedule Template A" & (a + 1) & " (" & WeekdayName(a + 1, False, vbMonday) & ")", s$, sStr, True
 Next a
 
 'Save the list of subtitles in a new array by month/day
@@ -308,7 +310,7 @@ Private Sub btnSetDataFolder_Click()
 Const PROC_NAME = "frmStart" & "." & "btnSetDataFolder_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
 '<errheader
 
-DB_SetSetting ActiveDBInstance, "GLOBAL_DataFolder", DataFilesPath
+DB_SetSetting ActiveDBInstance, "GLOBAL_DataFolder", DataFilesPath, , True
 SetFocusWithoutErr lstDataFiles
 
 CLEAN_UP:
