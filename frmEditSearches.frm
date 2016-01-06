@@ -127,22 +127,21 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "frmEditSearches"
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
 Private SkipChangeEvents As Boolean
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Cleanup2
 Sub Form_Show()
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "Form_Show": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 Dim a&, t$
 
@@ -164,20 +163,16 @@ Me.Show 1, frmMain
 '-----------------------------------
 frmMain.IdleSetAction
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then Unload Me
-'errfooter>
+CLEANUP: INCLEANUP = True
+    If HASERROR Then Unload Me
+
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Show", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyCode
 Case vbKeyReturn
@@ -189,40 +184,26 @@ Case vbKeyReturn
     End If
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "Form_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyAscii
 Case vbKeyReturn
     KeyAscii = 0    'Stop the beep
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSave_Click()
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "btnSave_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnSave.Enabled Then Exit Sub
 
@@ -241,58 +222,37 @@ tabSearch.txtSearch_Change
 
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSave_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnCancel_Click()
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "btnCancel_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnCancel.Enabled Then Exit Sub
 
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnCopyFromfrmMain_Click()
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "btnCopyFromfrmMain_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnCopyFromFrmMain.Enabled Then Exit Sub
 
 txtSearch(1).Text = tabSearch.txtSearch.Text
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCopyFromfrmMain_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnDelete_Click()
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "btnDelete_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnDelete.Enabled Then Exit Sub
 
@@ -306,20 +266,13 @@ End If
 lstSearches_Click
 SetFocusWithoutErr lstSearches
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnDelete_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnNew_Click()
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "btnNew_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnNew.Enabled Then Exit Sub
 
@@ -327,20 +280,13 @@ lstSearches.AddItem vbTab
 lstSearches.ListIndex = lstSearches.NewIndex
 SetFocusWithoutErr txtSearch(0)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnNew_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstSearches_Click()
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "lstSearches_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim t$(), li&, b As Boolean
 
@@ -359,73 +305,45 @@ Else
     txtSearch(1).Text = ""
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstSearches_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstSearches_DblClick()
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "lstSearches_DblClick": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SetFocusWithoutErr txtSearch(1)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstSearches_DblClick", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtSearch_Change(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "txtSearch_Change": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If SkipChangeEvents Then Exit Sub
 If lstSearches.ListIndex < 0 Then Exit Sub
 lstSearches.List(lstSearches.ListIndex) = Replace(txtSearch(0).Text, vbTab, " ") & vbTab & Replace(Replace(Replace(Replace(txtSearch(1).Text, vbTab, " "), vbCrLf, " "), vbCr, " "), vbLf, " ")
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtSearch_Change", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtSearch_GotFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "txtSearch_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Index = 0 Then txtSearch(Index).Tag = txtSearch(Index).Text
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtSearch_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtSearch_LostFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmEditSearches" & "." & "txtSearch_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim t$
 If Index = 0 Then
@@ -437,13 +355,7 @@ If Index = 0 Then
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtSearch_LostFocus", Err
 End Sub
 

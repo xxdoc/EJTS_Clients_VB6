@@ -148,7 +148,9 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "tabSearch"
 Implements ITab
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
 Public Enum enumValueType
@@ -223,23 +225,33 @@ Private SyntaxTable_Fields() As enumSyntaxItem
 Private SyntaxTable_Flags() As enumSyntaxItem
 Private mSearchCount&
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Standard
 Private Function ITab_CreateGDIObjects() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_CreateGDIObjects", Err
 End Function
 
+'EHT=Standard
 Private Function ITab_InitializeAfterDBLoad() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_InitializeAfterDBLoad", Err
 End Function
 
+'EHT=Cleanup2
 Private Sub ITab_AfterTabShown()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "ITab_AfterTabShown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 Dim t$(), n$(), a&, b&, stc&
 
@@ -269,47 +281,47 @@ Next a
 
 PopulateCboSpecialSearch
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then
+CLEANUP: INCLEANUP = True
+    If HASERROR Then
         Erase SyntaxTable_Fields
         Erase SyntaxTable_Flags
     End If
 
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_AfterTabShown", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Sub
 
+'EHT=Standard
 Private Sub ITab_SetDefaultFocus()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "ITab_SetDefaultFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SetFocusWithoutErr lstResults
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SetDefaultFocus", Err
 End Sub
 
+'EHT=Standard
 Private Function ITab_SaveSettingsToDBBeforeClose() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SaveSettingsToDBBeforeClose", Err
 End Function
 
+'EHT=Standard
 Private Function ITab_DestroyGDIObjects() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_DestroyGDIObjects", Err
 End Function
 
+'EHT=ResumeNext
 Private Sub Form_Resize()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 txtSearch.Move 0, 0, Me.ScaleWidth - lblHelp.Width - lblCount.Width - 16
 lblCount.Move txtSearch.Left + txtSearch.Width + 8, 0
@@ -318,61 +330,39 @@ lstResults.Move 0, txtSearch.Height + 5, Me.ScaleWidth
 lstResults.Height = Me.ScaleHeight - lstResults.Top
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyDown KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "Form_KeyUp": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyUp KeyCode, Shift: If KeyCode = 0 Then Exit Sub     'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyUp", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "Form_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyPress KeyAscii: If KeyAscii = 0 Then Exit Sub       'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Public Sub txtSearch_Change()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "txtSearch_Change": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If SkipChangeEvents Then Exit Sub
 
@@ -397,20 +387,13 @@ End If
 DoSearch
 UpdateTabAsterisk
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtSearch_Change", Err
 End Sub
 
+'EHT=Standard
 Private Sub lblHelp_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "lblHelp_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, b&, t$, fieldnames$(EnumField_DATAITEMUBOUND), flagnames$(ClientFlags_DATAITEMUBOUND)
 
@@ -445,38 +428,24 @@ Next a
 
 ShowInfoMsg t$
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lblHelp_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstResults_GotFocus()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "lstResults_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SelectFirstItemIfNoSelection lstResults
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstResults_GotFocus", Err
 End Sub
 
 '[Mark] should be Private
+'EHT=Standard
 Public Sub lstResults_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "lstResults_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim i&, cID&
 frmMain.Form_KeyDown KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
@@ -515,7 +484,7 @@ Case vbKeyReturn
     Case vbCtrlMask
         menClientEdit_Click
     End Select
-    
+
 Case vbKeyLeft, vbKeyRight
     If Shift = vbShiftMask Then
         KeyCode = 0
@@ -531,7 +500,7 @@ Case vbKeyUp
 Case vbKeySpace
     KeyCode = 0
     If lstResults.ListIndex >= 0 Then PopupClientMenu lstResults.ListIndex, False
-    
+
 Case vbKeyBack
     KeyCode = 0
     If Len(txtSearch.Text) > 0 Then txtSearch.Text = Left$(txtSearch.Text, Len(txtSearch.Text) - 1)
@@ -542,37 +511,23 @@ Case Else
     End If
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstResults_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstResults_KeyUp(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "lstResults_KeyUp": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyUp KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstResults_KeyUp", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstResults_KeyPressByCode(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "lstResults_KeyPressByCode": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyPress KeyCode: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 
@@ -584,37 +539,23 @@ Case 33, 44, 60, 61, 62, 126
     SetFocusWithoutErr txtSearch
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstResults_KeyPressByCode", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstResults_TabToNextControl(Reverse As Boolean)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "lstResults_TabToNextControl": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 TabToNextControl Me, False, Reverse
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstResults_TabToNextControl", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstResults_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "lstResults_MouseDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'Select item under mouse
 Dim i&
@@ -625,43 +566,29 @@ Else
     i = (i And &HFFFF&)
     If Button = vbRightButton Then
         lstResults.ListIndex = i    'Listbox only does this for left click on a valid item
-        
+
         'Popup menu
         PopupClientMenu lstResults.ListIndex, True
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstResults_MouseDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstResults_DblClick()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "lstResults_DblClick": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 menClientEdit_Click
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstResults_DblClick", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientEdit_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientEdit_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientEdit.Enabled Then Exit Sub
 
@@ -675,20 +602,13 @@ If frm.Form_Show(cID, fEdit) Then   'This will mark changed if necessary
     lstResults.Repaint
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientEdit_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientPost_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientPost_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientPost.Enabled Then Exit Sub
 
@@ -705,20 +625,13 @@ If frm.Form_Show(cID, fPost) Then    'This will mark changed if necessary
     lstResults.Repaint
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientPost_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientGotoAppt_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientGotoAppt_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientGotoAppt.Enabled Then Exit Sub
 
@@ -739,20 +652,13 @@ Else
     ShowErrorMsg "Appointment day not within appointment bitmap range!"
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientGotoAppt_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientMarkDO_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientMarkDO_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientMarkDO.Enabled Then Exit Sub
 
@@ -776,20 +682,13 @@ End With
 lstResults.Repaint
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientMarkDO_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientMarkMI_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientMarkMI_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientMarkMI.Enabled Then Exit Sub
 
@@ -813,20 +712,13 @@ End With
 lstResults.Repaint
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientMarkMI_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientMarkINC_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientMarkINC_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientMarkINC.Enabled Then Exit Sub
 
@@ -850,20 +742,13 @@ End With
 lstResults.Repaint
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientMarkINC_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientMarkRelBefPmt_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientMarkRelBefPmt_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientMarkRelBefPmt.Enabled Then Exit Sub
 
@@ -887,20 +772,13 @@ End With
 lstResults.Repaint
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientMarkRelBefPmt_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientMarkPaid_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientMarkPaid_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientMarkPaid.Enabled Then Exit Sub
 
@@ -918,20 +796,13 @@ End With
 lstResults.Repaint
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientMarkPaid_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientMarkExtension_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientMarkExtension_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientMarkExtension.Enabled Then Exit Sub
 
@@ -955,20 +826,13 @@ End With
 lstResults.Repaint
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientMarkExtension_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menClientGotoML_Click()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "menClientGotoML_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menClientGotoML.Enabled Then Exit Sub
 
@@ -992,20 +856,13 @@ For a = 1 To 3
     End With
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menClientGotoML_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtSearch_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "txtSearch_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyCode
 Case vbKeyDown
@@ -1026,40 +883,26 @@ Case vbKeyF1
     lblHelp_Click
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtSearch_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtSearch_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "txtSearch_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyAscii
 Case vbKeyReturn, vbKeyEscape
     KeyAscii = 0    'Stop the beep
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtSearch_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Sub ClearAll()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "ClearAll": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SkipChangeEvents = True
 frmMain.SRCH_cboSpecialSearch.ListIndex = -1
@@ -1071,20 +914,13 @@ lblCount.Caption = "Count: 0"
 UpdateTabAsterisk
 SkipChangeEvents = False
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ClearAll", Err
 End Sub
 
+'EHT=Standard
 Sub PopulateCboSpecialSearch()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "PopulateCboSpecialSearch": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&
 frmMain.SRCH_cboSpecialSearch.Clear
@@ -1092,20 +928,13 @@ For a = 0 To ActiveDBInstance.SpecialSearches_Count - 1
     frmMain.SRCH_cboSpecialSearch.AddItem ActiveDBInstance.SpecialSearches(a).DisplayName
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateCboSpecialSearch", Err
 End Sub
 
+'EHT=Standard
 Sub PopupClientMenu(li&, showmenuatcursor As Boolean)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "PopupClientMenu": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim cID&, cindex&, aindex&, d As Date, comp As Boolean
 cID = tabSearch.lstResults.ItemClientID(li)
@@ -1150,26 +979,19 @@ If cID >= 0 Then    'Valid item (<0 is a separator)
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopupClientMenu", Err
 End Sub
 
+'EHT=Standard
 Sub RegenerateClientTempData(cindex&)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "RegenerateClientTempData": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim d As Date, aindex&
 With ActiveDBInstance.Clients(cindex)
     'Create display string
     .Temp_ParsedName = FindAndMarkSearchTerm(FormatClientName(fSearchResults, .c), CurrentSearch.SimpleSearchStringUCase)
-    
+
     'Create appt list
     aindex = DB_GetClientAppt(ActiveDBInstance, .c.ID, d)
     If aindex >= 0 Then
@@ -1181,24 +1003,17 @@ With ActiveDBInstance.Clients(cindex)
         .Temp_ApptPast = False
         .Temp_DidntHappen = False
     End If
-    
+
     .Temp_RegenerateTempData = False
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "RegenerateClientTempData", Err
 End Sub
 
+'EHT=Standard
 Sub UpdateTabAsterisk()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "UpdateTabAsterisk": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Const t1 = "Search  "
 Const t2 = "Search *"
@@ -1210,20 +1025,13 @@ Else
     frmMain.TabStrip.Tabs(vSearch + 1).Caption = t$
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UpdateTabAsterisk", Err
 End Sub
 
+'EHT=Standard
 Private Function ClientMatchesFilters(cindex&, asearch As enumDefinition) As Boolean
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "ClientMatchesFilters": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim findex&, filterresult As Boolean, a&
 Dim l1&, l2&
@@ -1332,7 +1140,7 @@ With ActiveDBInstance.Clients(cindex).c
                 filterresult = False
                 GoTo AppendResult
             End Select
-            
+
             filterresult = False
             Select Case asearch.Filters(findex).Operator
             Case oEqual
@@ -1374,7 +1182,7 @@ With ActiveDBInstance.Clients(cindex).c
                 Next a
             End Select
         End Select
-        
+
 AppendResult:
         If findex = 0 Then
             ClientMatchesFilters = filterresult
@@ -1390,20 +1198,13 @@ End With
 
 If asearch.NotOperator Then ClientMatchesFilters = Not ClientMatchesFilters
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ClientMatchesFilters", Err
 End Function
 
+'EHT=Standard
 Private Function FindAndMarkSearchTerm$(fs$, stu$)
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "FindAndMarkSearchTerm": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'Finds every occurence of stu$ (UCase) and inserts BoldSep before and after each one
 Dim fsu$, a&, la&, stl&
@@ -1422,20 +1223,13 @@ Else
     FindAndMarkSearchTerm$ = FindAndMarkSearchTerm$ & Mid$(fs$, la + stl)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "FindAndMarkSearchTerm", Err
 End Function
 
+'EHT=Standard
 Sub DoSearch()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "DoSearch": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim asearch As enumDefinition, t$, estr$, a&
 lstResults.SetRedraw False
@@ -1446,7 +1240,7 @@ If Len(t$) > 1 Then
     If ParseSearchString(t$, estr$, asearch) Then
         CurrentSearch = asearch
         RunSearch
-        
+
         'Select first client (>=0)
         For a = 0 To lstResults.ListCount - 1
             If lstResults.ItemClientID(a) >= 0 Then
@@ -1459,20 +1253,13 @@ End If
 lstResults.SetRedraw True
 lblCount.Caption = "Count: " & mSearchCount
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DoSearch", Err
 End Sub
 
+'EHT=Standard
 Function IsSimpleSearchString(t$) As Boolean
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "IsSimpleSearchString": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, ca&
 For a = 1 To Len(t$)
@@ -1487,20 +1274,13 @@ For a = 1 To Len(t$)
 Next a
 IsSimpleSearchString = True
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "IsSimpleSearchString", Err
 End Function
 
+'EHT=Standard
 Private Function ParseSearchString(ByVal s$, ByRef estr$, ByRef asearch As enumDefinition) As Boolean
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "ParseSearchString": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim parts$(), a&, m&, b&, c$, ca&, Flags$(), flagcount&, withinquotes As Boolean
 Dim nextfilterorop As Boolean
@@ -1530,7 +1310,7 @@ Else
         m = b
     Loop
     s$ = s$ & Mid$(c$, m + 1)
-    
+
     'Custom Split routine (skips the separator if found within "")
     ReDim parts$(0)
     m = 0
@@ -1550,7 +1330,7 @@ Else
             End If
         End If
     Next a
-    
+
     'Parse parts individually
     For a = 0 To UBound(parts$)
         Select Case parts$(a)
@@ -1614,13 +1394,13 @@ r:
                 estr$ = "Value to search for missing:" & vbCrLf & parts$(a)
                 Exit Function
             End If
-            
+
             'Create filter
             ReDim Preserve tempsearch.Filters(tempsearch.FilterCount)
             With tempsearch.Filters(tempsearch.FilterCount)
                 .Filter_OrOperator = nextfilterorop
                 nextfilterorop = False  'Set back to 'And' for the next filter
-                
+
                 'Lookup field name
                 .Field = -1
                 For b = 0 To UBound(SyntaxTable_Fields)
@@ -1633,7 +1413,7 @@ r:
                     estr$ = "Invalid field name: '" & f$ & "'"
                     Exit Function
                 End If
-                
+
                 'Select operator
                 Select Case Trim$(o$)
                 Case "=", "==":         .Operator = oEqual
@@ -1648,17 +1428,17 @@ r:
                     estr$ = "Invalid operator: '" & o$ & "'"
                     Exit Function
                 End Select
-                
+
                 'Determine what type the value is
                 v$ = Trim$(v$)
                 'Flags look like strings, so we need to catch it first
                 If .Field = dFlags Or .Field = dLastYear_Flags Then
                     .ValueType = tFlags
-                    
+
                     'Clear Flag array
                     flagcount = 0
                     Erase Flags$
-                    
+
                     'Separate individual flags (separated by the + or -, no space)
                     For b = 1 To Len(v$)
                         c$ = Mid$(v$, b, 1)
@@ -1674,17 +1454,17 @@ r:
                         estr$ = "Flag value empty:" & vbCrLf & parts$(a)
                         Exit Function
                     End If
-                    
+
                     'Init flag array
                     ReDim .Value_Flag(flagcount - 1)
                     ReDim .Value_FlagSet(flagcount - 1)
                     .Value_FlagCount = flagcount
-                    
+
                     'Parse each flag individually
                     For ca = 0 To flagcount - 1
                         'Set FlagSet, +:True, -:False
                         .Value_FlagSet(ca) = (Left$(Flags$(ca), 1) = "+")
-                        
+
                         'Lookup flag name
                         c$ = Mid$(Flags$(ca), 2)
                         .Value_Flag(ca) = -1
@@ -1699,15 +1479,15 @@ r:
                             Exit Function
                         End If
                     Next ca
-                
+
                 ElseIf IsDate(v$) Then
                     .ValueType = tLong
                     .Value_Long = CLng(CDate(v$))
-                
+
                 ElseIf IsNumeric(v$) Then
                     .ValueType = tLong
                     .Value_Long = CLng(v$)
-                
+
                 Else    'String, with no quotes
                     .ValueType = tString
                     If (Left$(v$, 1) = """") And (Right$(v$, 1) = """") Then
@@ -1731,20 +1511,13 @@ End If
 asearch = tempsearch
 ParseSearchString = True
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ParseSearchString", Err
 End Function
 
+'EHT=Standard
 Private Sub RunSearch()
-'errheader>
-Const PROC_NAME = "tabSearch" & "." & "RunSearch": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim sl&, a&, p&
 Dim ul1$, ul2$, uf1$, uf2$
@@ -1760,9 +1533,9 @@ If CurrentSearch.IsSimpleSearch Then
     sectiontitles(2) = "First name / nickname contains..."
     sectiontitles(3) = "Last, First contains..."
     sectiontitles(4) = "Notes contains..."
-    
+
     sl = Len(CurrentSearch.SimpleSearchStringUCase)
-    
+
     mSearchCount = 0
     For a = 0 To ActiveDBInstance.Clients_Count - 1
         With ActiveDBInstance.Clients(a).c
@@ -1770,19 +1543,19 @@ If CurrentSearch.IsSimpleSearch Then
             ul2$ = UCase$(.Person2.Last)
             uf1$ = UCase$(.Person1.First)
             uf2$ = UCase$(.Person2.First)
-            
+
             'Last begins
             If (Left$(ul1$, sl) = CurrentSearch.SimpleSearchStringUCase) Or _
                (Left$(ul2$, sl) = CurrentSearch.SimpleSearchStringUCase) Then
                 p = 0
                 sectioncount(p) = sectioncount(p) + 1
-            
+
             'Last contains
             ElseIf InStr(ul1$ & SEP1 & _
                          ul2$, CurrentSearch.SimpleSearchStringUCase) > 0 Then
                 p = 1
                 sectioncount(p) = sectioncount(p) + 1
-            
+
             'First/nickname contains
             ElseIf InStr(uf1$ & SEP1 & _
                          UCase$(.Person1.Nickname) & SEP1 & _
@@ -1790,7 +1563,7 @@ If CurrentSearch.IsSimpleSearch Then
                          UCase$(.Person2.Nickname), CurrentSearch.SimpleSearchStringUCase) > 0 Then
                 p = 2
                 sectioncount(p) = sectioncount(p) + 1
-            
+
             'Last, First cantains
             ElseIf InStr(ul1$ & ", " & uf1$ & SEP1 & _
                          ul1$ & ", " & uf2$ & SEP1 & _
@@ -1798,23 +1571,23 @@ If CurrentSearch.IsSimpleSearch Then
                          ul2$ & ", " & uf2$, CurrentSearch.SimpleSearchStringUCase) > 0 Then
                 p = 3
                 sectioncount(p) = sectioncount(p) + 1
-            
+
             'Notes contains
             ElseIf InStr(UCase$(.Notes), CurrentSearch.SimpleSearchStringUCase) > 0 Then
                 p = 4
                 sectioncount(p) = sectioncount(p) + 1
-            
+
             Else
                 p = -1
             End If
-            
+
             If p >= 0 Then
                 lstResults.AddItem (p * 2) + 1, a
                 mSearchCount = mSearchCount + 1
             End If
         End With
     Next a
-    
+
     'Add separators
     For a = 0 To UBound(sectioncount)
         If sectioncount(a) > 0 Then
@@ -1825,7 +1598,7 @@ If CurrentSearch.IsSimpleSearch Then
 Else
     '#################### Criteria Search ####################
     If CurrentSearch.FilterCount = 0 Then Err.Raise 1, , "Invalid search definition"
-    
+
     mSearchCount = 0
     For a = 0 To ActiveDBInstance.Clients_Count - 1
         If ClientMatchesFilters(a, CurrentSearch) Then
@@ -1836,13 +1609,7 @@ Else
 
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "RunSearch", Err
 End Sub
 

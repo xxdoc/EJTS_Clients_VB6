@@ -170,7 +170,9 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "tabStatistics"
 Implements ITab
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
 Private SkipComboChangeEvent As Boolean
@@ -178,9 +180,9 @@ Private SkipComboChangeEvent As Boolean
 Private Const CurVersion As Byte = 3
 Private Type typeSnapshot
     SnapshotVersion As Byte
-    
+
     SnapshotDate As Date
-    
+
     ReturnsCount_ByMonth(11) As Long
     ReturnsCountFeeGZ_ByMonth(11) As Long
     ReturnsCountMinGZ_ByMonth(11) As Long
@@ -194,7 +196,7 @@ Private Type typeSnapshot
     XChgUnpaidTotalFee As Long
     BKTotalFee_ByMonth(11) As Long
     BKUnpaidTotalFee As Long
-    
+
     NewCount As Long                'Marked complete, marked new, and meets NCThreshold
     NewTotal As Long
     NoShowCount As Long             'NOT marked complete, NOT marked extension, LYFlags marked complete
@@ -215,7 +217,7 @@ Private Type typeSnapshot
     EmailAddressCount As Long       'Marked complete, email <> ""
     IPTECount As Long               'Marked complete, marked IPTE
     IPTETotal As Long
-    
+
     '0-2 = Count, Total, Max
     CountTotalMaxData(4, 2) As Long
     'AGI_Data(2) As Long          'Skip IPTE
@@ -223,7 +225,7 @@ Private Type typeSnapshot
     'FedDue_Data(2) As Long       'Skip IPTE, FedResult < 0
     'StateRef_Data(2) As Long     'Skip IPTE, Skip NoState, StateResult >= 0
     'StateDue_Data(2) As Long     'Skip IPTE, Skip NoState, StateResult < 0
-    
+
     '5 sectors, each with range start and end (inclusive), count, and total money
     BellCurveData(4, 3) As Long
 End Type
@@ -246,36 +248,27 @@ Private BGBrush&
 Private SnapshotSlot(1) As typeSnapshot
 Private IsSnapshotLive(1) As Boolean
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Standard
 Private Function ITab_CreateGDIObjects() As Boolean
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "ITab_CreateGDIObjects": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 STAT_FontHeader = CreateFont2(pctDataView(0).hdc, "Arial", STAT_FontSize, True, False, False, False)
 STAT_Font = CreateFont2(pctDataView(0).hdc, "Arial", STAT_FontSize, False, False, False, False)
 BGBrush = GetSysColorBrush(COLOR_WINDOW)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_CreateGDIObjects", Err
 End Function
 
+'EHT=Standard
 Private Function ITab_InitializeAfterDBLoad() As Boolean
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "ITab_InitializeAfterDBLoad": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 chkRememberSelection(0).Enabled = ActiveDBInstance.IsWriteable
 chkRememberSelection(1).Enabled = ActiveDBInstance.IsWriteable
@@ -295,57 +288,36 @@ For a = 0 To 1
 Next a
 SkipComboChangeEvent = False
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_InitializeAfterDBLoad", Err
 End Function
 
+'EHT=Standard
 Private Sub ITab_AfterTabShown()
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "ITab_AfterTabShown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 PopulateComboWithSnapshotList 0
 cboSnapshots_Click 0
 PopulateComboWithSnapshotList 1
 cboSnapshots_Click 1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_AfterTabShown", Err
 End Sub
 
+'EHT=Standard
 Private Sub ITab_SetDefaultFocus()
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "ITab_SetDefaultFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SetFocusWithoutErr pctDataView(0)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SetDefaultFocus", Err
 End Sub
 
+'EHT=Standard
 Private Function ITab_SaveSettingsToDBBeforeClose() As Boolean
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "ITab_SaveSettingsToDBBeforeClose": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a%
 For a = 0 To 1
@@ -353,39 +325,25 @@ For a = 0 To 1
     DB_SetSetting ActiveDBInstance, "_Statistics-LastView-" & a, cboSnapshots(a).List(cboSnapshots(a).ListIndex), sStr
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SaveSettingsToDBBeforeClose", Err
 End Function
 
+'EHT=Standard
 Private Function ITab_DestroyGDIObjects() As Boolean
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "ITab_DestroyGDIObjects": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 DeleteObject STAT_FontHeader
 DeleteObject STAT_Font
 DeleteObject BGBrush
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_DestroyGDIObjects", Err
 End Function
 
+'EHT=ResumeNext
 Private Sub Form_Resize()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 Dim w&
 w = (Me.ScaleWidth / 2) - 4
@@ -399,61 +357,39 @@ DisplayData 0
 DisplayData 1
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyDown KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "Form_KeyUp": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyUp KeyCode, Shift: If KeyCode = 0 Then Exit Sub     'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyUp", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "Form_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyPress KeyAscii: If KeyAscii = 0 Then Exit Sub       'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSaveLiveDataToSnapshot_Click()
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "btnSaveLiveDataToSnapshot_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'Save currently-displayed data to snapshot
 
@@ -477,20 +413,13 @@ cboSnapshots_Click 0
 PopulateComboWithSnapshotList 1
 cboSnapshots_Click 1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSaveLiveDataToSnapshot_Click", Err
 End Sub
 
+'EHT=Standard
 Sub cboSnapshots_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "cboSnapshots_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim ls&
 
@@ -527,39 +456,25 @@ If ActiveDBInstance.IsWriteable Then
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "cboSnapshots_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub chkRememberSelection_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "chkRememberSelection_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not ActiveDBInstance.IsWriteable Then Exit Sub
 If SkipComboChangeEvent Then Exit Sub
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "chkRememberSelection_Click", Err
 End Sub
 
+'EHT=Cleanup2
 Sub PopulateComboWithSnapshotList(Index As Integer, Optional ItemToSelect$)
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "PopulateComboWithSnapshotList": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 'If ItemToSelect$ is blank, selection won't change throughout the update
 
@@ -596,21 +511,16 @@ For a = 0 To cboSnapshots(Index).ListCount - 1
     End If
 Next a
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then cboSnapshots(Index).Clear
+CLEANUP: INCLEANUP = True
+    If HASERROR Then cboSnapshots(Index).Clear
 
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateComboWithSnapshotList", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Sub
 
+'EHT=Standard
 Private Function CalculateLiveData(ld As typeSnapshot) As Boolean
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "CalculateLiveData": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, m&, b As Boolean, ncft As Long, defstate$
 
@@ -638,7 +548,7 @@ For a = 0 To ActiveDBInstance.Clients_Count - 1
                 Inc ld.ReturnsUnpaidCount
                 IncBy ld.ReturnsUnpaidTotalFee, .MoneyOwed
             End If
-            
+
             If Flag_IsSet(.Flags, NewClient) Then
                 If .PrepFee >= ncft Then
                     Inc ld.NewCount
@@ -677,7 +587,7 @@ For a = 0 To ActiveDBInstance.Clients_Count - 1
                 If .ResultAGI = NullLong Then Err.Raise 1, , FormatClientName(fLog, ActiveDBInstance.Clients(a).c) & ", ResultAGI cannot be null"
                 IncBy ld.CountTotalMaxData(0, 1), .ResultAGI
                 If .ResultAGI > ld.CountTotalMaxData(0, 2) Then ld.CountTotalMaxData(0, 2) = .ResultAGI
-                
+
                 If .ResultFederal = NullLong Then
                     Err.Raise 1, , FormatClientName(fLog, ActiveDBInstance.Clients(a).c) & ", ResultFederal cannot be null"
                 ElseIf .ResultFederal < 0 Then
@@ -689,7 +599,7 @@ For a = 0 To ActiveDBInstance.Clients_Count - 1
                     IncBy ld.CountTotalMaxData(1, 1), .ResultFederal
                     If .ResultFederal > ld.CountTotalMaxData(1, 2) Then ld.CountTotalMaxData(1, 2) = .ResultFederal
                 End If
-                
+
                 If Len(.StateList) > 0 Then
                     If .ResultState = NullLong Then
                         Err.Raise 1, , FormatClientName(fLog, ActiveDBInstance.Clients(a).c) & ", ResultState cannot be null"
@@ -704,7 +614,7 @@ For a = 0 To ActiveDBInstance.Clients_Count - 1
                     End If
                 End If
             End If
-            
+
             For m = 0 To 4
                 b = False
                 If ld.BellCurveData(m, 0) <> NullLong Then
@@ -766,20 +676,13 @@ ld.SnapshotVersion = CurVersion
 ld.SnapshotDate = Now
 CalculateLiveData = True
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CalculateLiveData", Err
 End Function
 
+'EHT=Cleanup1
 Sub CalculateLiveDataAndPutIntoSlot(SlotIndex As Integer)
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "CalculateLiveDataAndPutIntoSlot": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 Dim ld As typeSnapshot
 SnapshotSlot(SlotIndex) = ld            'Clear it out first; so if there is any error, the slot is left empty
@@ -791,20 +694,16 @@ If CalculateLiveData(ld) Then
     IsSnapshotLive(SlotIndex) = True
 End If
 
-CLEAN_UP:
+CLEANUP: INCLEANUP = True
     DisplayData SlotIndex       'Display what we have, regardless of succeess
-'errfooter>
+
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CalculateLiveDataAndPutIntoSlot", Err, INCLEANUP: Resume CLEANUP
 End Sub
 
+'EHT=Cleanup1
 Sub DisplayData(SlotIndex As Integer)
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "DisplayData": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 Dim a&, b&, b2&, secX&, secY&, y2&, t$
 Dim pcthdc&, tbl As typeTableDef
@@ -816,7 +715,7 @@ pcthdc = pctDataView(SlotIndex).hdc
 
 With SnapshotSlot(SlotIndex)
     If .SnapshotDate = 0 Then Exit Sub
-    
+
     tbl.pcthdc = pcthdc
     tbl.OffsetX = 0
     tbl.OffsetY = 0
@@ -839,7 +738,7 @@ With SnapshotSlot(SlotIndex)
     tbl.ColumnWidth(14) = 60
     tbl.ColumnWidth(15) = 60
     InitTable tbl
-    
+
     '***************************************************************************************
     secX = 0: secY = 0
     FillArea tbl, secX + 0, secY + 0, 12, 21
@@ -858,7 +757,7 @@ With SnapshotSlot(SlotIndex)
     DrawBorders tbl, secX + 5, secY + 0, 1, 21, False, False, False, True
     DrawBorders tbl, secX + 8, secY + 0, 1, 21, False, False, False, True
     DrawBorders tbl, secX + 10, secY + 0, 1, 21, False, False, False, True
-    
+
     SetTextColor pcthdc, vbBlack
     SelectObject pcthdc, STAT_FontHeader
     If .SnapshotDate <> 0 Then DrawContent tbl, secX + 0, secY + 0, 1, 2, Format$(.SnapshotDate, "m/dd/yyyy")
@@ -867,7 +766,7 @@ With SnapshotSlot(SlotIndex)
     DrawContent tbl, secX + 9, secY + 0, 2, 1, "BK"
     DrawContent tbl, secX + 11, secY + 0, 1, 1, "Total"
     DrawContent tbl, secX + 11, secY + 1, 1, 1, "Income"
-    
+
     SelectObject pcthdc, STAT_Font
     DrawContent tbl, secX + 1, secY + 1, 1, 1, "#"
     DrawContent tbl, secX + 2, secY + 1, 1, 1, "Total"
@@ -877,7 +776,7 @@ With SnapshotSlot(SlotIndex)
     DrawContent tbl, secX + 6, secY + 1, 1, 1, "#"
     DrawContent tbl, secX + 7, secY + 1, 2, 1, "Total"
     DrawContent tbl, secX + 9, secY + 1, 2, 1, "Total"
-    
+
     'ct(0,_)    Jan,Feb
     'ct(1,_)    Jan,Feb,Mar
     'ct(2,_)    Jan,Feb,Mar,Apr
@@ -886,7 +785,7 @@ With SnapshotSlot(SlotIndex)
     For a = 0 To 11
         If a < 4 Then
             y2 = a + 2      'Offset by the 2 rows of the header
-            
+
             b2 = a - 1
             If b2 < 0 Then b2 = 0
             For b = b2 To 2
@@ -900,10 +799,10 @@ With SnapshotSlot(SlotIndex)
                 IncBy ct(b, 6), .XChgTotalFee_ByMonth(a)
                 IncBy ct(b, 7), .BKTotalFee_ByMonth(a)
             Next b
-            
+
         Else
             y2 = a + 5      'Offset by the 2 header rows, plus the 3 subtotal rows
-            
+
             'Increment May-Dec subtotals
             IncBy ct(3, 0), .ReturnsCount_ByMonth(a)
             IncBy ct(3, 1), .ReturnsCountFeeGZ_ByMonth(a)
@@ -914,7 +813,7 @@ With SnapshotSlot(SlotIndex)
             IncBy ct(3, 6), .XChgTotalFee_ByMonth(a)
             IncBy ct(3, 7), .BKTotalFee_ByMonth(a)
         End If
-        
+
         'Increment year totals
         IncBy ct(4, 0), .ReturnsCount_ByMonth(a)
         IncBy ct(4, 1), .ReturnsCountFeeGZ_ByMonth(a)
@@ -924,7 +823,7 @@ With SnapshotSlot(SlotIndex)
         IncBy ct(4, 5), .XChgCount_ByMonth(a)
         IncBy ct(4, 6), .XChgTotalFee_ByMonth(a)
         IncBy ct(4, 7), .BKTotalFee_ByMonth(a)
-        
+
         'Draw that month's line
         DrawContent tbl, secX + 0, secY + y2, 1, 1, "   " & MonthName(a + 1), DT_LEFT
         DrawContent tbl, secX + 1, secY + y2, 1, 1, FmtCountOrBlank(.ReturnsCount_ByMonth(a)), DT_RIGHT
@@ -939,10 +838,10 @@ With SnapshotSlot(SlotIndex)
     Next a
     NumReturnsCompleted = ct(4, 0)
     TotalReturnIncome = ct(4, 3)
-    
+
     SelectObject pcthdc, STAT_FontHeader
     SetTextColor pcthdc, &HFF6633
-    
+
     y2 = 6
     DrawContent tbl, secX + 0, secY + y2, 1, 1, "Jan-Feb", DT_LEFT
     DrawContent tbl, secX + 1, secY + y2, 1, 1, FmtCountOrBlank(ct(0, 0)), DT_RIGHT
@@ -954,7 +853,7 @@ With SnapshotSlot(SlotIndex)
     DrawContent tbl, secX + 7, secY + y2, 2, 1, FmtTotalOrBlank(ct(0, 6)), DT_RIGHT
     DrawContent tbl, secX + 9, secY + y2, 2, 1, FmtTotalOrBlank(ct(0, 7)), DT_RIGHT
     DrawContent tbl, secX + 11, secY + y2, 1, 1, FmtTotalOrBlank(ct(0, 3) + ct(0, 6) + ct(0, 7)), DT_RIGHT
-    
+
     y2 = y2 + 1
     DrawContent tbl, secX + 0, secY + y2, 1, 1, "Jan-Mar", DT_LEFT
     DrawContent tbl, secX + 1, secY + y2, 1, 1, FmtCountOrBlank(ct(1, 0)), DT_RIGHT
@@ -966,7 +865,7 @@ With SnapshotSlot(SlotIndex)
     DrawContent tbl, secX + 7, secY + y2, 2, 1, FmtTotalOrBlank(ct(1, 6)), DT_RIGHT
     DrawContent tbl, secX + 9, secY + y2, 2, 1, FmtTotalOrBlank(ct(1, 7)), DT_RIGHT
     DrawContent tbl, secX + 11, secY + y2, 1, 1, FmtTotalOrBlank(ct(1, 3) + ct(1, 6) + ct(1, 7)), DT_RIGHT
-    
+
     y2 = y2 + 1
     DrawContent tbl, secX + 0, secY + y2, 1, 1, "Jan-Apr", DT_LEFT
     DrawContent tbl, secX + 1, secY + y2, 1, 1, FmtCountOrBlank(ct(2, 0)), DT_RIGHT
@@ -978,7 +877,7 @@ With SnapshotSlot(SlotIndex)
     DrawContent tbl, secX + 7, secY + y2, 2, 1, FmtTotalOrBlank(ct(2, 6)), DT_RIGHT
     DrawContent tbl, secX + 9, secY + y2, 2, 1, FmtTotalOrBlank(ct(2, 7)), DT_RIGHT
     DrawContent tbl, secX + 11, secY + y2, 1, 1, FmtTotalOrBlank(ct(2, 3) + ct(2, 6) + ct(2, 7)), DT_RIGHT
-    
+
     y2 = 17
     DrawContent tbl, secX + 0, secY + y2, 1, 1, "May-Dec", DT_LEFT
     DrawContent tbl, secX + 1, secY + y2, 1, 1, FmtCountOrBlank(ct(3, 0)), DT_RIGHT
@@ -990,7 +889,7 @@ With SnapshotSlot(SlotIndex)
     DrawContent tbl, secX + 7, secY + y2, 2, 1, FmtTotalOrBlank(ct(3, 6)), DT_RIGHT
     DrawContent tbl, secX + 9, secY + y2, 2, 1, FmtTotalOrBlank(ct(3, 7)), DT_RIGHT
     DrawContent tbl, secX + 11, secY + y2, 1, 1, FmtTotalOrBlank(ct(3, 3) + ct(3, 6) + ct(3, 7)), DT_RIGHT
-    
+
     SetTextColor pcthdc, vbBlack
     y2 = 18
     DrawContent tbl, secX + 0, secY + y2, 1, 1, "Year", DT_LEFT
@@ -1003,7 +902,7 @@ With SnapshotSlot(SlotIndex)
     DrawContent tbl, secX + 7, secY + y2, 2, 1, FmtTotalOrBlank(ct(4, 6)), DT_RIGHT
     DrawContent tbl, secX + 9, secY + y2, 2, 1, FmtTotalOrBlank(ct(4, 7)), DT_RIGHT
     DrawContent tbl, secX + 11, secY + y2, 1, 1, FmtTotalOrBlank(ct(4, 3) + ct(4, 6) + ct(4, 7)), DT_RIGHT
-    
+
     SetTextColor pcthdc, vbRed
     y2 = y2 + 1
     DrawContent tbl, secX + 0, secY + y2, 1, 1, "Owed", DT_LEFT
@@ -1013,7 +912,7 @@ With SnapshotSlot(SlotIndex)
     DrawContent tbl, secX + 7, secY + y2, 2, 1, FmtTotalOrBlank(-.XChgUnpaidTotalFee), DT_RIGHT
     DrawContent tbl, secX + 9, secY + y2, 2, 1, FmtTotalOrBlank(-.BKUnpaidTotalFee), DT_RIGHT
     DrawContent tbl, secX + 11, secY + y2, 1, 1, FmtTotalOrBlank(-.ReturnsUnpaidTotalFee - .XChgUnpaidTotalFee - .BKUnpaidTotalFee), DT_RIGHT
-    
+
     SetTextColor pcthdc, &HC000&
     y2 = y2 + 1
     DrawContent tbl, secX + 0, secY + y2, 1, 1, "Received", DT_LEFT
@@ -1036,15 +935,15 @@ With SnapshotSlot(SlotIndex)
     DrawBorders tbl, secX + 3, secY + 1, 2, 12, True, True, True, False
     DrawBorders tbl, secX + 5, secY + 1, 4, 12, True, True, True, True
     SetTextColor pcthdc, vbBlack
-    
+
     SelectObject pcthdc, STAT_FontHeader
     DrawContent tbl, secX + 5, secY + 0, 2, 1, "Total"
-    
+
     SelectObject pcthdc, STAT_Font
     DrawContent tbl, secX + 3, secY + 0, 1, 1, "#"
     DrawContent tbl, secX + 4, secY + 0, 1, 1, "%"
     DrawContent tbl, secX + 7, secY + 0, 2, 1, "%"
-    
+
     y2 = 1
     DrawContent tbl, secX + 0, secY + y2, 3, 1, "New - SAF", DT_LEFT
     DrawContent tbl, secX + 3, secY + y2, 1, 1, FmtCount(.NewCount), DT_RIGHT
@@ -1105,13 +1004,13 @@ With SnapshotSlot(SlotIndex)
     DrawContent tbl, secX + 4, secY + y2, 1, 1, FmtPercent(.IPTECount, NumReturnsCompleted), DT_RIGHT
     DrawContent tbl, secX + 5, secY + y2, 2, 1, FmtTotal(.IPTETotal), DT_RIGHT
     DrawContent tbl, secX + 7, secY + y2, 2, 1, FmtPercent(.IPTETotal, TotalReturnIncome), DT_RIGHT
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     '***************************************************************************************
     secX = 0: secY = 36
     FillArea tbl, secX + 1, secY, 6, 1
@@ -1120,15 +1019,15 @@ With SnapshotSlot(SlotIndex)
     DrawBorders tbl, secX + 0, secY + 1, 1, 5, True, True, True, False
     DrawBorders tbl, secX + 1, secY + 1, 6, 5, True, True, True, True
     SetTextColor pcthdc, vbBlack
-    
+
     SelectObject pcthdc, STAT_FontHeader
     DrawContent tbl, secX + 2, secY + 0, 2, 1, "Total"
     DrawContent tbl, secX + 4, secY + 0, 1, 1, "Average"
     DrawContent tbl, secX + 5, secY + 0, 2, 1, "Max"
-    
+
     SelectObject pcthdc, STAT_Font
     DrawContent tbl, secX + 1, secY + 0, 1, 1, "#"
-    
+
     For a = 0 To 4
         t$ = Choose(a + 1, "AGI", "FedRef", "FedDue", "StateRef", "StateDue")
         DrawContent tbl, secX + 0, secY + 1 + a, 1, 1, t$, DT_LEFT
@@ -1151,13 +1050,13 @@ With SnapshotSlot(SlotIndex)
     DrawBorders tbl, secX + 0, secY + 1, 2, 5, True, True, True, False
     DrawBorders tbl, secX + 2, secY + 1, 2, 5, True, True, True, True
     SetTextColor pcthdc, vbBlack
-    
+
     SelectObject pcthdc, STAT_FontHeader
     DrawContent tbl, secX + 3, secY + 0, 1, 1, "Total"
-    
+
     SelectObject pcthdc, STAT_Font
     DrawContent tbl, secX + 2, secY + 0, 1, 1, "#"
-    
+
     For a = 0 To 4
         If .BellCurveData(a, 0) = NullLong Then
             t$ = "<= " & FmtCount(.BellCurveData(a, 1))
@@ -1184,20 +1083,16 @@ Else
     lblLiveIndicator(SlotIndex).ForeColor = vbRed
 End If
 
-CLEAN_UP:
+CLEANUP: INCLEANUP = True
     pctDataView(SlotIndex).Refresh
-'errfooter>
+
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DisplayData", Err, INCLEANUP: Resume CLEANUP
 End Sub
 
+'EHT=Cleanup1
 Sub LoadSnapshotFileIntoSlot(ByVal filetoload$, SlotIndex As Integer)
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "LoadSnapshotFileIntoSlot": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 Dim nd As typeSnapshot
 SnapshotSlot(SlotIndex) = nd            'Clear it out first; that way if there is an error, the slot is left empty
@@ -1220,21 +1115,17 @@ Else
     IsSnapshotLive(SlotIndex) = False
 End If
 
-CLEAN_UP:
+CLEANUP: INCLEANUP = True
     If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
     DisplayData SlotIndex       'Display what we have, regardless of success
-'errfooter>
+
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "LoadSnapshotFileIntoSlot", Err, INCLEANUP: Resume CLEANUP
 End Sub
 
+'EHT=Cleanup1
 Function SaveLiveDataToSnapshotFile(filetosaveto$) As Boolean
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "SaveLiveDataToSnapshotFile": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 Dim ld As typeSnapshot
 If CalculateLiveData(ld) Then
@@ -1255,20 +1146,16 @@ End If
 
 SaveLiveDataToSnapshotFile = True
 
-CLEAN_UP:
+CLEANUP: INCLEANUP = True
     If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
-'errfooter>
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SaveLiveDataToSnapshotFile", Err, INCLEANUP: Resume CLEANUP
 End Function
 
+'EHT=Standard
 Sub CreateAutoSnapshotIfNewMonth()
-'errheader>
-Const PROC_NAME = "tabStatistics" & "." & "CreateAutoSnapshotIfNewMonth": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'If this is a new month, and the user forgot to create a snapshot, create one automatically
 
@@ -1316,19 +1203,12 @@ If Len(m$) > 0 Then
     ShowInfoMsg "Automatically created the following snapshots using live data as of this moment:" & m$
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CreateAutoSnapshotIfNewMonth", Err
 End Sub
 
+'EHT=Custom
 Private Sub InitTable(t As typeTableDef)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 Dim a&, ub&
 ub = UBound(t.ColumnWidth)
 ReDim t.ColumnLeft(ub)
@@ -1337,9 +1217,8 @@ For a = 1 To ub
 Next a
 End Sub
 
+'EHT=Custom
 Private Sub DrawBorders(table As typeTableDef, c&, r&, nc&, nr&, bt As Boolean, bb As Boolean, bl As Boolean, br As Boolean)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 Dim dr As RECT
 dr.Top = table.OffsetY + r * (table.RowHeight - 1)
 dr.Left = table.OffsetX + table.ColumnLeft(c)
@@ -1363,9 +1242,8 @@ If br Then
 End If
 End Sub
 
+'EHT=Custom
 Private Sub DrawContent(table As typeTableDef, c&, r&, nc&, nr&, s$, Optional halign& = DT_CENTER, Optional valign& = DT_VCENTER)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 Dim dr As RECT
 dr.Top = 1 + table.OffsetY + r * (table.RowHeight - 1)
 dr.Left = 2 + table.OffsetX + table.ColumnLeft(c)
@@ -1374,9 +1252,8 @@ dr.Right = -1 + table.OffsetX + table.ColumnLeft(c + nc - 1) + table.ColumnWidth
 DrawText table.pcthdc, s$, Len(s$), dr, halign Or valign Or DT_SINGLELINE
 End Sub
 
+'EHT=Custom
 Private Sub FillArea(table As typeTableDef, c&, r&, nc&, nr&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 Dim dr As RECT
 dr.Top = table.OffsetY + r * (table.RowHeight - 1)
 dr.Left = table.OffsetX + table.ColumnLeft(c)
@@ -1385,37 +1262,32 @@ dr.Right = table.OffsetX + table.ColumnLeft(c + nc - 1) + table.ColumnWidth(c + 
 FillRect table.pcthdc, dr, BGBrush
 End Sub
 
+'EHT=Custom
 Private Function FmtAvgCountOrBlank$(l1&, l2&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 If l2 <> 0 Then
     FmtAvgCountOrBlank = Format$(l1 / l2, "#,##0")
 End If
 End Function
 
+'EHT=Custom
 Private Function FmtAvgTotalOrBlank$(l1&, l2&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 If l2 <> 0 Then
     FmtAvgTotalOrBlank = Format$(l1 / l2, "$#,##0")
 End If
 End Function
 
+'EHT=Custom
 Private Function FmtCount$(l&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 FmtCount = Format$(l, "#,##0")
 End Function
 
+'EHT=Custom
 Private Function FmtCountOrBlank$(l&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 If l <> 0 Then FmtCountOrBlank = Format$(l, "#,##0")
 End Function
 
+'EHT=Custom
 Private Function FmtPercent$(l1&, l2&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 Dim p#
 If l2 = 0 Then
     p = 0
@@ -1425,9 +1297,8 @@ End If
 FmtPercent = Format$(p, "0%")
 End Function
 
+'EHT=Custom
 Private Function FmtPercentOrBlank$(l1&, l2&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 Dim p#
 If l2 <> 0 Then
     p = l1 / l2
@@ -1435,15 +1306,13 @@ If l2 <> 0 Then
 End If
 End Function
 
+'EHT=Custom
 Private Function FmtTotal$(l&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 FmtTotal = Format$(l, "$#,##0")
 End Function
 
+'EHT=Custom
 Private Function FmtTotalOrBlank$(l&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 If l <> 0 Then FmtTotalOrBlank = Format$(l, "$#,##0")
 End Function
 

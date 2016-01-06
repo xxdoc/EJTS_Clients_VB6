@@ -16,6 +16,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Attribute VB_Description = "vbaccelerator Owner Draw Combo and List box control."
 Option Explicit
+Private Const MOD_NAME = "CustomListbox"
 
 'Subclassing / IOLEInPlaceActivate
 Private WithEvents sc1 As SubClass
@@ -82,18 +83,17 @@ Private Const phonedetails_columnmargin = 3
 
 
 
+'EHT=Standard
 Private Sub UserControl_Initialize()
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "UserControl_Initialize": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If RunningFromIDE Then DEBUGMODE = True '[Mark]
 
 If Not DEBUGMODE Then
     Dim a&
-    
+
     hParent = UserControl.hwnd
-    
+
     'Initialize phonedetails_columns
     ReDim phonedetails_columns(7)
     phonedetails_columns(0).cWidth = 25:  phonedetails_columns(0).cAlign = TA_RIGHT
@@ -107,7 +107,7 @@ If Not DEBUGMODE Then
     For a = 1 To UBound(phonedetails_columns)
         phonedetails_columns(a).cx = phonedetails_columns(a - 1).cx + phonedetails_columns(a - 1).cWidth
     Next a
-    
+
     'Brushes, Pens, and Fonts (must be deleted)
     NormalBGBrush = GetSysColorBrush(COLOR_WINDOW)
     SelectedBGBrush = CreateSolidBrush(&HEBEBEB)
@@ -123,27 +123,20 @@ If Not DEBUGMODE Then
     FontStrike = CreateFont2(UserControl.hdc, "Arial", 10, False, False, False, True)
     FontBoldStrike = CreateFont2(UserControl.hdc, "Arial", 10, True, False, False, True)
     FontItalicStrike = CreateFont2(UserControl.hdc, "Arial", 10, False, True, False, True)
-    
+
     'Colors
     NormalTextColor = GetSysColor(COLOR_WINDOWTEXT)
     ChosenTextColor = vbRed
     ReturnCompleteTextColor = RGB(170, 170, 170)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UserControl_Initialize", Err
 End Sub
 
+'EHT=Standard
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "UserControl_ReadProperties": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 mDisplayMode = PropBag.ReadProperty("DisplayMode", mPhoneDetails)
 mMultiSel = PropBag.ReadProperty("MultiSel", False)
@@ -161,24 +154,17 @@ If Not DEBUGMODE Then
         ShowWindow hListBox, SW_SHOW
         SendMessage hListBox, LB_SETITEMHEIGHT, 0, LISTITEMHEIGHT
     End If
-    
+
     SetSubclassHooks
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UserControl_ReadProperties", Err
 End Sub
 
+'EHT=ResumeNext
 Private Sub UserControl_Resize()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 If Not DEBUGMODE Then
     Dim lWidth As Long, lHeight As Long
@@ -188,17 +174,16 @@ If Not DEBUGMODE Then
 End If
 End Sub
 
+'EHT=Standard
 Private Sub UserControl_Terminate()
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "UserControl_Terminate": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     UnsetSubclassHooks
-    
+
     DestroyWindow hListBox
     hListBox = 0
-    
+
     DeleteObject NormalBGBrush
     DeleteObject SelectedBGBrush
     DeleteObject FocusedBGBrush
@@ -215,72 +200,34 @@ If Not DEBUGMODE Then
     DeleteObject FontItalicStrike
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UserControl_Terminate", Err
 End Sub
 
+'EHT=Standard
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "UserControl_WriteProperties": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 PropBag.WriteProperty "DisplayMode", mDisplayMode
 PropBag.WriteProperty "MultiSel", mMultiSel
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UserControl_WriteProperties", Err
 End Sub
 
 
+'EHT=Custom
 Property Get DisplayMode() As eDisplayMode
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "DisplayMode": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
-
 DisplayMode = mDisplayMode
-
-CLEAN_UP:
-    'Your code here
-'errfooter>
-Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
 End Property
+'EHT=Custom
 Property Let DisplayMode(m As eDisplayMode)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "DisplayMode": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
-
 mDisplayMode = m
-
-CLEAN_UP:
-    'Your code here
-'errfooter>
-Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
 End Property
 
+'EHT=Standard
 Property Get ItemText(i&) As String
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "ItemText": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     lR = SendMessage(hListBox, LB_GETTEXTLEN, i, 0)
@@ -291,57 +238,36 @@ If Not DEBUGMODE Then
     ItemText = Left$(ItemText, lR)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ItemText[Get]", Err
 End Property
 
+'EHT=Standard
 Property Get ListCount() As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "ListCount": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     ListCount = SendMessage(hListBox, LB_GETCOUNT, 0, 0)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ListCount[Get]", Err
 End Property
 
+'EHT=Standard
 Property Get ListIndex() As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "ListIndex": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     ListIndex = SendMessage(hListBox, LB_GETCURSEL, 0, 0)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ListIndex[Get]", Err
 End Property
+'EHT=Standard
 Property Let ListIndex(i&)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "ListIndex": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     If mMultiSel Then
@@ -353,121 +279,63 @@ If Not DEBUGMODE Then
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ListIndex[Let]", Err
 End Property
 
+'EHT=Custom
 Property Get MultiSel() As Boolean
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "MultiSel": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
-
 MultiSel = mMultiSel
-
-CLEAN_UP:
-    'Your code here
-'errfooter>
-Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
 End Property
+'EHT=Custom
 Property Let MultiSel(m As Boolean)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "MultiSel": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
-
 mMultiSel = m
-
-CLEAN_UP:
-    'Your code here
-'errfooter>
-Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
 End Property
 
+'EHT=Standard
 Property Get Selected(i&) As Boolean
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "Selected": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     Selected = SendMessage(hListBox, LB_GETSEL, i, 0)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Selected[Get]", Err
 End Property
+'EHT=Standard
 Property Let Selected(i&, s As Boolean)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "Selected": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     lR = SendMessage(hListBox, LB_SETSEL, (Not s) + 1, i)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Selected[Let]", Err
 End Property
 
+'EHT=Standard
 Property Get TopIndex() As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "TopIndex": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     TopIndex = SendMessage(hListBox, LB_GETTOPINDEX, 0, 0)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "TopIndex[Get]", Err
 End Property
+'EHT=Standard
 Property Let TopIndex(i&)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "TopIndex": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     lR = SendMessage(hListBox, LB_SETTOPINDEX, i, 0)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Property
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "TopIndex[Let]", Err
 End Property
 
 
@@ -475,10 +343,9 @@ End Property
 
 
 
+'EHT=Standard
 Public Function AddItem(sectionnum&, cindex&, Optional septext$) As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "AddItem": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     'This text chosen here does not display on the screen (owner-draw), but it IS used
@@ -500,136 +367,87 @@ If Not DEBUGMODE Then
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "AddItem", Err
 End Function
 
+'EHT=Standard
 Public Sub Clear()
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "Clear": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     lR = SendMessage(hListBox, LB_RESETCONTENT, 0, 0)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Clear", Err
 End Sub
 
+'EHT=Standard
 Public Function ItemClientID(i&) As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "ItemClientID": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     ItemClientID = SendMessage(hListBox, LB_GETITEMDATA, i, 0)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ItemClientID", Err
 End Function
 
+'EHT=Standard
 Public Sub RemoveItem(i&)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "RemoveItem": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     lR = SendMessage(hListBox, LB_DELETESTRING, i&, 0)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "RemoveItem", Err
 End Sub
 
+'EHT=Standard
 Public Sub Repaint()
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "Repaint": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     lR = InvalidateRect(hListBox, 0, 1)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Repaint", Err
 End Sub
 
+'EHT=Standard
 Public Function SelectedClientID() As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "SelectedClientID": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     SelectedClientID = ListIndex
     If SelectedClientID <> LB_ERR Then SelectedClientID = ItemClientID(SelectedClientID)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SelectedClientID", Err
 End Function
 
+'EHT=Standard
 Public Sub SetRedraw(r As Boolean)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "SetRedraw": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     lR = SendMessage(hListBox, WM_SETREDRAW, (Not r) + 1, 0)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SetRedraw", Err
 End Sub
 
 
+'EHT=Standard
 Private Sub DrawItem_MailingList(cindex&, dis As DRAWITEMSTRUCT)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "DrawItem_MailingList": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim tc&, nx&, ny&, t$
 
@@ -649,25 +467,18 @@ With ActiveDBInstance.Clients(cindex).c
 
     nx = dis.rcItem.Left + 3
     ny = dis.rcItem.Top + 1
-    
+
     t$ = FormatClientName(fMailingList, ActiveDBInstance.Clients(cindex).c)
     TextOut dis.hdc, nx, ny, t$, Len(t$)
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DrawItem_MailingList", Err
 End Sub
 
+'EHT=Standard
 Private Sub DrawItem_PhoneDetails(cindex&, dis As DRAWITEMSTRUCT)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "DrawItem_PhoneDetails": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim tc&, p$(), a&, ci&, c As Boolean, nx&, ny&, t$, atleastoneliving As Boolean
 
@@ -690,17 +501,17 @@ With ActiveDBInstance.Clients(cindex).c
     End If
     SetTextColor dis.hdc, tc
     SelectObject dis.hdc, FontNormal
-    
+
     nx = dis.rcItem.Left + 3
     ny = dis.rcItem.Top + 1
-    
+
     'Draw grid lines
     SelectObject dis.hdc, GridLinesPen
     For a = 1 To UBound(phonedetails_columns)
         MoveToEx dis.hdc, nx + phonedetails_columns(a).cx, dis.rcItem.Top, 0
         LineTo dis.hdc, nx + phonedetails_columns(a).cx, dis.rcItem.Bottom
     Next a
-    
+
     'LYMinutes
     ci = 0
     SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign
@@ -712,13 +523,13 @@ With ActiveDBInstance.Clients(cindex).c
         t$ = FieldToString(.LastYear_MinutesToComplete, mNumberOrNULL)
     End If
     TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)), ny, t$, Len(t$)
-    
+
     'NumApptSlots
     ci = ci + 1
     SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign
     t$ = FormatNumApptSlots(.NumApptSlotsToUse)
     TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)), ny, t$, Len(t$)
-    
+
     'Last year's DO/MI flag
     ci = ci + 1
     SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign
@@ -729,7 +540,7 @@ With ActiveDBInstance.Clients(cindex).c
         t$ = "MI"
         TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)), ny, t$, Len(t$)
     End If
-    
+
     'Last, First
     ci = ci + 1
     SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign Or TA_UPDATECP
@@ -755,7 +566,7 @@ With ActiveDBInstance.Clients(cindex).c
     Next a
     SelectObject dis.hdc, FontNormal
     SetTextAlign dis.hdc, TA_NOUPDATECP
-    
+
     'Phone numbers
     ci = ci + 1
     t$ = FieldToString(.PhoneHome, mPhoneHideLocalAreaCode)
@@ -763,12 +574,12 @@ With ActiveDBInstance.Clients(cindex).c
     If a > 0 Then
         SetTextAlign dis.hdc, TA_LEFT
         TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)) - 5, ny, "x", 1
-        
+
         t$ = Left$(t$, a - 1)
     End If
     SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign
     TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)) - 6, ny, t$, Len(t$)
-    
+
     'Notes
     ci = ci + 1
     SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign
@@ -776,7 +587,7 @@ With ActiveDBInstance.Clients(cindex).c
     t$ = .Notes
     TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)), ny, t$, Len(t$)
     SelectObject dis.hdc, FontNormal
-    
+
     'Appointment
     ci = ci + 1
     SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign
@@ -796,7 +607,7 @@ With ActiveDBInstance.Clients(cindex).c
     t$ = ActiveDBInstance.Clients(cindex).Temp_ApptDate
     TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)), ny, t$, Len(t$)
     SelectObject dis.hdc, FontNormal
-    
+
     'Current flags
     ci = ci + 1
     SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign
@@ -831,20 +642,13 @@ With ActiveDBInstance.Clients(cindex).c
     End If
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DrawItem_PhoneDetails", Err
 End Sub
 
+'EHT=Standard
 Private Sub DrawItem_Separator(sepid&, dis As DRAWITEMSTRUCT)
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "DrawItem_Separator": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'The sepid parametor isn't used yet, but leave it in case it's useful in the future
 
@@ -861,14 +665,8 @@ ny = dis.rcItem.Top + 1
 t$ = Mid$(ItemText(dis.ItemId), 3)
 TextOut dis.hdc, nx, ny, t$, Len(t$)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DrawItem_Separator", Err
 End Sub
 
 
@@ -885,10 +683,9 @@ End Sub
 
 
 
+'EHT=Standard
 Private Function DrawItem(ByVal wParam As Long, ByVal lParam As Long) As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "DrawItem": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim dis As DRAWITEMSTRUCT, cindex&
 CopyMemory dis, ByVal lParam, Len(dis)
@@ -897,7 +694,7 @@ With dis
         Select Case .ItemAction
         Case ODA_SELECT, ODA_FOCUS, ODA_DRAWENTIRE
             SetBkMode .hdc, TRANSPARENT
-            
+
             If .ItemData < 0 Then
                 'Separator item
                 SelectObject .hdc, SeparatorBGBrush
@@ -920,7 +717,7 @@ With dis
                     'Clear background
                     FillRect .hdc, .rcItem, NormalBGBrush
                 End If
-                
+
                 'Draw item
                 cindex = DB_FindClientIndex(ActiveDBInstance, .ItemData)
                 If cindex >= 0 Then
@@ -934,19 +731,12 @@ With dis
     End If
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DrawItem", Err
 End Function
+'EHT=Standard
 Private Function GetTextDrawPos(c As COLUMNDIM) As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "GetTextDrawPos": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case c.cAlign
 Case TA_LEFT
@@ -957,20 +747,13 @@ Case TA_RIGHT
     GetTextDrawPos = c.cx + c.cWidth + 1 - phonedetails_columnmargin
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "GetTextDrawPos", Err
 End Function
 
+'EHT=Standard
 Private Function sc1_WindowProc(hwnd As Long, uMsg As Long, wParam As Long, lParam As Long) As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "sc1_WindowProc": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case uMsg
 Case WM_COMMAND
@@ -984,20 +767,13 @@ Case WM_SETFOCUS
     SetFocusAPI hListBox
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "sc1_WindowProc", Err
 End Function
 
+'EHT=Standard
 Private Function sc2_WindowProc(hwnd As Long, uMsg As Long, wParam As Long, lParam As Long) As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "sc2_WindowProc": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim iKeyCode As Integer, iShift As Integer
 Dim iButton As Integer, X As Single, Y As Single
@@ -1120,20 +896,13 @@ Case WM_SETFOCUS
     CopyMemory pOleInPlaceActiveObject, 0&, 4
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "sc2_WindowProc", Err
 End Function
 
+'EHT=Standard
 Private Sub SetSubclassHooks()
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "SetSubclassHooks": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     Set sc1 = New SubClass
@@ -1141,7 +910,7 @@ If Not DEBUGMODE Then
     sc1.HookMessage WM_DRAWITEM, cBefore
     sc1.HookMessage WM_SETFOCUS, cBefore
     sc1.SetHook hParent
-    
+
     Set sc2 = New SubClass
     sc2.HookMessage WM_KEYDOWN, cManual
     sc2.HookMessage WM_CHAR, cManual
@@ -1159,19 +928,12 @@ If Not DEBUGMODE Then
     IsSubClassed = True
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SetSubclassHooks", Err
 End Sub
+'EHT=Standard
 Private Sub UnsetSubclassHooks()
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "UnsetSubclassHooks": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
     If IsSubClassed Then
@@ -1181,29 +943,11 @@ If Not DEBUGMODE Then
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UnsetSubclassHooks", Err
 End Sub
 
+'EHT=Custom
 Friend Function TranslateAccelerator(lpMsg As VBOleGuids.Msg) As Long
-'errheader>
-Const PROC_NAME = "CustomListbox" & "." & "TranslateAccelerator": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
-
 TranslateAccelerator = S_FALSE
-
-CLEAN_UP:
-    'Your code here
-'errfooter>
-Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
 End Function

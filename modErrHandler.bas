@@ -1,40 +1,62 @@
 Attribute VB_Name = "modErrHandler"
 Option Explicit
 
-Public Const MAXERRS = 4    'Max number of errors allowed in one procedure before the error is bubbled up to the parent procedure
+'The purpose of this module is as follows:
+' * Provide at least some level of error tracking, rather than every error appearing as though it occured in the parent function
+' * Allow functions to clean up their work when an error occurs, while still preserving the source of the original error
 
-Sub ShowInfoMsg(e$)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-MsgBox e$, vbInformation
+'Use the ErrorHandlerTemplates addin to ensure consistency of error-handling across the entire project.
+
+Private Type Error
+    Source As String
+    Number As Long
+    Description As String
+End Type
+Private ErrorLog() As Error
+Private ErrorCount As Long
+
+Sub ShowInfoMsg(e As String)
+MsgBox e, vbInformation
 End Sub
 
-Sub ShowErrorMsg(e$)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-MsgBox e$, vbCritical
+Sub ShowErrorMsg(e As String)
+MsgBox e, vbCritical
 End Sub
 
-Sub UNHANDLEDERROR(section$)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-Dim e$
-Const h = "Woops! An unhandled error has occurred. Under normal circumstances, this should never happen. Please contact the software developer and report the error details below..." & vbCrLf & vbCrLf
-If Err.Number = 0 Then
-    e$ = "Error #0 (no details provided)"
-ElseIf Err.Number = 1 Then
-    e$ = Err.Description
+Function UNHANDLEDERROR(module As String, section As String, errobj As ErrObject, Optional INCLEANUP As Boolean = False) As Boolean
+ReDim Preserve ErrorLog(ErrorCount)
+With ErrorLog(ErrorCount)
+    .Source = module & "." & section
+    .Number = errobj.Number
+    .Description = errobj.Description
+    If INCLEANUP Then .Description = .Description & vbCrLf & "(Occurred during clean-up section)"
+End With
+ErrorCount = ErrorCount + 1
+If INCLEANUP Then
+    Err.Raise -1
 Else
-    e$ = "Error #" & Err.Number & ", " & Err.Description
+    Dim e As String, a As Long
+    Const h As String = "Woops! An unhandled error has occurred. Under normal circumstances, this should never happen. Use Alt+PrtScrn to copy this, to paste into an email for the software developer."
+    For a = 0 To ErrorCount - 1
+        With ErrorLog(a)
+            Select Case .Number
+            Case -1
+                e = e & vbCrLf & vbCrLf & "Error was ultimately caught by " & .Source & " error handler."
+            Case 0
+                e = e & vbCrLf & vbCrLf & .Source & ": Unknown error"
+            Case 1
+                e = e & vbCrLf & vbCrLf & .Source & ": " & .Description
+            Case Else
+                e = e & vbCrLf & vbCrLf & .Source & ": Error #" & .Number & ", " & .Description
+            End Select
+        End With
+    Next a
+    ErrorCount = 0
+    MsgBox h & e, vbCritical
 End If
-
-MsgBox h & "PROCEDURE: " & section$ & vbCrLf & _
-           "DESCRIPTION: " & e$, vbCritical
-End Sub
+UNHANDLEDERROR = True
+End Function
 
 Sub CAUSEERROR()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 Err.Raise 1, , "Custom error message from CAUSEERROR() for debug purposes."
 End Sub
-

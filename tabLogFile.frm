@@ -37,27 +37,33 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "tabLogFile"
 Implements ITab
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
 Private Declare Function GetComputerName Lib "kernel32" Alias "GetComputerNameA" (ByVal lpBuffer As String, nSize As Long) As Long
 
 Private ComputerName$
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Standard
 Private Function ITab_CreateGDIObjects() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_CreateGDIObjects", Err
 End Function
 
+'EHT=Cleanup1
 Private Function ITab_InitializeAfterDBLoad() As Boolean
-'errheader>
-Const PROC_NAME = "tabLogFile" & "." & "ITab_InitializeAfterDBLoad": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 Dim l&
 l = 100
@@ -79,123 +85,95 @@ If FileExists(ActiveDBInstance.FullPath_Log) Then
     lstLog.TopIndex = lstLog.ListCount - 1
 End If
 
-CLEAN_UP:
+CLEANUP: INCLEANUP = True
     If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
-'errfooter>
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_InitializeAfterDBLoad", Err, INCLEANUP: Resume CLEANUP
 End Function
 
+'EHT=Standard
 Private Sub ITab_AfterTabShown()
-'errheader>
-Const PROC_NAME = "tabLogFile" & "." & "ITab_AfterTabShown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 lstLog.ListIndex = -1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_AfterTabShown", Err
 End Sub
 
+'EHT=Standard
 Private Sub ITab_SetDefaultFocus()
-'errheader>
-Const PROC_NAME = "tabLogFile" & "." & "ITab_SetDefaultFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SetFocusWithoutErr lstLog
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SetDefaultFocus", Err
 End Sub
 
+'EHT=Standard
 Private Function ITab_SaveSettingsToDBBeforeClose() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SaveSettingsToDBBeforeClose", Err
 End Function
 
+'EHT=Standard
 Private Function ITab_DestroyGDIObjects() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_DestroyGDIObjects", Err
 End Function
 
+'EHT=ResumeNext
 Private Sub Form_Resize()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 lstLog.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabLogFile" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyDown KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabLogFile" & "." & "Form_KeyUp": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyUp KeyCode, Shift: If KeyCode = 0 Then Exit Sub     'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyUp", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "tabLogFile" & "." & "Form_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyPress KeyAscii: If KeyAscii = 0 Then Exit Sub       'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
-Private Sub lstLog_MouseDown(Button As Integer, Shift As Integer, X As Single, y As Single)
-'errheader>
-Const PROC_NAME = "tabLogFile" & "." & "lstLog_MouseDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+'EHT=Standard
+Private Sub lstLog_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+On Error GoTo ERR_HANDLER
 
 'Select item under mouse
 Dim i&
-i = SendMessage(lstLog.hwnd, LB_ITEMFROMPOINT, 0, (X / Screen.TwipsPerPixelX) + ((y / Screen.TwipsPerPixelY) * &H10000))
+i = SendMessage(lstLog.hwnd, LB_ITEMFROMPOINT, 0, (X / Screen.TwipsPerPixelX) + ((Y / Screen.TwipsPerPixelY) * &H10000))
 If i > &HFFFF& Then
     lstLog.ListIndex = -1
 Else
@@ -205,20 +183,13 @@ Else
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstLog_MouseDown", Err
 End Sub
 
+'EHT=Cleanup1
 Public Sub WriteLine(ByVal t$)
-'errheader>
-Const PROC_NAME = "tabLogFile" & "." & "WriteLine": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 If Not ActiveDBInstance.IsWriteable Then Exit Sub
 
@@ -239,13 +210,10 @@ fh.CloseFile: Set fh = Nothing
 lstLog.AddItem t$
 lstLog.TopIndex = lstLog.ListCount - 1
 
-CLEAN_UP:
+CLEANUP: INCLEANUP = True
     If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
-'errfooter>
+
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "WriteLine", Err, INCLEANUP: Resume CLEANUP
 End Sub
 

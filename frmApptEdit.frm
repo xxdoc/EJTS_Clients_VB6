@@ -392,6 +392,8 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "frmApptEdit"
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 Public TabOrderSetting As String            'This is set in Form_Show
 
@@ -411,18 +413,15 @@ Private ClientsToAdd_Count&
 Private thisID&
 Private Changed As Boolean
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Cleanup2
 Function Form_Show(aID&, Optional FocusNotesBoxFirst As Boolean = False) As Boolean
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "Form_Show": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 Dim aindex&, a&, i&
 
@@ -436,18 +435,18 @@ SetControlTabOrder Me, DB_GetSetting(ActiveDBInstance, TabOrderSetting)
 
 With ActiveDBInstance.Appointments(aindex)
     Me.Caption = Me.Caption & " (#" & .ID & ")"
-    
+
     FieldToTextbox txtField(fNumSlots), .NumSlots
-    
+
     FieldToTextbox txtField(fTimeSlot), .ApptTimeSlot
     'FieldToTextbox txtField(fTimeSlot), Appointment_FirstSlotTime + (.ApptTimeSlot * Appointment_SlotLength)
-    
+
     FieldToTextbox txtField(fDay), .ApptDate
-    
+
     FieldToTextbox txtField(fActualTime), .ApptActualTime
-    
+
     FieldToTextbox txtField(fNotes), .Notes
-    
+
     For a = 0 To AppointmentFlags_DATAITEMUBOUND
         If Flag_IsSet(.Flags, 2 ^ a) Then
             lblFlag(a).BackStyle = 1
@@ -457,7 +456,7 @@ With ActiveDBInstance.Appointments(aindex)
             lblFlag(a).BorderStyle = 0
         End If
     Next a
-    
+
     lstClients.Clear
     For a = 0 To .ClientID_Count - 1
         i = DB_FindClientIndex(ActiveDBInstance, .ClientIDs(a))
@@ -479,20 +478,16 @@ frmMain.IdleSetAction
 
 Form_Show = Changed
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then Unload Me
-'errfooter>
+CLEANUP: INCLEANUP = True
+    If HASERROR Then Unload Me
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Show", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Function
 
+'EHT=Standard
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyCode
 Case vbKeyReturn
@@ -504,40 +499,26 @@ Case vbKeyReturn
     End If
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "Form_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyAscii
 Case vbKeyReturn
     KeyAscii = 0    'Stop the beep
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSave_Click()
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "btnSave_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnSave.Enabled Then Exit Sub
 
@@ -553,7 +534,7 @@ With tempappt
         SetFocusWithoutErr txtField(fNumSlots)
         Exit Sub
     End If
-    
+
     FieldFromTextbox txtField(fTimeSlot), .ApptTimeSlot
     '.ApptTimeSlot = (CDate(txtField(fTimeSlot)) - Appointment_FirstSlotTime) / Appointment_SlotLength
 '    If <outside timeslot range> Then
@@ -561,25 +542,25 @@ With tempappt
 '        SetFocusWithoutErr txtField(fTimeSlot)
 '        Exit Sub
 '    End If
-    
+
     FieldFromTextbox txtField(fDay), .ApptDate
 '    If <outside bitmap range> Then
 '        ShowErrorMsg "Day is invalid"
 '        SetFocusWithoutErr txtField(fDay)
 '        Exit Sub
 '    End If
-    
+
     FieldFromTextbox txtField(fActualTime), .ApptActualTime
-    
+
     FieldFromTextbox txtField(fNotes), .Notes
-    
+
     .Flags = 0
     For a = 0 To AppointmentFlags_DATAITEMUBOUND
         If lblFlag(a).BackStyle = 1 Then
             .Flags = .Flags Or (2 ^ a)
         End If
     Next a
-    
+
     .ClientID_Count = lstClients.ListCount
     If .ClientID_Count = 0 Then
         Erase .ClientIDs
@@ -589,7 +570,7 @@ With tempappt
             .ClientIDs(a) = lstClients.ItemData(a)
         Next a
     End If
-    
+
     'Update bitmap
     If DB_SlotsIsAvail(ActiveDBInstance, .ApptDate, .ApptTimeSlot, .NumSlots, .ID) Then
         'Clear old position
@@ -600,16 +581,16 @@ With tempappt
         ShowErrorMsg "Selected appointment slots are not available!"
         Exit Sub
     End If
-    
+
     'Write temp copy back to database
     ActiveDBInstance.Appointments(aindex) = tempappt
-    
+
     'Regenerate Temp data
     For a = 0 To .ClientID_Count - 1
         cindex = DB_FindClientIndex(ActiveDBInstance, .ClientIDs(a))
         ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData = True
     Next a
-    
+
     'Add OpNotes
     For a = 0 To ClientsToDelete_Count - 1
         cindex = DB_FindClientIndex(ActiveDBInstance, ClientsToDelete(a))
@@ -620,7 +601,7 @@ With tempappt
         cindex = DB_FindClientIndex(ActiveDBInstance, ClientsToAdd(a))
         AddOpNote ActiveDBInstance.Clients(cindex).c.OpNotes, "Scheduled appt: " & FormatApptTime$(.ApptDate, .ApptActualTime)
     Next a
-    
+
     frmMain.DayTotal_Update
     frmMain.SetChangedFlagAndIndication
     tabLogFile.WriteLine "Edited " & DB_FormatApptClientList(ActiveDBInstance, tempappt) & ": " & FormatApptTime$(.ApptDate, .ApptActualTime) & ", " & FormatNumApptSlots(.NumSlots)
@@ -629,39 +610,25 @@ End With
 Changed = True
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSave_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnCancel_Click()
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "btnCancel_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnCancel.Enabled Then Exit Sub
 
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnAdd_Click()
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "btnAdd_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnAdd.Enabled Then Exit Sub
 
@@ -679,7 +646,7 @@ With ActiveDBInstance.Clients(NewIndex).c
     'Add to listbox
     lstClients.AddItem FormatClientName(fSearchResults, ActiveDBInstance.Clients(NewIndex).c)
     lstClients.ItemData(lstClients.NewIndex) = newID
-    
+
     'Search for newID in ClientsToDelete
     For a = 0 To ClientsToDelete_Count - 1
         If ClientsToDelete(a) = newID Then
@@ -708,20 +675,13 @@ With ActiveDBInstance.Clients(NewIndex).c
     lstClients_Click
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnAdd_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnMoveDown_Click()
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "btnMoveDown_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnMoveDown.Enabled Then Exit Sub
 
@@ -739,20 +699,13 @@ If (i1 >= 0) And (i1 < (lstClients.ListCount - 1)) Then
     lstClients.ListIndex = i2
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnMoveDown_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnMoveUp_Click()
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "btnMoveUp_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnMoveUp.Enabled Then Exit Sub
 
@@ -770,20 +723,13 @@ If i1 > 0 Then
     lstClients.ListIndex = i2
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnMoveUp_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnRemove_Click()
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "btnRemove_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnRemove.Enabled Then Exit Sub
 
@@ -792,7 +738,7 @@ SetFocusWithoutErr lstClients
 i = lstClients.ListIndex
 If (i >= 0) Then
     cID = lstClients.ItemData(i)
-    
+
     'Search for newID in ClientsToAdd
     For a = 0 To ClientsToAdd_Count - 1
         If ClientsToAdd(a) = cID Then
@@ -817,25 +763,18 @@ If (i >= 0) Then
         ClientsToDelete(ClientsToDelete_Count) = cID
         ClientsToDelete_Count = ClientsToDelete_Count + 1
     End If
-    
+
     lstClients.RemoveItem i
     lstClients_Click
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnRemove_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstClients_Click()
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "lstClients_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim i&
 
@@ -845,20 +784,13 @@ btnMoveDown.Enabled = (i >= 0) And (i < (lstClients.ListCount - 1)) And (ActiveD
 btnAdd.Enabled = (ActiveDBInstance.IsWriteable)
 btnRemove.Enabled = (i >= 0) And (ActiveDBInstance.IsWriteable)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstClients_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstClients_DblClick()
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "lstClients_DblClick": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim frm As frmClientEditPost, i&, cID&
 
@@ -869,20 +801,13 @@ If i >= 0 Then
     frm.Form_Show cID, fEdit, Me   'This will mark changed if necessary
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstClients_DblClick", Err
 End Sub
 
+'EHT=Standard
 Private Sub lblFlag_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "lblFlag_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 With lblFlag(Index)
     If .BackStyle = 1 Then
@@ -894,20 +819,13 @@ With lblFlag(Index)
     End If
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lblFlag_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtField_LostFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "txtField_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'If Index = fTimeSlot Then
 '    'Custom handler to round to nearest slot time
@@ -926,32 +844,19 @@ Const PROC_NAME = "frmApptEdit" & "." & "txtField_LostFocus": Dim ERR_COUNT As I
     LostFocusFormat txtField(Index)
 'End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtField_LostFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub lblChangeTabOrder_Click()
-'errheader>
-Const PROC_NAME = "frmApptEdit" & "." & "lblChangeTabOrder_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim f As frmChangeTabOrder
 Set f = New frmChangeTabOrder
 f.Form_Show Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lblChangeTabOrder_Click", Err
 End Sub
 

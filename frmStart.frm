@@ -87,22 +87,21 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "frmStart"
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
 'Any calls to DB_GetSetting, DB_SetSetting, or DB_SetDefaultSettingValue should have DontCallSetChangedFlag=True
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Cleanup2
 Sub Form_Show()
-'errheader>
-Const PROC_NAME = "frmStart" & "." & "Form_Show": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 SetTabStops lstDataFiles.hwnd, 20, 115
 
@@ -126,22 +125,16 @@ End If
 TopMost Me.hwnd
 Me.Show
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then
-        Unload Me
-    End If
-'errfooter>
+CLEANUP: INCLEANUP = True
+    If HASERROR Then Unload Me
+
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Show", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Sub
 
+'EHT=Standard
 Private Sub btnOpen_Click()
-'errheader>
-Const PROC_NAME = "frmStart" & "." & "btnOpen_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnOpen.Enabled Then Exit Sub
 
@@ -153,20 +146,13 @@ If li >= 0 Then
     OpenMainForm    'This will call Unload Me if successful
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnOpen_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnNewFile_Click()
-'errheader>
-Const PROC_NAME = "frmStart" & "." & "btnNewFile_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnNewFile.Enabled Then Exit Sub
 
@@ -296,111 +282,69 @@ End If
 PopulateListbox
 SetFocusWithoutErr lstDataFiles
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnNewFile_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSetDataFolder_Click()
-'errheader>
-Const PROC_NAME = "frmStart" & "." & "btnSetDataFolder_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 DB_SetSetting ActiveDBInstance, "GLOBAL_DataFolder", DataFilesPath, , True
 SetFocusWithoutErr lstDataFiles
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSetDataFolder_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstDataFiles_DblClick()
-'errheader>
-Const PROC_NAME = "frmStart" & "." & "lstDataFiles_DblClick": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 btnOpen_Click
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstDataFiles_DblClick", Err
 End Sub
 
+'EHT=Standard
 Private Sub chkReadOnly_Click()
-'errheader>
-Const PROC_NAME = "frmStart" & "." & "chkReadOnly_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 FileToOpen_OpenReadOnly = (chkReadOnly.Value = 1)
 btnNewFile.Enabled = Not FileToOpen_OpenReadOnly
 SetFocusWithoutErr lstDataFiles
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "chkReadOnly_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtDataFolder_Change()
-'errheader>
-Const PROC_NAME = "frmStart" & "." & "txtDataFolder_Change": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 DataFilesPath = AddTrailingSlash(txtDataFolder.Text)
 PopulateListbox
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtDataFolder_Change", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtDataFolder_LostFocus()
-'errheader>
-Const PROC_NAME = "frmStart" & "." & "txtDataFolder_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If txtDataFolder.Text = "" Then
     txtDataFolder.Text = AppPath & "Data Files\"
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtDataFolder_LostFocus", Err
 End Sub
 
+'EHT=Standard
 Function OpenMainForm() As Boolean
-'errheader>
-Const PROC_NAME = "frmStart" & "." & "OpenMainForm": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'Load and subclass frmMain (it will hook the listbox parent)
 If FileToOpen_Year <> 0 Then
@@ -416,19 +360,12 @@ If FileToOpen_Year <> 0 Then
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "OpenMainForm", Err
 End Function
 
+'EHT=Custom
 Sub PopulateListbox()
-'CUSTOM ERROR HANDLING HERE INSTEAD OF TEMPLATE
-''~~**##**~~**##**~~**##**~~**##**~~**##**~~**#
 On Error GoTo e
 Dim f$, Y&, skipsel As Boolean
 lstDataFiles.Enabled = True

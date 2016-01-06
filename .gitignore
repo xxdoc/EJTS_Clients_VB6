@@ -3,3 +3,8 @@ EJTSClients.cfg
 *.vbw
 desktop.ini
 *.log
+*.tmp
+*.bak
+ErrorHandler.lib
+ErrorHandler.exp
+ErrorHandler.dll

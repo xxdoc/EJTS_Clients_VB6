@@ -19,50 +19,119 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "tab___Template"
 Implements ITab
 
+'EHT=Standard
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+On Error GoTo ERR_HANDLER
+
 frmMain.Form_KeyDown KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to frmMain first, Exit if form cancelled the event
-End Sub
-Private Sub Form_KeyPress(KeyAscii As Integer)
-frmMain.Form_KeyPress KeyAscii: If KeyAscii = 0 Then Exit Sub       'Pass it to frmMain first, Exit if form cancelled the event
-End Sub
-Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
-frmMain.Form_KeyUp KeyCode, Shift: If KeyCode = 0 Then Exit Sub     'Pass it to frmMain first, Exit if form cancelled the event
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
+Private Sub Form_KeyPress(KeyAscii As Integer)
+On Error GoTo ERR_HANDLER
+
+frmMain.Form_KeyPress KeyAscii: If KeyAscii = 0 Then Exit Sub       'Pass it to frmMain first, Exit if form cancelled the event
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
+End Sub
+
+'EHT=Standard
+Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
+On Error GoTo ERR_HANDLER
+
+frmMain.Form_KeyUp KeyCode, Shift: If KeyCode = 0 Then Exit Sub     'Pass it to frmMain first, Exit if form cancelled the event
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyUp", Err
+End Sub
+
+'EHT=ResumeNext
 Private Sub Form_Resize()
 On Error Resume Next
-End Sub
 
-Private Function ITab_Initialize() As Boolean
-'
-End Function
-
-Private Function ITab_LoadSettings() As Boolean
-'
-End Function
-
-Private Sub ITab_AfterTabShown()
-'
-End Sub
-
-Private Sub ITab_SetDefaultFocus()
 On Error Resume Next
 End Sub
 
-Private Sub ITab_AfterTabHidden()
-'
-End Sub
+'EHT=Standard
+Private Function ITab_Initialize() As Boolean
+On Error GoTo ERR_HANDLER
 
-Private Sub ITab_CodeRequestingRefresh()
 '
-End Sub
 
-Private Function ITab_CommitDataToDB() As Boolean
-'
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_Initialize", Err
 End Function
 
-Private Function ITab_CleanUp() As Boolean
+'EHT=Standard
+Private Function ITab_LoadSettings() As Boolean
+On Error GoTo ERR_HANDLER
+
 '
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_LoadSettings", Err
+End Function
+
+'EHT=Standard
+Private Sub ITab_AfterTabShown()
+On Error GoTo ERR_HANDLER
+
+'
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_AfterTabShown", Err
+End Sub
+
+'EHT=ResumeNext
+Private Sub ITab_SetDefaultFocus()
+On Error Resume Next
+
+On Error Resume Next
+End Sub
+
+'EHT=Standard
+Private Sub ITab_AfterTabHidden()
+On Error GoTo ERR_HANDLER
+
+'
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_AfterTabHidden", Err
+End Sub
+
+'EHT=Standard
+Private Sub ITab_CodeRequestingRefresh()
+On Error GoTo ERR_HANDLER
+
+'
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_CodeRequestingRefresh", Err
+End Sub
+
+'EHT=Standard
+Private Function ITab_CommitDataToDB() As Boolean
+On Error GoTo ERR_HANDLER
+
+'
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_CommitDataToDB", Err
+End Function
+
+'EHT=Standard
+Private Function ITab_CleanUp() As Boolean
+On Error GoTo ERR_HANDLER
+
+'
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_CleanUp", Err
 End Function

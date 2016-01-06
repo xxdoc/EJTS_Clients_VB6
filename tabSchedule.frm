@@ -173,7 +173,9 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "tabSchedule"
 Implements ITab
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
 #Const LRTB = True
@@ -223,17 +225,15 @@ Private ScheduleTemplate(1 To 3, 6, Appointment_NumSlotsUB) As Long     '3D arra
 Private lastMouseMoveX!
 Private lastMouseMoveY!
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Standard
 Private Function ITab_CreateGDIObjects() As Boolean
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "ITab_CreateGDIObjects": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 FontTitle = CreateFont2(pctSchedule.hdc, "Arial", 14, False, False, False, False)
 FontSubtitle = CreateFont2(pctSchedule.hdc, "Arial", 12, False, False, False, False)
@@ -288,37 +288,23 @@ ColorProfilesAppt(4, 3) = ColorProfilesAppt(4, 0)
 
 InitScheduleLayout
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_CreateGDIObjects", Err
 End Function
 
+'EHT=Standard
 Private Function ITab_InitializeAfterDBLoad() As Boolean
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "ITab_InitializeAfterDBLoad": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ApptBeingRescheduled.ID = NullLong
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_InitializeAfterDBLoad", Err
 End Function
 
+'EHT=Standard
 Private Sub ITab_AfterTabShown()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "ITab_AfterTabShown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If frmMain.CHOS_lstClients.ListCount = 0 Then
     ChangeScheduleMode sView
@@ -327,40 +313,32 @@ Else
 End If
 DrawSchedule
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_AfterTabShown", Err
 End Sub
 
+'EHT=Standard
 Private Sub ITab_SetDefaultFocus()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "ITab_SetDefaultFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SetFocusWithoutErr pctSchedule
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SetDefaultFocus", Err
 End Sub
 
+'EHT=Standard
 Private Function ITab_SaveSettingsToDBBeforeClose() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SaveSettingsToDBBeforeClose", Err
 End Function
 
+'EHT=Standard
 Private Function ITab_DestroyGDIObjects() As Boolean
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "ITab_DestroyGDIObjects": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 DeleteObject FontTitle
 DeleteObject FontSubtitle
@@ -370,29 +348,21 @@ DeleteObject FontApptPrimary
 DeleteObject FontApptSecondary
 DeleteObject FontApptMinutes
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_DestroyGDIObjects", Err
 End Function
 
+'EHT=ResumeNext
 Private Sub Form_Resize()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 pctSchedule.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
 InitScheduleLayout
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyDown KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 
@@ -435,57 +405,36 @@ Case Else
     End If
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "Form_KeyUp": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyUp KeyCode, Shift: If KeyCode = 0 Then Exit Sub     'Pass it to the parent form first, Exit if form cancelled the event
 If KeyCode = vbKeyControl Then
     If LastShapeStyle = Style_CopyForcedWithCtrl Then pctSchedule_MouseMove 0, Shift, lastMouseMoveX, lastMouseMoveY
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyUp", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "Form_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyPress KeyAscii: If KeyAscii = 0 Then Exit Sub       'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Private Sub menApptEdit_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menApptEdit_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menApptEdit.Enabled Then Exit Sub
 
@@ -496,20 +445,13 @@ If frm.Form_Show(aID) Then         'This will mark changed if necessary
     DrawSchedule
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menApptEdit_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menApptReschedule_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menApptReschedule_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menApptReschedule.Enabled Then Exit Sub
 
@@ -517,20 +459,13 @@ ChangeScheduleMode sReschedule
 ApptIDBeingRescheduled = ActiveDBInstance.Appointments(ClickedApptIndex).ID
 DrawSchedule
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menApptReschedule_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menApptCancelDelete_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menApptCancelDelete_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menApptCancelDelete.Enabled Then Exit Sub
 
@@ -564,20 +499,13 @@ tabLogFile.WriteLine "Cancelled appt " & t$
 
 ClickedApptIndex = -1   '...Since the apptindex doesn't exist anymore
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menApptCancelDelete_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menApptScheduleFromThis_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menApptScheduleFromThis_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menApptScheduleFromThis.Enabled Then Exit Sub
 
@@ -598,20 +526,13 @@ With ActiveDBInstance.Appointments(ClickedApptIndex)
     End If
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menApptScheduleFromThis_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menApptMarkReminderCall_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menApptMarkReminderCall_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menApptMarkReminderCall.Enabled Then Exit Sub
 
@@ -627,20 +548,13 @@ End With
 DrawSchedule
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menApptMarkReminderCall_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menApptMarkCalled_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menApptMarkCalled_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menApptMarkCalled.Enabled Then Exit Sub
 
@@ -656,20 +570,13 @@ End With
 DrawSchedule
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menApptMarkCalled_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menApptMarkDidntHappen_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menApptMarkDidntHappen_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menApptMarkDidntHappen.Enabled Then Exit Sub
 
@@ -685,20 +592,13 @@ End With
 DrawSchedule
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menApptMarkDidntHappen_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menApptCLItem_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menApptCLItem_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menApptCLItem(Index).Enabled Then Exit Sub
 
@@ -737,20 +637,13 @@ Case "i"    'Mark incomplete
     frmMain.SetChangedFlagAndIndication
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menApptCLItem_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menSlotMarkDefault_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menSlotMarkDefault_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menSlotMarkDefault.Enabled Then Exit Sub
 
@@ -758,20 +651,13 @@ DB_SlotFill ActiveDBInstance, ClickedDate, ClickedTimeslot, Slot_DefaultAccordin
 DrawSchedule
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menSlotMarkDefault_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menSlotMarkAvailable_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menSlotMarkAvailable_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menSlotMarkAvailable.Enabled Then Exit Sub
 
@@ -779,20 +665,13 @@ DB_SlotFill ActiveDBInstance, ClickedDate, ClickedTimeslot, Slot_Available
 DrawSchedule
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menSlotMarkAvailable_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menSlotMarkReserved_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menSlotMarkReserved_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menSlotMarkReserved.Enabled Then Exit Sub
 
@@ -800,20 +679,13 @@ DB_SlotFill ActiveDBInstance, ClickedDate, ClickedTimeslot, Slot_Reserved
 DrawSchedule
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menSlotMarkReserved_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menSlotMarkMealBreak_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menSlotMarkMealBreak_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menSlotMarkMealBreak.Enabled Then Exit Sub
 
@@ -821,20 +693,13 @@ DB_SlotFill ActiveDBInstance, ClickedDate, ClickedTimeslot, Slot_MealBreak
 DrawSchedule
 frmMain.SetChangedFlagAndIndication
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menSlotMarkMealBreak_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub menSlotCreateNonClient_Click()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "menSlotCreateNonClient_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not menSlotCreateNonClient.Enabled Then Exit Sub
 
@@ -869,20 +734,13 @@ Else
     Err.Raise 1, , "User attempted to create a custom item in a slot which is unavailable."
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "menSlotCreateNonClient_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub pctSchedule_DblClick()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "pctSchedule_DblClick": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If DoubleClickAllowed Then
     If ClickedApptIndex >= 0 Then
@@ -922,20 +780,13 @@ If DoubleClickAllowed Then
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "pctSchedule_DblClick", Err
 End Sub
 
+'EHT=Standard
 Private Sub pctSchedule_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "pctSchedule_MouseDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 pctSchedule_MouseMove Button, Shift, X, Y
 
@@ -994,32 +845,32 @@ If ClickedTimeslot >= 0 Then
                     For b = 0 To .ClientID_Count - 1
                         cindex = DB_FindClientIndex(ActiveDBInstance, .ClientIDs(b))
                         comp = Flag_IsSet(ActiveDBInstance.Clients(cindex).c.Flags, CompletedReturn) Or Flag_IsSet(ActiveDBInstance.Clients(cindex).c.Flags, NoNeedToFile)
-                        
+
                         cli = cli + 1
                         Load menApptCLItem(cli)
                         menApptCLItem(cli).Caption = "-"
                         menApptCLItem(cli).Visible = True
-                        
+
                         cli = cli + 1
                         Load menApptCLItem(cli)
                         menApptCLItem(cli).Caption = "== " & Replace(FormatClientName(fSchedulePct, ActiveDBInstance.Clients(cindex).c), "&", "&&") & " =="
                         menApptCLItem(cli).Enabled = False
                         menApptCLItem(cli).Visible = True
-                        
+
                         cli = cli + 1
                         Load menApptCLItem(cli)
                         menApptCLItem(cli).Caption = "Edit Client..."
                         menApptCLItem(cli).Visible = True
                         menApptCLItem(cli).Tag = "e" & .ClientIDs(b)
                         If b = 0 Then Set defmi = menApptCLItem(cli)
-                        
+
                         cli = cli + 1
                         Load menApptCLItem(cli)
                         menApptCLItem(cli).Caption = "Post Client..."
                         menApptCLItem(cli).Enabled = Not comp
                         menApptCLItem(cli).Visible = True
                         menApptCLItem(cli).Tag = "p" & .ClientIDs(b)
-                        
+
                         cli = cli + 1
                         Load menApptCLItem(cli)
                         menApptCLItem(cli).Caption = "Incomplete"
@@ -1047,7 +898,7 @@ If ClickedTimeslot >= 0 Then
                     Exit Sub
                 End If
             End If
-            
+
             'Create appointment
             Dim n As Boolean
             With a
@@ -1072,7 +923,7 @@ If ClickedTimeslot >= 0 Then
                 End If
                 If n Or ((ClickedDate - Date) > DB_GetSetting(ActiveDBInstance, "Reminder call if appt scheduled more than")) Then a.Flags = ReminderCall
                 aindex = DB_AddAppointment(ActiveDBInstance, a)
-                
+
                 DB_SlotsFill ActiveDBInstance, .ApptDate, .ApptTimeSlot, .NumSlots, aindex
                 frmMain.DayTotal_Update
                 frmMain.SetChangedFlagAndIndication
@@ -1097,7 +948,7 @@ If ClickedTimeslot >= 0 Then
         End If
         If DB_SlotsIsAvail(ActiveDBInstance, ClickedDate, ClickedTimeslot, ActiveDBInstance.Appointments(ClickedApptIndex).NumSlots, abr) Then
             Dim oldat$
-            
+
             'Create new appt structure
             With a
                 oldat$ = FormatApptTime$(.ApptDate, .ApptActualTime)
@@ -1113,7 +964,7 @@ If ClickedTimeslot >= 0 Then
                     ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData = True
                 Next b
             End With
-            
+
             'Handle old appt
             With ActiveDBInstance.Appointments(ClickedApptIndex)
                 If moveexistingappt = Style_Copy Or moveexistingappt = Style_CopyForcedWithCtrl Then
@@ -1124,7 +975,7 @@ If ClickedTimeslot >= 0 Then
                     DB_SlotsClear ActiveDBInstance, .ApptDate, .ApptTimeSlot, .NumSlots
                 End If
             End With
-            
+
             'Put new appt into database
             If moveexistingappt = Style_Copy Or moveexistingappt = Style_CopyForcedWithCtrl Then
                 'Create new appointment
@@ -1135,7 +986,7 @@ If ClickedTimeslot >= 0 Then
                 ActiveDBInstance.Appointments(ClickedApptIndex) = a
                 DB_SlotsFill ActiveDBInstance, a.ApptDate, a.ApptTimeSlot, a.NumSlots, ClickedApptIndex
             End If
-            
+
             'Finish
             frmMain.SetChangedFlagAndIndication
             ChangeScheduleMode sView
@@ -1154,20 +1005,13 @@ Else 'ClickedTimeslot < 0
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "pctSchedule_MouseDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub pctSchedule_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "pctSchedule_MouseMove": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim moDayIndex&, moDate&, moTimeSlot&
 Dim a As Appointment, ai&, ns&, abr&, moveexistingappt As ScheduleShapeStyle
@@ -1257,20 +1101,13 @@ Else
     End Select
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "pctSchedule_MouseMove", Err
 End Sub
 
+'EHT=ResumeNext
 Private Sub tmrFlashAppt_Timer()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 If Timer < FlashStopTime Then
     shpApptSelection.Visible = Not shpApptSelection.Visible
@@ -1279,10 +1116,9 @@ Else
 End If
 End Sub
 
+'EHT=Standard
 Sub InitScheduleLayout()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "InitScheduleLayout": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim r&, c&, i&
 
@@ -1330,20 +1166,13 @@ With ScheduleDayPositions(6)
     .Bottom = .Top + DayHeight - 1
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "InitScheduleLayout", Err
 End Sub
 
+'EHT=Standard
 Sub DrawSchedule()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "DrawSchedule": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not ActiveDBInstance.Loaded Then Exit Sub
 
@@ -1360,20 +1189,13 @@ Next a
 
 MoveRedArrow Time
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DrawSchedule", Err
 End Sub
 
+'EHT=Standard
 Sub DrawScheduleDay(cd As Long, cx&, cy&, todaysdate As Long)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "DrawScheduleDay": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, b&, c&, cindex&, tx&, ty&, t$, ts&
 Dim scheduletemplaterange&
@@ -1475,11 +1297,11 @@ For a = 0 To ActiveDBInstance.Appointments_Count - 1
             Else
                 CurCPAppt = 0
             End If
-            
+
             'Calculate position on pctSchedule
             tx = cx + DayApptsOffsetX
             ty = cy + DayFirstSlotOffsetY + (.ApptTimeSlot * DayApptSlotHeight)
-            
+
             'Draw appointment time (left)
             SetTextAlign pctScheduleHdc, TA_RIGHT
             If Appointment_FirstSlotTime + (.ApptTimeSlot * Appointment_SlotLength) = .ApptActualTime Then
@@ -1493,12 +1315,12 @@ For a = 0 To ActiveDBInstance.Appointments_Count - 1
             End If
             t$ = Format$(.ApptActualTime, "h:mma/p")
             TextOut pctScheduleHdc, cx + DayTimesOffsetX, ty, t$, Len(t$)
-            
+
             If .ClientID_Count > 0 Then
                 'Draw appointment rectangle
                 pctSchedule.Line (tx, ty)-(cx + DayWidth - DayMarginRight - 2, ty + (.NumSlots * DayApptSlotHeight)), ColorProfilesAppt(CurCPAppt, 1), BF
                 pctSchedule.Line (tx, ty)-(cx + DayWidth - DayMarginRight - 2, ty + (.NumSlots * DayApptSlotHeight)), ColorProfilesAppt(CurCPAppt, 2), B
-                
+
                 'Draw clients
                 c = .ClientID_Count - 1
                 If c > (.NumSlots - 1) Then
@@ -1506,7 +1328,7 @@ For a = 0 To ActiveDBInstance.Appointments_Count - 1
                 End If
                 For b = 0 To c
                     cindex = DB_FindClientIndex(ActiveDBInstance, .ClientIDs(b))
-                    
+
                     'Name
                     SetTextAlign pctScheduleHdc, TA_LEFT
                     If Flag_IsSet(ActiveDBInstance.Clients(cindex).c.Flags, CompletedReturn) Then
@@ -1529,7 +1351,7 @@ For a = 0 To ActiveDBInstance.Appointments_Count - 1
                     r.Right = cx + DayWidth - DayMarginRight - 2 - 18
                     r.Bottom = ty + ((b + 1) * DayApptSlotHeight) + 1
                     DrawText pctScheduleHdc, t$, Len(t$), r, DT_NOPREFIX Or DT_LEFT Or DT_WORD_ELLIPSIS
-                    
+
                     'Last year's minutes
                     SetTextAlign pctScheduleHdc, TA_RIGHT
                     SelectObject pctScheduleHdc, FontApptMinutes
@@ -1542,11 +1364,11 @@ For a = 0 To ActiveDBInstance.Appointments_Count - 1
                 Next b
             Else
                 'Custom item, no clients
-                
+
                 'Draw appointment rectangle
                 pctSchedule.Line (tx, ty)-(cx + DayWidth - DayMarginRight - 2, ty + (.NumSlots * DayApptSlotHeight)), ColorProfilesAppt(CurCPAppt, 1), BF
                 pctSchedule.Line (tx, ty)-(cx + DayWidth - DayMarginRight - 2, ty + (.NumSlots * DayApptSlotHeight)), ColorProfilesAppt(CurCPAppt, 2), B
-                
+
                 'Draw appointment notes
                 SetTextAlign pctScheduleHdc, TA_LEFT
                 SetTextColor pctScheduleHdc, ColorProfilesAppt(CurCPAppt, 0)
@@ -1558,7 +1380,7 @@ For a = 0 To ActiveDBInstance.Appointments_Count - 1
                 r.Bottom = ty + (.NumSlots * DayApptSlotHeight) - 1
                 DrawText pctScheduleHdc, t$, Len(t$), r, DT_NOPREFIX Or DT_CENTER Or DT_WORDBREAK
             End If
-            
+
             'Draw reminder call flag
             If Flag_IsSet(.Flags, ReminderCall) Then
                 pctSchedule.PaintPicture imgReminderCall(Flag_IsSet(.Flags, Called) + 1).Picture, cx + DayTimesOffsetX + 1, ty + 3
@@ -1567,20 +1389,13 @@ For a = 0 To ActiveDBInstance.Appointments_Count - 1
     End With
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DrawScheduleDay", Err
 End Sub
 
+'EHT=Standard
 Sub ExtractScheduleTemplate()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "ExtractScheduleTemplate": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim r&, wd&, ts&, s$
 For r = 1 To 3
@@ -1599,20 +1414,13 @@ For r = 1 To 3
     Next wd
 Next r
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ExtractScheduleTemplate", Err
 End Sub
 
+'EHT=Standard
 Private Function IsMoveOrCopy(OrigAppt As Appointment, NewDate As Long, ShiftState As Integer) As ScheduleShapeStyle
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "IsMoveOrCopy": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'Returns a style code, from the SetShapeStyle function
 
@@ -1646,20 +1454,13 @@ Else
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "IsMoveOrCopy", Err
 End Function
 
+'EHT=Standard
 Function CalcTodaysDayIndex(ByRef todaysdate As Long) As Long
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "CalcTodaysDayIndex": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 todaysdate = CLng(Date)
 CalcTodaysDayIndex = todaysdate - ViewStartDate
@@ -1673,40 +1474,26 @@ Else
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CalcTodaysDayIndex", Err
 End Function
 
+'EHT=Standard
 Public Sub ChangeScheduleMode(sm As enumScheduleMode, Optional appt)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "ChangeScheduleMode": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ScheduleMode = sm
 ApptIDBeingRescheduled = -1
 shpApptSelection.Visible = False
 lblApptSelection.Visible = False
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ChangeScheduleMode", Err
 End Sub
 
+'EHT=Standard
 Sub MouseMoveCalc(ByVal X As Long, ByVal Y As Long, ByRef moDayIndex&, ByRef moDate&, ByRef moTimeSlot&)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "MouseMoveCalc": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'If cursor is over a day on the schedule, returns Index and Date of it; otherwise -1
 'If cursor is over a time slot, alse returns time slot index; otherwise -1
@@ -1743,20 +1530,13 @@ If (cx >= 0) And (cy >= 0) Then
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "MouseMoveCalc", Err
 End Sub
 
+'EHT=Standard
 Sub SetShapeStyle(style As ScheduleShapeStyle)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "SetShapeStyle": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case style
 Case Style_Normal
@@ -1783,38 +1563,24 @@ Case Style_ShowAppt
 End Select
 LastShapeStyle = style
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SetShapeStyle", Err
 End Sub
 
+'EHT=Standard
 Sub HideShape()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "HideShape": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 shpApptSelection.Visible = False
 lblApptSelection.Visible = False
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "HideShape", Err
 End Sub
 
+'EHT=Standard
 Sub MoveShapeAndSetStyle(DayIndex&, TimeSlot&, NumSlots&, style As ScheduleShapeStyle)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "MoveShapeAndSetStyle": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'Calculates the dimensions necessary to maintain the inner dimensions of the appointment rectangle
 Dim w%, n1%, n2%
@@ -1834,20 +1600,13 @@ lblApptSelection.Visible = True
 
 SetShapeStyle style
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "MoveShapeAndSetStyle", Err
 End Sub
 
+'EHT=Standard
 Sub MoveRedArrow(nt As Date)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "MoveRedArrow": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim tx&, ty&, tdi&, todaysdate&
 tdi = CalcTodaysDayIndex(todaysdate)
@@ -1871,20 +1630,13 @@ Else
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "MoveRedArrow", Err
 End Sub
 
+'EHT=Standard
 Sub ShowDate(ByVal d As Date)
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "ShowDate": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&
 
@@ -1910,31 +1662,18 @@ shpApptSelection.Visible = False
 lblApptSelection.Visible = False
 If frmMain.CurTab = vSchedule Then DrawSchedule
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ShowDate", Err
 End Sub
 
+'EHT=Standard
 Sub StopFlashAppt()
-'errheader>
-Const PROC_NAME = "tabSchedule" & "." & "StopFlashAppt": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 tmrFlashAppt.Enabled = False
 shpApptSelection.Visible = False
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "StopFlashAppt", Err
 End Sub
 

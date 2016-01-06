@@ -147,23 +147,22 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "frmChangeTabOrder"
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
 Private ParentForm As Form
 Private oldleft As Single
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Cleanup2
 Sub Form_Show(frm As Form)
-'errheader>
-Const PROC_NAME = "frmChangeTabOrder" & "." & "Form_Show": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 Dim c As Control, a%, i%, f As Boolean, t$, tabordersplit$()
 Dim scr As RECT, par As RECT, ours As RECT, p1&, p2&
@@ -187,13 +186,13 @@ For Each c In ParentForm.Controls
         t$ = c.Name
         i = GetControlIndexWithoutError(c)
         If i >= 0 Then t$ = t$ & SEP2 & i
-        
+
         'See if it is already in the tab order setting
         f = False
         For a = 0 To UBound(tabordersplit$)
             If tabordersplit$(a) = t$ Then f = True: Exit For
         Next a
-        
+
         'If not found, then add it to the lower list
         If Not f Then lstControls(1).AddItem t$
     End If
@@ -234,39 +233,27 @@ If p2 < scr.Top Then p2 = scr.Top
 SetWindowPos Me.hwnd, 0, p1 + offsetforaero, p2 + offsetforaero, 0, 0, SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
 Me.Show 1, ParentForm
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then Unload Me
+CLEANUP: INCLEANUP = True
+    If HASERROR Then Unload Me
 
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Descrip2ion
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Show", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Sub
 
+'EHT=Standard
 Private Sub Form_Unload(Cancel As Integer)
-'errheader>
-Const PROC_NAME = "frmChangeTabOrder" & "." & "Form_Unload": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ClearControlHilight ParentForm
 ParentForm.Left = oldleft
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Unload", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSave_Click()
-'errheader>
-Const PROC_NAME = "frmChangeTabOrder" & "." & "btnSave_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnSave.Enabled Then Exit Sub
 
@@ -282,38 +269,24 @@ Me.Hide
 SetControlTabOrder ParentForm, taborder$
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSave_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnCancel_Click()
-'errheader>
-Const PROC_NAME = "frmChangeTabOrder" & "." & "btnCancel_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnCancel.Enabled Then Exit Sub
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstControls_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmChangeTabOrder" & "." & "lstControls_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If lstControls(Index).ListIndex >= 0 Then
     Dim ctrl As Control, c$, cs$()
@@ -327,20 +300,13 @@ If lstControls(Index).ListIndex >= 0 Then
     HilightControl ParentForm, ctrl
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstControls_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstControls_DblClick(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmChangeTabOrder" & "." & "lstControls_DblClick": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim i%, otherindex%
 i = lstControls(Index).ListIndex
@@ -353,20 +319,13 @@ lstControls(Index).RemoveItem i
 'Remove the hilight, since there is now no item selected
 ClearControlHilight ParentForm
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstControls_DblClick", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstControls_KeyDown(Index As Integer, KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "frmChangeTabOrder" & "." & "lstControls_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'The user can only change the order of the items in the first listbox
 If Index = 0 Then
@@ -393,38 +352,23 @@ If Index = 0 Then
     End Select
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstControls_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstControls_LostFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmChangeTabOrder" & "." & "lstControls_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 lstControls(Index).ListIndex = -1
 ClearControlHilight ParentForm
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstControls_LostFocus", Err
 End Sub
 
+'EHT=Custom
 Function GetControlIndexWithoutError(ctrl As Control) As Integer
-'CUSTOM ERROR HANDLING HERE INSTEAD OF TEMPLATE
-''~~**##**~~**##**~~**##**~~**##**~~**##**~~**#
-
 On Error GoTo e
 GetControlIndexWithoutError = -1
 GetControlIndexWithoutError = ctrl.Index    'If succeeds, then this is a control array
@@ -432,10 +376,8 @@ Exit Function
 e:
 End Function
 
+'EHT=Custom
 Function GetControlTabIndexWithoutError(ctrl As Control) As Integer
-'CUSTOM ERROR HANDLING HERE INSTEAD OF TEMPLATE
-''~~**##**~~**##**~~**##**~~**##**~~**##**~~**#
-
 On Error GoTo e
 Dim ts As Boolean
 GetControlTabIndexWithoutError = -2     'Assume the control cannot receive focus
@@ -456,10 +398,8 @@ Exit Function
 e:
 End Function
 
+'EHT=Custom
 Function IsControlTabable(ctrl As Control) As Boolean
-'CUSTOM ERROR HANDLING HERE INSTEAD OF TEMPLATE
-''~~**##**~~**##**~~**##**~~**##**~~**##**~~**#
-
 On Error GoTo e
 Dim ts As Boolean, ti As Integer
 If Not ctrl.Visible Then Exit Function  'Control must be visible

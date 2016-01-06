@@ -1,5 +1,6 @@
 Attribute VB_Name = "modCommon"
 Option Explicit
+Private Const MOD_NAME = "modCommon"
 
 'This module should NEVER reference ActiveDBInstance (use LocalDBInstance instead)
 
@@ -451,9 +452,8 @@ Public Const NullLong = &H80000000      '-2147483648
 Private MouseNullZoneRef As POINTAPI
 Private MouseNullZonePixels&
 
+'EHT=Custom
 Sub AddOpNote(ByRef OpNotes$, ByVal newon$)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 newon$ = Format$(Now, "yyyy-mm-dd hh:mma/p") & " " & newon$
 If Len(OpNotes$) = 0 Then
     OpNotes$ = newon$
@@ -462,30 +462,26 @@ Else
 End If
 End Sub
 
+'EHT=Custom
 Function CalcNumApptSlotsFromMinuteSum&(numminutes&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 CalcNumApptSlotsFromMinuteSum = Int((numminutes - 1) / 40) + 1
 If CalcNumApptSlotsFromMinuteSum = 0 Then CalcNumApptSlotsFromMinuteSum = 1
 End Function
 
+'EHT=Custom
 Function CapatalizeFirstLetter(s$) As String
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 CapatalizeFirstLetter = UCase$(Left$(s$, 1)) & LCase$(Mid$(s$, 2))
 End Function
 
+'EHT=Custom
 Function CreateFont2(fHDC&, fName$, fSize!, fBold As Boolean, fItalic As Boolean, fUnderline As Boolean, fStrikeout As Boolean) As Long
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 Dim fw&
 If fBold Then fw = FW_BOLD Else fw = FW_NORMAL
 CreateFont2 = CreateFont(-(fSize * GetDeviceCaps(fHDC, LOGPIXELSY)) / 72, 0, 0, 0, fw, fItalic, fUnderline, fStrikeout, 0, 0, 0, 0, 0, fName$)
 End Function
 
+'EHT=Custom
 Sub EnableTextbox(txt As TextBox, e As Boolean)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 txt.Enabled = e
 If e Then
     txt.BackColor = vbWindowBackground
@@ -494,10 +490,9 @@ Else
 End If
 End Sub
 
+'EHT=Standard
 Function FieldFromString(s$, m As FieldFormatMode) As Variant
-'errheader>
-Const PROC_NAME = "modCommon" & "." & "FieldFromString": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim v$, a&, n$, c$, nv#, e$, cy&, d$(), dv&(2)
 v$ = Trim$(s$)
@@ -637,28 +632,19 @@ Case Else
     Err.Raise 1, , "Unknown FieldFormatMode"
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "FieldFromString", Err
 End Function
 
+'EHT=Custom
 Sub FieldFromTextbox(txt As TextBox, ByRef v As Variant)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'Converts display format to database format
 v = FieldFromString(txt.Text, Val(txt.Tag))
 End Sub
 
+'EHT=Standard
 Function FieldToString(v As Variant, m As FieldFormatMode) As String
-'errheader>
-Const PROC_NAME = "modCommon" & "." & "FieldToString": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim t$, a&
 
@@ -722,73 +708,51 @@ Case Else
     Err.Raise 1, , "Unknown FieldFormatMode"
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "FieldToString", Err
 End Function
 
+'EHT=Custom
 Sub FieldToTextbox(txt As TextBox, v As Variant, Optional en As Boolean = -100)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'Converts database format to display format
 txt.Text = FieldToString(v, Val(txt.Tag))
 If en <> -100 Then EnableTextbox txt, en
 End Sub
 
+'EHT=Custom
 Function Flag_IsSet(Flags As Long, Flag As Long) As Boolean
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 Flag_IsSet = ((Flags And Flag) = Flag)
 End Function
 
+'EHT=Custom
 Function Flag_Remove(Flags As Long, Flag As Long) As Long
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 Flag_Remove = Not ((Not Flags) Or Flag)
 End Function
 
+'EHT=Custom
 Function Flag_ToCheckbox(Flags As Long, Flag As Long) As Integer
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 Dim b As Boolean
 b = ((Flags And Flag) = Flag)     'Is flag set?
 Flag_ToCheckbox = (Not b) + 1    'TRUE = 1, FALSE = 0
 End Function
 
+'EHT=Custom
 Function FormatApptTime$(Day&, actualtime As Date)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 FormatApptTime$ = Format$(CDate(Day) + actualtime, "m/dd h:mma/p")
 End Function
 
+'EHT=Custom
 Function FormatApptTime2$(at As Date)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 FormatApptTime2$ = Format$(at, "m/dd h:mma/p")
 End Function
 
+'EHT=Custom
 Function FormatDateForDayTitle$(d As Long)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 FormatDateForDayTitle$ = Format$(CDate(d), "dddd, mmm d, yyyy")
 End Function
 
+'EHT=Custom
 Function FormatClientName(formatoption As ClientNameFormatMode, c As Client_DBPortion) As String
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'Dim p&, lp&, t$, m As Boolean, matchingbrace$
 Dim showname1 As Boolean, showname2 As Boolean
 
@@ -975,10 +939,8 @@ End Select
 '    If formatoption = fPrintLabels Then FormatClientName = UCase$(FormatClientName)
 End Function
 
+'EHT=Custom
 Function FormatNumApptSlots$(nastu&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 Select Case nastu
 Case 0:     FormatNumApptSlots$ = "-"
 Case 1:     FormatNumApptSlots$ = "SA"
@@ -989,10 +951,8 @@ Case Else:  FormatNumApptSlots$ = nastu & "A"
 End Select
 End Function
 
+'EHT=Custom
 Function FormatRefDue$(p&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If p < 0 Then
     FormatRefDue$ = "Due: " & Format$(-p, "$#,##0")
 ElseIf p = 0 Then
@@ -1002,17 +962,13 @@ Else
 End If
 End Function
 
+'EHT=Custom
 Function FormatTextForCSV(t$)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 FormatTextForCSV = Replace$(t$, ",", ";")
 End Function
 
+'EHT=Custom
 Function FormatTextForDB$(t$)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 FormatTextForDB = Replace(Replace(Replace(Replace$(t$, _
                     vbTab, " "), _
                     vbCrLf, MultiLineSep), _
@@ -1020,61 +976,39 @@ FormatTextForDB = Replace(Replace(Replace(Replace$(t$, _
                     vbLf, MultiLineSep)
 End Function
 
+'EHT=Custom
 Function GetCapsLock() As Boolean
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 GetCapsLock = (GetKeyState(VK_CAPITAL) And 1 = 1)
 End Function
 
+'EHT=Custom
 Function GetShiftState() As Integer
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 GetShiftState = (-1 * ((GetAsyncKeyState(VK_SHIFT) And &H8000&) = &H8000&)) Or _
                 (-2 * ((GetAsyncKeyState(VK_CONTROL) And &H8000&) = &H8000&)) Or _
                 (-4 * ((GetAsyncKeyState(VK_MENU) And &H8000&) = &H8000&))
 End Function
 
+'EHT=Custom
 Sub Inc(ByRef t As Long)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 t = t + 1
 End Sub
 
+'EHT=Custom
 Sub IncBy(ByRef t As Long, i As Long)
-'errheader>
-Const PROC_NAME = "modCommon" & "." & "IncBy": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
-
 If i = NullLong Then
     Err.Raise 1, , "Cannot increment by Null"
 Else
     t = t + i
 End If
-
-CLEAN_UP:
-    'Your code here
-'errfooter>
-Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
 End Sub
 
+'EHT=Custom
 Function IsLetterKey(KeyCode As Integer) As Boolean
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 IsLetterKey = ((KeyCode >= 65) And (KeyCode <= 90))
 End Function
 
+'EHT=Custom
 Function IsNumberOrBlank(ByVal t$) As Boolean
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If t$ = "" Then
     IsNumberOrBlank = True
 Else
@@ -1083,10 +1017,8 @@ Else
 End If
 End Function
 
+'EHT=Custom
 Function JoinNumberArray1(SourceArray() As Long) As String
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'Joins all
 Dim a&, e As Boolean
 For a = 0 To UBound(SourceArray)
@@ -1099,10 +1031,8 @@ For a = 0 To UBound(SourceArray)
 Next a
 End Function
 
+'EHT=Custom
 Function JoinNumberArray2(SourceArray() As Long, SourceCount As Long) As String
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'Joins only to SourceCount (allows for 0 elements)
 Dim a&, e As Boolean
 For a = 0 To SourceCount - 1
@@ -1115,27 +1045,23 @@ For a = 0 To SourceCount - 1
 Next a
 End Function
 
+'EHT=ResumeNext
 Sub LostFocusFormat(txt As TextBox)
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 Dim m As FieldFormatMode
 m = Val(txt.Tag)
 txt.Text = FieldToString(FieldFromString(txt.Text, m), m)
 End Sub
 
+'EHT=Custom
 Sub MouseNullZone_Set(nzp&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 MouseNullZonePixels = nzp
 GetCursorPos MouseNullZoneRef
 End Sub
 
+'EHT=Custom
 Function MouseNullZone_Moved() As Boolean
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 Dim cp As POINTAPI
 GetCursorPos cp
 If Abs(cp.X - MouseNullZoneRef.X) > MouseNullZonePixels Then
@@ -1145,10 +1071,8 @@ ElseIf Abs(cp.Y - MouseNullZoneRef.Y) > MouseNullZonePixels Then
 End If
 End Function
 
+'EHT=Custom
 Sub PutKeyAsciiIntoTextbox(txt As TextBox, KeyAscii As Integer, ReplaceContents As Boolean)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 Dim t$
 t$ = Chr$(KeyAscii)
 If ReplaceContents Then
@@ -1160,10 +1084,8 @@ txt.SelStart = Len(txt.Text)
 txt.SelLength = 0
 End Sub
 
+'EHT=Custom
 Sub PutKeyCodeIntoTextbox(txt As TextBox, KeyCode As Integer, ReplaceContents As Boolean)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 Dim t$
 If GetCapsLock Then
     t$ = Chr$(KeyCode)       'Uppercase
@@ -1179,18 +1101,14 @@ txt.SelStart = Len(txt.Text)
 txt.SelLength = 0
 End Sub
 
+'EHT=Custom
 Sub ResizeFormByInnerScaleDimensions(frm As Form, Optional NewScaleWidth&, Optional NewScaleHeight&)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If NewScaleWidth <> 0 Then frm.Width = (frm.Width - (frm.ScaleWidth * Screen.TwipsPerPixelX)) + (NewScaleWidth * Screen.TwipsPerPixelX)
 If NewScaleHeight <> 0 Then frm.Height = (frm.Height - (frm.ScaleHeight * Screen.TwipsPerPixelY)) + (NewScaleHeight * Screen.TwipsPerPixelY)
 End Sub
 
+'EHT=Custom
 Function RunningFromIDE() As Boolean
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'Because debug statements are ignored when the app is compiled, the next statment will
 'never be executed in the EXE. If we get an error then we are running in IDE / Debug mode
 On Error GoTo e
@@ -1199,18 +1117,14 @@ Exit Function
 e: RunningFromIDE = True
 End Function
 
+'EHT=Custom
 Sub SelectAll(txt As TextBox)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 txt.SelStart = 0
 txt.SelLength = Len(txt.Text)
 End Sub
 
+'EHT=Custom
 Sub SelectFirstItemIfNoSelection(lst As Object)
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If lst.ListIndex < 0 Then
     If lst.ListCount > 0 Then
         lst.ListIndex = 0
@@ -1218,10 +1132,8 @@ If lst.ListIndex < 0 Then
 End If
 End Sub
 
+'EHT=Custom
 Function SetTabStops(hwnd&, ParamArray TabStops()) As Boolean
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'TabStops() is a 0 based array of tab stop values.
 'The values "represent the number of quarters of the average character width for the font that is selected into the list box"
 'For the standard VB6 listbox font, this comes out to be 3 pixels per 2 tabstop increments
@@ -1235,10 +1147,10 @@ SetTabStops = (SendMessageByRef(hwnd, LB_SETTABSTOPS, UBound(TabStops) + 1, ts(0
 InvalidateRect hwnd, 0, 0
 End Function
 
+'EHT=ResumeNext
 Sub HilightControl(frm As Form, ctrl As Object)
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
+
 Dim shp As Shape
 Set shp = frm.Controls("hilight")
 If Not shp Is Nothing Then
@@ -1257,10 +1169,10 @@ shp.Move ctrl.Left - 1, ctrl.Top - 1, ctrl.Width + 3, ctrl.Height + 3
 shp.Visible = True
 End Sub
 
+'EHT=ResumeNext
 Sub ClearControlHilight(frm As Form)
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
+
 Dim shp As Shape
 Set shp = frm.Controls("hilight")
 If Not shp Is Nothing Then
@@ -1268,10 +1180,9 @@ If Not shp Is Nothing Then
 End If
 End Sub
 
+'EHT=ResumeNext
 Sub SetControlTabOrder(frm As Form, taborder$)
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 Dim ctrl As Object, tabordersplit$(), c$(), a&, focusset As Boolean
 For Each ctrl In frm.Controls
@@ -1304,10 +1215,8 @@ For a = 0 To UBound(tabordersplit)
 Next a
 End Sub
 
+'EHT=Custom
 Function SplitNumberArray1(s$, a&()) As Long
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'Splits string, redims a(), outputs to a(), returns count
 Dim sp$(), b&
 sp$ = Split(s$, SEP1)
@@ -1318,10 +1227,8 @@ Next b
 SplitNumberArray1 = UBound(sp$) + 1
 End Function
 
+'EHT=Custom
 Sub SplitNumberArray2(s$, a&())
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'Splits string, outputs to a()
 Dim sp$(), b&
 sp$ = Split(s$, SEP1)
@@ -1330,10 +1237,9 @@ For b = 0 To UBound(sp$)
 Next b
 End Sub
 
+'EHT=ResumeNext
 Sub TabToNextControl(frm As Form, selalliftextbox As Boolean, rev As Boolean)
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 'Tab to the next control (or previus one if rev=True)
 'If focus is on a control with TabStop = False, this code will find the next
@@ -1376,10 +1282,8 @@ Do
 Loop
 End Sub
 
+'EHT=Custom
 Function AddTrailingSlash(t$) As String
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 'If app is in root, returns c:\, but everywhere else, it does not include the '\'
 '   Windows XP doesn't mind the '\\', but Windows 98 fails
 If Right$(t$, 1) = "\" Then
@@ -1389,10 +1293,9 @@ Else
 End If
 End Function
 
+'EHT=Cleanup1
 Function LoadGlobalSettings() As Boolean
-'errheader>
-Const PROC_NAME = "CGlobalSettings" & "." & "LoadGlobalSettings": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 If GSLoaded Then Exit Function
 
@@ -1413,25 +1316,19 @@ Else
     Get #fh.FileNum, , GlobalSettings
 End If
 
-CLEAN_UP:
+LoadGlobalSettings = True
+GSLoaded = True
+
+CLEANUP: INCLEANUP = True
     If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
-    If ERR_COUNT = 0 Then
-        LoadGlobalSettings = True
-        GSLoaded = True
-    End If
-    
-'errfooter>
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "LoadGlobalSettings", Err, INCLEANUP: Resume CLEANUP
 End Function
 
+'EHT=Cleanup1
 Function SaveGlobalSettings() As Boolean
-'errheader>
-Const PROC_NAME = "CGlobalSettings" & "." & "SaveGlobalSettings": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 If Not GSLoaded Then Exit Function
 If Not GSChanged Then Exit Function
@@ -1445,19 +1342,15 @@ fh.WriteLong GlobalSettings_Count
 If GlobalSettings_Count > 0 Then
     Put #fh.FileNum, , GlobalSettings
 End If
+fh.CloseFile: Set fh = Nothing
 
-CLEAN_UP:
+RenameFile tempfile$, destfile$, True
+GSChanged = False
+SaveGlobalSettings = True
+
+CLEANUP: INCLEANUP = True
     If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
-    If ERR_COUNT = 0 Then
-        RenameFile tempfile$, destfile$, True
-        GSChanged = False
-        SaveGlobalSettings = True
-    End If
 
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SaveGlobalSettings", Err, INCLEANUP: Resume CLEANUP
 End Function

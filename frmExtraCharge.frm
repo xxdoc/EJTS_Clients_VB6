@@ -252,6 +252,8 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "frmExtraChargeEdit"
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 Public TabOrderSetting As String            'This is set in Form_Show
 
@@ -266,18 +268,15 @@ End Enum
 Private EditMode As Boolean
 Private CurIndex&
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Cleanup2
 Function Form_Show(eindex&) As Boolean
-'errheader>
-Const PROC_NAME = "frmExtraChargeEdit" & "." & "Form_Show": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 If (eindex < 0) Or (eindex >= ActiveDBInstance.ExtraCharges_Count) Then
     Err.Raise 1, , "Extra Charge #" & eindex & " not found!"
@@ -307,20 +306,16 @@ Me.Show 1, frmMain
 frmMain.IdleSetAction
 Form_Show = True
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then Unload Me
-'errfooter>
+CLEANUP: INCLEANUP = True
+    If HASERROR Then Unload Me
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Show", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Function
 
+'EHT=Cleanup2
 Function Form_ShowNew() As Long
-'errheader>
-Const PROC_NAME = "frmExtraChargeEdit" & "." & "Form_ShowNew": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 ' Returns     :Index of new Extra Charge, or -1 if cancelled
 
@@ -336,20 +331,16 @@ Me.Show 1, frmMain
 '-----------------------------------
 Form_ShowNew = CurIndex
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then Unload Me
-'errfooter>
+CLEANUP: INCLEANUP = True
+    If HASERROR Then Unload Me
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_ShowNew", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Function
 
+'EHT=Standard
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "frmExtraChargeEdit" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyCode
 Case vbKeyReturn
@@ -361,40 +352,26 @@ Case vbKeyReturn
     End If
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "frmExtraChargeEdit" & "." & "Form_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyAscii
 Case vbKeyReturn
     KeyAscii = 0    'Stop the beep
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSave_Click()
-'errheader>
-Const PROC_NAME = "frmExtraChargeEdit" & "." & "btnSave_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnSave.Enabled Then Exit Sub
 
@@ -406,26 +383,26 @@ With e
         SetFocusWithoutErr txtField(fClientName)
         Exit Sub
     End If
-    
+
     FieldFromTextbox txtField(fDescription), .Description
-    
+
     FieldFromTextbox txtField(fCompletionDate), .CompletionDate
     If .CompletionDate = NullLong Then
         ShowErrorMsg "Missing completion date!"
         SetFocusWithoutErr txtField(fCompletionDate)
         Exit Sub
     End If
-    
+
     FieldFromTextbox txtField(fPrepFee), .PrepFee
     If .PrepFee = NullLong Then
         ShowErrorMsg "Missing prep fee!"
         SetFocusWithoutErr txtField(fPrepFee)
         Exit Sub
     End If
-    
+
     FieldFromTextbox txtField(fMoneyOwed), .MoneyOwed
     If .MoneyOwed = 0 Then .MoneyOwed = NullLong
-    
+
     If EditMode Then
         ActiveDBInstance.ExtraCharges(CurIndex) = e
         tabLogFile.WriteLine "Edited extra charge #" & CurIndex & " (" & .ClientName & ", " & .Description & ")"
@@ -438,39 +415,25 @@ End With
 
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSave_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnCancel_Click()
-'errheader>
-Const PROC_NAME = "frmExtraChargeEdit" & "." & "btnCancel_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnCancel.Enabled Then Exit Sub
 
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtField_GotFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmExtraChargeEdit" & "." & "txtField_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case Index
 Case fMoneyOwed
@@ -485,49 +448,29 @@ Case fCompletionDate
     End If
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtField_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtField_LostFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmExtraChargeEdit" & "." & "txtField_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 LostFocusFormat txtField(Index)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtField_LostFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub lblChangeTabOrder_Click()
-'errheader>
-Const PROC_NAME = "frmExtraChargeEdit" & "." & "lblChangeTabOrder_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim f As frmChangeTabOrder
 Set f = New frmChangeTabOrder
 f.Form_Show Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lblChangeTabOrder_Click", Err
 End Sub
 

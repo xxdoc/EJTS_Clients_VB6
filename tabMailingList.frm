@@ -409,7 +409,9 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "tabMailingList"
 Implements ITab
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
 Private LastClientIDSelected&(1 To 3)
@@ -429,20 +431,24 @@ Private animStep&
 Private NewItem_Lst&
 Private NewItem_Index&
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Standard
 Private Function ITab_CreateGDIObjects() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_CreateGDIObjects", Err
 End Function
 
+'EHT=Standard
 Private Function ITab_InitializeAfterDBLoad() As Boolean
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "ITab_InitializeAfterDBLoad": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&
 lblWarning.Visible = (FileToOpen_Year <> (Year(Date) - 1))
@@ -462,20 +468,13 @@ e = e And lstSection(2).MultiSel
 e = e And lstSection(3).MultiSel
 If Not e Then Err.Raise 1, , "lstSection not set to Multi-Select! Some features will not work properly!"
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_InitializeAfterDBLoad", Err
 End Function
 
+'EHT=Standard
 Private Sub ITab_AfterTabShown()
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "ITab_AfterTabShown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, pft&
 pft = DB_GetSetting(ActiveDBInstance, "Prep fee threshold - receive organizer")
@@ -506,43 +505,41 @@ SkipChangeEvents = True
 txtPaperSize.Text = DB_GetSetting(ActiveDBInstance, "_MailingList-PaperSize")
 SkipChangeEvents = False
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_AfterTabShown", Err
 End Sub
 
+'EHT=Standard
 Private Sub ITab_SetDefaultFocus()
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "ITab_SetDefaultFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SetFocusWithoutErr lstSection(LastColumnFocused)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SetDefaultFocus", Err
 End Sub
 
+'EHT=Standard
 Private Function ITab_SaveSettingsToDBBeforeClose() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SaveSettingsToDBBeforeClose", Err
 End Function
 
+'EHT=Standard
 Private Function ITab_DestroyGDIObjects() As Boolean
+On Error GoTo ERR_HANDLER
+
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_DestroyGDIObjects", Err
 End Function
 
+'EHT=ResumeNext
 Private Sub Form_Resize()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 Dim l&, t&, w&, h&
 
@@ -575,121 +572,78 @@ lblTitle(3).Move l, 0, Me.ScaleWidth - l
 lblCriteria(3).Move l, lblTitle(2).Height, w
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyDown KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "Form_KeyUp": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyUp KeyCode, Shift: If KeyCode = 0 Then Exit Sub     'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyUp", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "Form_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyPress KeyAscii: If KeyAscii = 0 Then Exit Sub       'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnExport_Click()
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "btnExport_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnExport.Enabled Then Exit Sub
 
 SetFocusWithoutErr lstSection(MailingListStatus.HardCopyOrganizer)
 ExportClients_ToThunderbird
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnExport_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnPrint_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "btnPrint_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnPrint(Index).Enabled Then Exit Sub
 
 SetFocusWithoutErr lstSection(MailingListStatus.HardCopyOrganizer)
 PrintClients Index
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnPrint_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnScanForPaperSize_Click()
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "btnScanForPaperSize_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnScanForPaperSize.Enabled Then Exit Sub
 
 SetFocusWithoutErr lstSection(MailingListStatus.HardCopyOrganizer)
 ScanForPaperSize
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnScanForPaperSize_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstSection_DblClick(Index As Integer)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "lstSection_DblClick": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim frm As frmClientEditPost, cID&
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
@@ -702,37 +656,23 @@ If frm.Form_Show(cID, fEdit) Then   'This will mark changed if necessary
     lstSection(Index).Repaint
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstSection_DblClick", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstSection_GotFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "lstSection_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 LastColumnFocused = Index
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstSection_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstSection_KeyDown(Index As Integer, KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "lstSection_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyDown KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 
@@ -745,7 +685,7 @@ Case vbKeyReturn
     Case vbCtrlMask
         lstSection_DblClick (Index)
     End Select
-    
+
 Case vbKeyLeft
     KeyCode = 0
     If Index > 1 Then SetFocusWithoutErr lstSection(Index - 1)
@@ -767,72 +707,44 @@ Case vbKeyN
     ProcessKey Index, MailingListStatus.NoOrganizer
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstSection_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstSection_KeyPressByCode(Index As Integer, KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "lstSection_KeyPressByCode": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyPress KeyCode: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 frmMain.IdleSetAction
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstSection_KeyPressByCode", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstSection_KeyUp(Index As Integer, KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "lstSection_KeyUp": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 frmMain.Form_KeyUp KeyCode, Shift: If KeyCode = 0 Then Exit Sub   'Pass it to the parent form first, Exit if form cancelled the event
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstSection_KeyUp", Err
 End Sub
 
+'EHT=Standard
 Private Sub lstSection_TabToNextControl(Index As Integer, Reverse As Boolean)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "lstSection_TabToNextControl": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 TabToNextControl Me, False, Reverse
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstSection_TabToNextControl", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtPaperSize_Change()
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "txtPaperSize_Change": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not txtPaperSize.Enabled Then Exit Sub
 If Not SkipChangeEvents Then
@@ -843,20 +755,13 @@ If Not SkipChangeEvents Then
     frmMain.SetChangedFlagAndIndication
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtPaperSize_Change", Err
 End Sub
 
+'EHT=ResumeNext
 Private Sub tmrAnimation_Timer()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 If animStep = animNumSteps Then
     pctAnimation.Visible = False
@@ -868,10 +773,9 @@ pctAnimation.Move animStartX, animStartY
 animStep = animStep + 1
 End Sub
 
+'EHT=Standard
 Function AddToAppropriateList(cindex&, SelectNewItem As Boolean) As Long
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "AddToAppropriateList": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim li&, sec&
 With ActiveDBInstance.Clients(cindex).c
@@ -909,20 +813,13 @@ If NewItem_Index <> LB_ERR Then
     If SelectNewItem Then lstSection(li).ListIndex = NewItem_Index
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "AddToAppropriateList", Err
 End Function
 
+'EHT=Cleanup1
 Sub ExportClients_ToThunderbird()
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "ExportClients_ToThunderbird": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 Dim fh As CMNMOD_CFileHandler, a&, cID&, cindex&, l$(36)
 Set fh = OpenFile(txtExportFile.Text, mLineByLine_Output)
@@ -949,9 +846,10 @@ For a = 0 To lstSection(MailingListStatus.HardCopyOrganizer).ListCount - 1
     End If
 Next a
 
-CLEAN_UP:
+ShowInfoMsg "Email list has been successfully exported to '" & txtExportFile.Text & "'."
+
+CLEANUP: INCLEANUP = True
     If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
-    ShowInfoMsg "Email list has been successfully exported to '" & txtExportFile.Text & "'."
 
 Exit Sub
 exp:
@@ -968,18 +866,13 @@ exp:
     End With
 Return
 
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ExportClients_ToThunderbird", Err, INCLEANUP: Resume CLEANUP
 End Sub
 
+'EHT=Cleanup1
 Sub PrintClients(i%)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "PrintClients": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 Dim s&, c&, a&, cID&
 Dim ClientIDsToPrint() As Long, ClientIDsCount&
@@ -1018,7 +911,7 @@ Else
             End If
         Next a
         If s < 0 Then
-            ERR_COUNT = ERR_COUNT + 1: GoTo CLEAN_UP
+            GoTo CLEANUP
         End If
     End If
     For a = s To c - 1
@@ -1040,7 +933,7 @@ If ClientIDsCount > 0 Then
         c = DB_FindClientIndex(ActiveDBInstance, ClientIDsToPrint(a))
         If c < 0 Then
             ShowErrorMsg "Invalid client ID #" & ClientIDsToPrint(a)
-            ERR_COUNT = ERR_COUNT + 1: GoTo CLEAN_UP
+            GoTo CLEANUP
         End If
         With ActiveDBInstance.Clients(c).c
             Printer.Print FormatClientName(fPrintLabels, ActiveDBInstance.Clients(c).c)
@@ -1060,20 +953,16 @@ If ClientIDsCount > 0 Then
     Printer.EndDoc
 End If
 
-CLEAN_UP:
+CLEANUP: INCLEANUP = True
     frmMain.HidePopupInfo
-'errfooter>
+
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PrintClients", Err, INCLEANUP: Resume CLEANUP
 End Sub
 
+'EHT=Standard
 Sub ProcessKey(Index As Integer, nli As MailingListStatus)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "ProcessKey": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not ActiveDBInstance.IsWriteable Then Exit Sub
 
@@ -1107,20 +996,13 @@ DoEvents
 StartAnimation CLng(Index), animStartPos, NewItem_Lst, NewItem_Index - lstSection(NewItem_Lst).TopIndex, _
         animText$ = FormatClientName(fMailingList, ActiveDBInstance.Clients(cindex).c)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ProcessKey", Err
 End Sub
 
+'EHT=Standard
 Sub ReturnPrevSel()
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "ReturnPrevSel": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, b&
 For a = 1 To 3
@@ -1141,20 +1023,13 @@ For a = 1 To 3
     End With
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ReturnPrevSel", Err
 End Sub
 
+'EHT=Cleanup1
 Sub ScanForPaperSize()
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "ScanForPaperSize": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 If Not ActiveDBInstance.IsWriteable Then Exit Sub
 
@@ -1185,21 +1060,17 @@ Else
     frmMain.SetChangedFlagAndIndication
 End If
 
-CLEAN_UP:
+CLEANUP: INCLEANUP = True
     SkipChangeEvents = False
     If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
-'errfooter>
+
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ScanForPaperSize", Err, INCLEANUP: Resume CLEANUP
 End Sub
 
+'EHT=Standard
 Sub StartAnimation(startLst&, startPos&, endLst&, endPos&, animText$)
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "StartAnimation": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 animStartX = lstSection(startLst).Left
 animStartY = lstSection(startLst).Top + (startPos * 18)
@@ -1213,25 +1084,18 @@ lblTitleAnimText.Caption = animText$
 pctAnimation.Visible = True
 tmrAnimation.Enabled = True
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "StartAnimation", Err
 End Sub
 
+'EHT=Standard
 Sub UpdateTotals()
-'errheader>
-Const PROC_NAME = "tabMailingList" & "." & "UpdateTotals": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, b&, c&, cID&, liOverrides&, totalOverrides&, liAuto&, totalAuto&, secnum&, totalNoOrgCO&
 For a = 1 To 3
     lblTitle(a).Caption = lblTitle(a).Tag & " (" & (lstSection(a).ListCount - 2) & ")"
-    
+
     liOverrides = -1
     totalOverrides = 0
     liAuto = -1
@@ -1274,13 +1138,7 @@ For a = 1 To 3
 Next a
 lblClientCount.Caption = "Total:" & vbCrLf & ActiveDBInstance.Clients_Count
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UpdateTotals", Err
 End Sub
 

@@ -1,5 +1,6 @@
 Attribute VB_Name = "modDB"
 Option Explicit
+Private Const MOD_NAME = "modDB"
 
 'This module should NEVER reference ActiveDBInstance (use LocalDBInstance instead)
 'Also, be careful when calling frmmain.SetChangedFlagAndIndication, since that is only relevant to ActiveDBInstance
@@ -17,13 +18,13 @@ Public Enum ClientFlags
     'Only 1 of these 2
     PartiallyComplete = 1
     CompletedReturn = 2
-    
+
     'Only 1 of these 4
     HadAppointment = 4      'Mark this ONLY during posting
     DroppedOff = 8          'Mark this when client drops off (confirmed during posting)
     MailedIn = 16           'Mark this when package received (confirmed during posting)
     NoNeedToFile = 32       'Mark this ONLY during posting
-    
+
     'Individual flags
     Extension = 64
     IncPtnrTrustEstate = 128    'Cannot by IPTE and NNTF at the same time
@@ -55,11 +56,11 @@ Public Type PersonStruct
 End Type
 Public Type Client_DBPortion
     ID As Long
-    
+
     'Person-specific information (see above)
     Person1 As PersonStruct
     Person2 As PersonStruct
-    
+
     'TaxReturn-specific information
     PhoneHome As String            'Phone numbers must be in 0000000000 or 0000000000x* format
     AddressStreet As String
@@ -70,14 +71,14 @@ Public Type Client_DBPortion
     NumApptSlotsToUse As Long
     Flags As Long
     MailingListStatus As Long       '0-Auto, 1-Email(MLE), 2-HardCopy(MLH), 3-None(NML)
-    
+
     'Last year's data
     LastYear_MinutesToComplete As Long
     LastYear_PrepFee As Long
     LastYear_Flags As Long
     OldestYearFiled As Long
     NewestYearFiled As Long
-    
+
     'Posting data
     CompletionDate As Long
     MinutesToComplete As Long
@@ -87,7 +88,7 @@ Public Type Client_DBPortion
     ResultAGI As Long
     ResultFederal As Long
     ResultState As Long
-    
+
     'Operation notes
     OpNotes As String
 End Type
@@ -178,27 +179,27 @@ End Type
 Public Type EJTSClientsDB
     Clients() As Client
     Clients_Count As Long
-    
+
     Appointments() As Appointment
     Appointments_Count As Long
-    
+
     ApptBitmap() As Long   'CAUTION: Bitmap stores Indexes in program, but IDs in database
     ApptBitmap_StartDate As Long
     ApptBitmap_Count As Long
     Subtitles() As String       'Same length as ApptBitmap
-    
+
     ExtraCharges() As ExtraCharge
     ExtraCharges_Count As Long
-    
+
     Bookkeeping() As BookkeepingJob
     Bookkeeping_Count As Long
-    
+
     SpecialSearches() As SpecialSearch
     SpecialSearches_Count As Long
-    
+
     Settings() As Setting
     Settings_Count As Long
-    
+
     Loaded As Boolean
     IsWriteable As Boolean
     Changed As Boolean
@@ -207,10 +208,9 @@ Public Type EJTSClientsDB
     MakeBakOnNextSave As String
 End Type
 
+'EHT=Cleanup1
 Function DB_Load(DBFile$, LocalDBInstance As EJTSClientsDB) As Boolean
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_Load": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 If LocalDBInstance.Loaded Then Err.Raise 1, , "A database file is already loaded. Cannot open another until the first one is closed."
 
@@ -241,7 +241,7 @@ Case "EJTS-v04", "EJTS-v05", "EJTS-v06"
 Case Else
     'So old that we are unable to convert it (I'll have to do it manually)
     ShowErrorMsg "The selected database file was saved in format " & filespec$ & ", but the latest format is " & CurDBFileSpecVersion & "." & vbCrLf & vbCrLf & "This file cannot be opened."
-    ERR_COUNT = ERR_COUNT + 1: GoTo CLEAN_UP
+    GoTo CLEANUP
 End Select
 
 'Clients
@@ -297,7 +297,7 @@ Else
                 .ResultFederal = fh.ReadLong
                 .ResultState = fh.ReadLong
                 .OpNotes = fh.ReadStringPlusLen
-                
+
                 'Also, there is no longer any NoState flag (1024)
                 If Flag_IsSet(.Flags, 1024) Then
                     .StateList = ""
@@ -317,7 +317,7 @@ Else
                     End If
                 End If
                 If Flag_IsSet(.LastYear_Flags, 1024) Then .LastYear_Flags = Flag_Remove(.LastYear_Flags, 1024)
-                
+
                 'The ReleasedBeforePayment flag (2048) shifted down to the NoState position (1024)
                 If Flag_IsSet(.Flags, 2048) Then .Flags = Flag_Remove(.Flags, 2048) Or 1024
                 If Flag_IsSet(.LastYear_Flags, 2048) Then .LastYear_Flags = Flag_Remove(.LastYear_Flags, 2048) Or 1024
@@ -433,7 +433,7 @@ Else
         For e = 0 To TempDBInstance.Settings_Count - 1
             tttse(e).sName = tttse_v05(e).sName
             tttse(e).sValue = tttse_v05(e).sValue
-            
+
             'Guess at the type
             Select Case VarType(tttse_v05(e).sValue)
             Case 3, 2:    tttse(e).sType = sLng
@@ -441,7 +441,7 @@ Else
             Case Else
                 Err.Raise 1, , "Unknown type"
             End Select
-            
+
             'Convert the boolean values
             Select Case tttse(e).sName
             Case "SatCheck-LastDayOfTaxSeason", "Statistics-RememberSelection-0", "Statistics-RememberSelection-1"
@@ -452,7 +452,7 @@ Else
                     tttse(e).sValue = False
                 End If
             End Select
-            
+
             'Rename several settings
             If tttse(e).sName Like "SatCheck-Txt*" Or tttse(e).sName = "MailingList-PaperSize" Or tttse(e).sName Like "Statistics-RememberSelection-*" Or tttse(e).sName Like "Statistics-LastView-*" Or tttse(e).sName = "SatCheck-LastDayOfTaxSeason" Then
                 tttse(e).sName = "_" & tttse(e).sName
@@ -476,30 +476,25 @@ End If
 footer$ = fh.ReadString(Len(CurDBFileSpecVersion))
 If footer$ <> filespec$ Then Err.Raise 1, , "File footer does not match file header. Unable to read complete file."
 
-CLEAN_UP:
-    If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
-    If ERR_COUNT = 0 Then
-        'Now that reading is complete, copy temporary lists to master lists
-        TempDBInstance.Loaded = True
-        TempDBInstance.IsWriteable = False
-        TempDBInstance.FullPath_Log = DB_GenerateLogfileName(DBFile$)
-        TempDBInstance.Changed = False
-        LocalDBInstance = TempDBInstance
-        DB_Load = True
-    End If
+'Now that reading is complete, copy temporary lists to master lists
+TempDBInstance.Loaded = True
+TempDBInstance.IsWriteable = False
+TempDBInstance.FullPath_Log = DB_GenerateLogfileName(DBFile$)
+TempDBInstance.Changed = False
+LocalDBInstance = TempDBInstance
 
-'errfooter>
+DB_Load = True
+
+CLEANUP: INCLEANUP = True
+    If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_Load", Err, INCLEANUP: Resume CLEANUP
 End Function
 
+'EHT=Cleanup1
 Function DB_Save(LocalDBInstance As EJTSClientsDB) As Boolean
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_Save": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
 If Not LocalDBInstance.IsWriteable Then
     'This should never actually happen, since there are other protections in the code
@@ -579,27 +574,21 @@ End If
 'FILEFOOTER
 fh.WriteString CurDBFileSpecVersion
 
-CLEAN_UP:
-    If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
-    If ERR_COUNT = 0 Then
-        RenameFile tempfile$, destfile$, True
-        LocalDBInstance.Changed = False
-        DB_Save = True
-    End If
+RenameFile tempfile$, destfile$, True
+LocalDBInstance.Changed = False
 
-'errfooter>
+DB_Save = True
+
+CLEANUP: INCLEANUP = True
+    If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_Save", Err, INCLEANUP: Resume CLEANUP
 End Function
 
-'Function DB_GetSetting(LocalDBInstance As EJTSClientsDB, ByVal n$, Optional CreateAsValueIfNone As Variant, Optional CreateAsTypeIfNone As enumSettingType, Optional FormatForScreen As Boolean = False) As Variant
+'EHT=Standard
 Function DB_GetSetting(LocalDBInstance As EJTSClientsDB, ByVal n$, Optional FormatForScreen As Boolean = False, Optional DontCallSetChangedFlag As Boolean) As Variant
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_GetSetting": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, nl$
 nl$ = LCase$(Trim$(n$))
@@ -637,20 +626,13 @@ Else
     Err.Raise 1, , "No setting found with name '" & n$ & "' and no default value available to create it."
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_GetSetting", Err
 End Function
 
+'EHT=Standard
 Sub DB_SetSetting(LocalDBInstance As EJTSClientsDB, ByVal n$, v As Variant, Optional CreateAsTypeIfNone As enumSettingType, Optional DontCallSetChangedFlag As Boolean)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_SetSetting": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, nl$, g As Boolean, s As Setting, found As Boolean
 nl$ = LCase$(Trim$(n$))
@@ -758,20 +740,13 @@ Else
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SetSetting", Err
 End Sub
 
+'EHT=Standard
 Function DB_SetDefaultSettingValue(LocalDBInstance As EJTSClientsDB, n$, Optional DontCallSetChangedFlag As Boolean) As Boolean
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_SetDefaultSettingValue": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 DB_SetDefaultSettingValue = True
 If n$ = "GLOBAL_DataFolder" Then
@@ -825,20 +800,12 @@ Else
     DB_SetDefaultSettingValue = False
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SetDefaultSettingValue", Err
 End Function
 
+'EHT=Custom
 Function DB_FormatSettingForScreen(s As Setting) As String
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 With s
     Select Case .sType
     Case sDate:
@@ -855,10 +822,9 @@ With s
 End With
 End Function
 
+'EHT=Standard
 Function DB_GetNewClientID(LocalDBInstance As EJTSClientsDB) As Long
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_GetNewClientID": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, hid&
 For a = 0 To LocalDBInstance.Clients_Count - 1
@@ -866,42 +832,27 @@ For a = 0 To LocalDBInstance.Clients_Count - 1
 Next a
 DB_GetNewClientID = hid + 1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_GetNewClientID", Err
 End Function
 
+'EHT=Standard
 Function DB_AddClient(LocalDBInstance As EJTSClientsDB, c As Client) As Long
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_AddClient": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ' Returns     : Index of new item
-
 ReDim Preserve LocalDBInstance.Clients(LocalDBInstance.Clients_Count)
 LocalDBInstance.Clients(LocalDBInstance.Clients_Count) = c
 DB_AddClient = LocalDBInstance.Clients_Count
 LocalDBInstance.Clients_Count = LocalDBInstance.Clients_Count + 1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_AddClient", Err
 End Function
 
+'EHT=Standard
 Function DB_FindClientIndex&(LocalDBInstance As EJTSClientsDB, ID&)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_FindClientIndex": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&
 For a = 0 To LocalDBInstance.Clients_Count - 1
@@ -912,20 +863,13 @@ For a = 0 To LocalDBInstance.Clients_Count - 1
 Next a
 DB_FindClientIndex = -1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_FindClientIndex", Err
 End Function
 
+'EHT=Standard
 Function DB_GetClientAppt(LocalDBInstance As EJTSClientsDB, cID&, founddate As Date) As Long
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_GetClientAppt": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'Returns index of client's appointment
 'If any are today or future, returns closest to today
@@ -968,20 +912,13 @@ Else
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_GetClientAppt", Err
 End Function
 
+'EHT=Standard
 Function DB_AddAppointment(LocalDBInstance As EJTSClientsDB, a As Appointment) As Long
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_AddAppointment": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ' Returns     : Index of new item
 
@@ -990,23 +927,15 @@ LocalDBInstance.Appointments(LocalDBInstance.Appointments_Count) = a
 DB_AddAppointment = LocalDBInstance.Appointments_Count
 LocalDBInstance.Appointments_Count = LocalDBInstance.Appointments_Count + 1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_AddAppointment", Err
 End Function
 
+'EHT=Standard
 Sub DB_RemoveAppointment(LocalDBInstance As EJTSClientsDB, aindex&)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_RemoveAppointment": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ' Do NOT call this procedure from within a With block!!!
-
 Dim a&
 For a = aindex To LocalDBInstance.Appointments_Count - 2
     LocalDBInstance.Appointments(a) = LocalDBInstance.Appointments(a + 1)
@@ -1031,20 +960,13 @@ For a = 0 To LocalDBInstance.ApptBitmap_Count - 1
     Next b
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_RemoveAppointment", Err
 End Sub
 
+'EHT=Standard
 Function DB_GetNewAppointmentID(LocalDBInstance As EJTSClientsDB) As Long
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_GetNewAppointmentID": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, hid&
 For a = 0 To LocalDBInstance.Appointments_Count - 1
@@ -1052,20 +974,13 @@ For a = 0 To LocalDBInstance.Appointments_Count - 1
 Next a
 DB_GetNewAppointmentID = hid + 1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_GetNewAppointmentID", Err
 End Function
 
+'EHT=Standard
 Function DB_FindAppointmentIndex&(LocalDBInstance As EJTSClientsDB, ID&)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_FindAppointmentIndex": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&
 For a = 0 To LocalDBInstance.Appointments_Count - 1
@@ -1076,23 +991,15 @@ For a = 0 To LocalDBInstance.Appointments_Count - 1
 Next a
 DB_FindAppointmentIndex& = -1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_FindAppointmentIndex", Err
 End Function
 
+'EHT=Standard
 Function DB_AddBookkeepingJob(LocalDBInstance As EJTSClientsDB, bk As BookkeepingJob, Optional BeforeIndex As Long = -1) As Long
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_AddBookkeepingJob": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ' Returns     : Index of new item
-
 Dim a&
 ReDim Preserve LocalDBInstance.Bookkeeping(LocalDBInstance.Bookkeeping_Count)
 If BeforeIndex = -1 Then
@@ -1107,23 +1014,15 @@ Else
 End If
 LocalDBInstance.Bookkeeping_Count = LocalDBInstance.Bookkeeping_Count + 1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_AddBookkeepingJob", Err
 End Function
 
+'EHT=Standard
 Sub DB_RemoveBookkeepingJob(LocalDBInstance As EJTSClientsDB, bkindex&)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_RemoveBookkeepingJob": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ' Do NOT call this procedure from within a With block!!!
-
 Dim a&
 For a = bkindex To LocalDBInstance.Bookkeeping_Count - 2
     LocalDBInstance.Bookkeeping(a) = LocalDBInstance.Bookkeeping(a + 1)
@@ -1135,45 +1034,29 @@ Else
     ReDim Preserve LocalDBInstance.Bookkeeping(LocalDBInstance.Bookkeeping_Count - 1)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_RemoveBookkeepingJob", Err
 End Sub
 
+'EHT=Standard
 Function DB_AddExtraCharge(LocalDBInstance As EJTSClientsDB, e As ExtraCharge) As Long
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_AddExtraCharge": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ' Returns     : Index of new item
-
 ReDim Preserve LocalDBInstance.ExtraCharges(LocalDBInstance.ExtraCharges_Count)
 LocalDBInstance.ExtraCharges(LocalDBInstance.ExtraCharges_Count) = e
 DB_AddExtraCharge = LocalDBInstance.ExtraCharges_Count
 LocalDBInstance.ExtraCharges_Count = LocalDBInstance.ExtraCharges_Count + 1
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_AddExtraCharge", Err
 End Function
 
+'EHT=Standard
 Sub DB_RemoveExtraCharge(LocalDBInstance As EJTSClientsDB, eindex&)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_RemoveExtraCharge": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ' Do NOT call this procedure from within a With block!!!
-
 Dim a&
 For a = eindex To LocalDBInstance.ExtraCharges_Count - 2
     LocalDBInstance.ExtraCharges(a) = LocalDBInstance.ExtraCharges(a + 1)
@@ -1185,20 +1068,13 @@ Else
     ReDim Preserve LocalDBInstance.ExtraCharges(LocalDBInstance.ExtraCharges_Count - 1)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_RemoveExtraCharge", Err
 End Sub
 
+'EHT=Standard
 Sub DB_ClearAndRebuildApptBitmap(LocalDBInstance As EJTSClientsDB)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_ClearAndRebuildApptBitmap": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, b&, i&, ub&
 'Create the default availability
@@ -1219,20 +1095,13 @@ For a = 0 To LocalDBInstance.Appointments_Count - 1
     End With
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_ClearAndRebuildApptBitmap", Err
 End Sub
 
+'EHT=Standard
 Function DB_DayWithinBitmapRange(LocalDBInstance As EJTSClientsDB, Day&) As Boolean
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_DayWithinBitmapRange": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&
 a = Day - LocalDBInstance.ApptBitmap_StartDate
@@ -1240,20 +1109,13 @@ If (a >= 0) And (a < LocalDBInstance.ApptBitmap_Count) Then
     DB_DayWithinBitmapRange = True
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_DayWithinBitmapRange", Err
 End Function
 
+'EHT=Standard
 Sub DB_SlotsClear(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&, NumSlots&)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_SlotsClear": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, ub&
 If Not DB_DayWithinBitmapRange(LocalDBInstance, Day) Then Exit Sub
@@ -1263,20 +1125,13 @@ For a = TimeSlot To ub
     LocalDBInstance.ApptBitmap(Day - LocalDBInstance.ApptBitmap_StartDate, a) = Slot_DefaultAccordingToTemplate
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsClear", Err
 End Sub
 
+'EHT=Standard
 Sub DB_SlotsFill(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&, NumSlots&, NewApptIndex&)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_SlotsFill": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, ub&
 If Not DB_DayWithinBitmapRange(LocalDBInstance, Day) Then Exit Sub
@@ -1286,38 +1141,24 @@ For a = TimeSlot To ub
     LocalDBInstance.ApptBitmap(Day - LocalDBInstance.ApptBitmap_StartDate, a) = NewApptIndex
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsFill", Err
 End Sub
 
+'EHT=Standard
 Sub DB_SlotFill(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&, NewApptIndex&)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_SlotFill": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not DB_DayWithinBitmapRange(LocalDBInstance, Day) Then Exit Sub
 LocalDBInstance.ApptBitmap(Day - LocalDBInstance.ApptBitmap_StartDate, TimeSlot) = NewApptIndex
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotFill", Err
 End Sub
 
+'EHT=Standard
 Function DB_SlotsIsAvail(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&, NumSlots&, IgnoreApptID&) As Boolean
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_SlotsIsAvail": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, ub&, i&
 If Not DB_DayWithinBitmapRange(LocalDBInstance, Day) Then Exit Function
@@ -1335,20 +1176,13 @@ For a = TimeSlot To ub
 Next a
 DB_SlotsIsAvail = True
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsIsAvail", Err
 End Function
 
+'EHT=Standard
 Function DB_FindNextAvailableSlot(LocalDBInstance As EJTSClientsDB, ByVal startdate As Long, NumSlots&, retDay&, retSlot&) As Boolean
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_FindNextAvailableSlot": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim cd As Long, a&, b&
 For cd = startdate - LocalDBInstance.ApptBitmap_StartDate To LocalDBInstance.ApptBitmap_Count - 1
@@ -1368,27 +1202,18 @@ For cd = startdate - LocalDBInstance.ApptBitmap_StartDate To LocalDBInstance.App
     Next a
 Next cd
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_FindNextAvailableSlot", Err
 End Function
 
+'EHT=Custom
 Function DB_GetTimeSlotTime(ts&) As String
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 DB_GetTimeSlotTime = Format$(CDate(Appointment_FirstSlotTime + (ts * Appointment_SlotLength)), "h:mm AM/PM")
 End Function
 
+'EHT=Standard
 Function DB_FormatApptClientList$(LocalDBInstance As EJTSClientsDB, appt As Appointment)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_FormatApptClientList": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, cindex&
 DB_FormatApptClientList$ = "ApptID#" & appt.ID & "["
@@ -1399,20 +1224,13 @@ For a = 0 To appt.ClientID_Count - 1
 Next a
 DB_FormatApptClientList$ = DB_FormatApptClientList$ & "]"
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_FormatApptClientList", Err
 End Function
 
+'EHT=Standard
 Function DB_FormatMinutesForSchedule$(LocalDBInstance As EJTSClientsDB, cindex&, primary As Boolean)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_FormatMinutesForSchedule": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 With LocalDBInstance.Clients(cindex).c
     If Not primary Then DB_FormatMinutesForSchedule$ = "+"
@@ -1425,20 +1243,13 @@ With LocalDBInstance.Clients(cindex).c
     End If
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_FormatMinutesForSchedule", Err
 End Function
 
+'EHT=Standard
 Function DB_GenerateLogfileName$(ByVal f$)
-'errheader>
-Const PROC_NAME = "modDB" & "." & "DB_GenerateLogfileName": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim p&, p2&
 p = InStrRev(f$, ".")
@@ -1450,13 +1261,7 @@ If p > 0 Then
 End If
 DB_GenerateLogfileName$ = f$ & ".log"
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_GenerateLogfileName", Err
 End Function
 

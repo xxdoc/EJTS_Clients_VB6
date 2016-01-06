@@ -2510,6 +2510,8 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "frmClientEditPost"
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 Public TabOrderSetting As String            'This is set in Form_Show, depending on the post/edit mode
 
@@ -2527,7 +2529,7 @@ Private Enum FieldName
     fPerson1Phone
     fPerson1Email
     fPerson1DOD
-    
+
     fPerson2First
     fPerson2Nickname
     fPerson2Initial
@@ -2535,32 +2537,32 @@ Private Enum FieldName
     fPerson2Phone
     fPerson2Email
     fPerson2DOD
-    
+
     fAddressStreet
     fAddressCity
     fAddressState
     fAddressZipCode
     fNotes
-    
+
     fPhoneHome
     fNumApptSlotsToUse
     fLastYear_MinutesToComplete
     fLastYear_PrepFee
     fCompletionDate
     fMinutesToComplete
-    
+
     fOperationNotes
-    
+
     fPrepFee
     fMoneyOwed
     fResultFederal
     fResultState
     fResultAGI
     fStateList
-    
+
     fOldestYearFiled
     fNewestYearFiled
-    
+
     fResultState2
 
     fPerson1DOB
@@ -2575,18 +2577,15 @@ Private tempclient As Client
 Private thisID&
 Private Changed As Boolean
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Cleanup2
 Function Form_Show(cID&, mShowFormMode As enumShowFormMode, Optional OwnerForm_OtherThanFrmMainOrTabs As Form, Optional NewClientInputString As String) As Boolean
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "Form_Show": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 'If Post/Edit, cID(input) is the ClientID to open
 'If New, cID(output) is where the new ClientID is returned, or -1 if canceled
@@ -2611,16 +2610,16 @@ End If
 If ShowFormMode = fPost Then
     pctPostSpecificArea.Move 8, 8
     pctPostSpecificArea.Visible = True
-    
+
     pctMainEditArea.Move pctPostSpecificArea.Left + pctPostSpecificArea.Width - 1, 8, txtField(fResultState2).Left + txtField(fResultState2).Width + 8
-    
+
     txtField(fResultState2).Visible = True
     lbl(fResultState2).Visible = True
     chkEFile.Visible = True
-    
+
     txtField(fOperationNotes).Visible = False
     lbl(fOperationNotes).Visible = False
-    
+
     pctFlags.Visible = False
     pctFutureFlags.Visible = True
 Else
@@ -2645,16 +2644,16 @@ With tempclient.c
         .Person1.dod = NullLong
         .Person2.DOB = NullLong
         .Person2.dod = NullLong
-        
+
         .NumApptSlotsToUse = 0  'New clients should be set to Auto (CHOS will calculate it properly later)
         .Flags = NewClient
-        
+
         .LastYear_MinutesToComplete = NullLong
         .LastYear_PrepFee = NullLong
         .LastYear_Flags = 0
         .OldestYearFiled = NullLong
         .NewestYearFiled = NullLong
-        
+
         .CompletionDate = NullLong
         .MinutesToComplete = NullLong
         .PrepFee = NullLong
@@ -2663,7 +2662,7 @@ With tempclient.c
         .ResultFederal = NullLong
         .ResultState = NullLong
     End If
-    
+
     FieldToTextbox txtField(fPerson1First), .Person1.First, True
     FieldToTextbox txtField(fPerson1Nickname), .Person1.Nickname, True
     FieldToTextbox txtField(fPerson1Initial), .Person1.Initial, True
@@ -2672,7 +2671,7 @@ With tempclient.c
     FieldToTextbox txtField(fPerson1Email), .Person1.Email, True
     FieldToTextbox txtField(fPerson1DOB), .Person1.DOB, True
     FieldToTextbox txtField(fPerson1DOD), .Person1.dod, True
-    
+
     FieldToTextbox txtField(fPerson2First), .Person2.First, True
     FieldToTextbox txtField(fPerson2Nickname), .Person2.Nickname, True
     FieldToTextbox txtField(fPerson2Initial), .Person2.Initial, True
@@ -2681,13 +2680,13 @@ With tempclient.c
     FieldToTextbox txtField(fPerson2Email), .Person2.Email, True
     FieldToTextbox txtField(fPerson2DOB), .Person2.DOB, True
     FieldToTextbox txtField(fPerson2DOD), .Person2.dod, True
-    
+
     FieldToTextbox txtField(fAddressStreet), .AddressStreet, True
     FieldToTextbox txtField(fAddressCity), .AddressCity, True
     FieldToTextbox txtField(fAddressState), .AddressState, True
     FieldToTextbox txtField(fAddressZipCode), .AddressZipCode, True
     FieldToTextbox txtField(fNotes), .Notes, (ShowFormMode <> fPost)
-    
+
     FieldToTextbox txtField(fPhoneHome), .PhoneHome, True
     FieldToTextbox txtField(fNumApptSlotsToUse), .NumApptSlotsToUse, (ShowFormMode <> fPost)
     FieldToTextbox txtField(fLastYear_MinutesToComplete), .LastYear_MinutesToComplete, (ShowFormMode <> fPost)
@@ -2698,9 +2697,9 @@ With tempclient.c
         FieldToTextbox txtField(fCompletionDate), .CompletionDate, True
     End If
     FieldToTextbox txtField(fMinutesToComplete), .MinutesToComplete, True
-    
+
     FieldToTextbox txtField(fOperationNotes), .OpNotes, (ShowFormMode <> fPost)
-    
+
     FieldToTextbox txtField(fPrepFee), .PrepFee, True
     FieldToTextbox txtField(fMoneyOwed), .MoneyOwed, True
     FieldToTextbox txtField(fResultAGI), .ResultAGI, True
@@ -2712,19 +2711,19 @@ With tempclient.c
     End If
     FieldToTextbox txtField(fResultState), .ResultState, True
     FieldToTextbox txtField(fResultState2), NullLong, (ShowFormMode = fPost)
-    
+
     FieldToTextbox txtField(fOldestYearFiled), .OldestYearFiled, (ShowFormMode <> fPost)
     FieldToTextbox txtField(fNewestYearFiled), .NewestYearFiled, (ShowFormMode <> fPost)
-    
+
     pctFlags.Enabled = (ShowFormMode <> fPost)
     If ShowFormMode = fPost Then
         For a = 0 To ClientFlags_DATAITEMUBOUND
             SetFutureFlagIndicator False, 0, a
         Next a
-        
+
         'Make a working copy of the Flags
         PreviouslyMarkedIncomplete = Flag_IsSet(.Flags, PartiallyComplete)
-        
+
         'Initialize them for posting...
         '   Inc       '0    OFF always
         'x  Comp      '1    ON if not NNTF
@@ -2737,15 +2736,15 @@ With tempclient.c
         'x  New       'same Copy from DB
         '   E-Filed   '?    ON if Not IPTE
         'x  RBefPmt   'same Copy from DB
-        
+
         Me.Visible = True
-        
+
         'Copy over the 'same' flags (above)
         SetFutureFlagIndicator Flag_IsSet(.Flags, Extension), Extension
         SetFutureFlagIndicator Flag_IsSet(.Flags, NewClient), NewClient
         SetFutureFlagIndicator Flag_IsSet(.Flags, ReleasedBeforePayment), ReleasedBeforePayment
-        
-        
+
+
         'Then initialize a few of them, depending on certain conditions
         chkEFile.Value = vbChecked  'Everything is E-filed by default
         If Flag_IsSet(.LastYear_Flags, IncPtnrTrustEstate) Then
@@ -2799,20 +2798,16 @@ Form_Show = Changed
 frmMain.IdleSetAction
 If ShowFormMode = fNew Then cID = thisID
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then Unload Me
-'errfooter>
+CLEANUP: INCLEANUP = True
+    If HASERROR Then Unload Me
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Show", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Function
 
+'EHT=Standard
 Public Sub Form_KeyPress(KeyAscii As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "Form_KeyPress": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyAscii
 Case vbKeyReturn
@@ -2821,20 +2816,13 @@ Case vbKeyReturn
     End If
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Public Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case KeyCode
 Case vbKeyReturn
@@ -2846,20 +2834,13 @@ Case vbKeyReturn
     End If
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSavePost_Click()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "btnSavePost_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnSavePost.Enabled Then Exit Sub
 
@@ -2893,7 +2874,7 @@ With tempclient.c
             End If
         Next a
     End If
-    
+
     FieldFromTextbox txtField(fPerson1First), .Person1.First
     FieldFromTextbox txtField(fPerson1Nickname), .Person1.Nickname
     FieldFromTextbox txtField(fPerson1Initial), .Person1.Initial
@@ -2902,7 +2883,7 @@ With tempclient.c
     FieldFromTextbox txtField(fPerson1Email), .Person1.Email
     FieldFromTextbox txtField(fPerson1DOB), .Person1.DOB
     FieldFromTextbox txtField(fPerson1DOD), .Person1.dod
-    
+
     FieldFromTextbox txtField(fPerson2First), .Person2.First
     FieldFromTextbox txtField(fPerson2Nickname), .Person2.Nickname
     FieldFromTextbox txtField(fPerson2Initial), .Person2.Initial
@@ -2911,13 +2892,13 @@ With tempclient.c
     FieldFromTextbox txtField(fPerson2Email), .Person2.Email
     FieldFromTextbox txtField(fPerson2DOB), .Person2.DOB
     FieldFromTextbox txtField(fPerson2DOD), .Person2.dod
-    
+
     FieldFromTextbox txtField(fAddressStreet), .AddressStreet
     FieldFromTextbox txtField(fAddressCity), .AddressCity
     FieldFromTextbox txtField(fAddressState), .AddressState
     FieldFromTextbox txtField(fAddressZipCode), .AddressZipCode
     FieldFromTextbox txtField(fNotes), .Notes
-    
+
     FieldFromTextbox txtField(fPhoneHome), .PhoneHome
     FieldFromTextbox txtField(fNumApptSlotsToUse), .NumApptSlotsToUse
     FieldFromTextbox txtField(fLastYear_MinutesToComplete), .LastYear_MinutesToComplete
@@ -2928,9 +2909,9 @@ With tempclient.c
         FieldFromTextbox txtField(fCompletionDate), .CompletionDate
     End If
     FieldFromTextbox txtField(fMinutesToComplete), .MinutesToComplete
-    
+
     FieldFromTextbox txtField(fOperationNotes), .OpNotes
-    
+
     FieldFromTextbox txtField(fPrepFee), .PrepFee
     FieldFromTextbox txtField(fMoneyOwed), .MoneyOwed
     FieldFromTextbox txtField(fResultAGI), .ResultAGI
@@ -2941,7 +2922,7 @@ With tempclient.c
     If Len(.StateList) = 0 Then
         If (p1 <> NullLong) Or (p2 <> NullLong) Then
             ShowErrorMsg "If no states are listed, then there cannot be any state results entered either."
-            ERR_COUNT = ERR_COUNT + 1: GoTo CLEAN_UP
+            Exit Sub
         End If
         .ResultState = NullLong
     Else
@@ -2950,24 +2931,24 @@ With tempclient.c
         If Len(.StateList) = 2 Then
             If p1 = NullLong Then
                 ShowErrorMsg "If a state is listed, there must also be a state result entered."
-                ERR_COUNT = ERR_COUNT + 1: GoTo CLEAN_UP
+                Exit Sub
             End If
             If p2 <> NullLong Then
                 ShowErrorMsg "Only one state is listed, yet there are two results entered."
-                ERR_COUNT = ERR_COUNT + 1: GoTo CLEAN_UP
+                Exit Sub
             End If
             .ResultState = p1
         Else
             If (p1 = NullLong) Or (p2 = NullLong) Then
                 ShowErrorMsg "If two or more states are listed, there must be two state results entered."
-                ERR_COUNT = ERR_COUNT + 1: GoTo CLEAN_UP
+                Exit Sub
             End If
             .ResultState = p1 + p2
         End If
     End If
     FieldFromTextbox txtField(fOldestYearFiled), .OldestYearFiled
     FieldFromTextbox txtField(fNewestYearFiled), .NewestYearFiled
-    
+
     If ShowFormMode = fNew Then
         .ID = DB_GetNewClientID(ActiveDBInstance)
         DB_AddClient ActiveDBInstance, tempclient
@@ -2986,107 +2967,65 @@ End With
 Changed = True
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSavePost_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSavePost_GotFocus()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "btnSavePost_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 HilightControl Me, btnSavePost
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSavePost_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSavePost_LostFocus()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "btnSavePost_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ClearControlHilight Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSavePost_LostFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnCancel_Click()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "btnCancel_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnCancel.Enabled Then Exit Sub
 
 Unload Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnCancel_GotFocus()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "btnCancel_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 HilightControl Me, btnCancel
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnCancel_LostFocus()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "btnCancel_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ClearControlHilight Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_LostFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub chkEFile_Click()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "chkEFile_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If chkEFile.Value Then
     chkEFile.BackColor = &HC0FFC0
@@ -3097,54 +3036,33 @@ End If
 If Not DontChangeFlags Then SetFutureFlagIndicator (chkEFile.Value = vbChecked), EFiled
 'If DontChangeFocus = 0 Then SetFocusWithoutErr txtField(fResultAGI)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "chkEFile_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub chkEFile_GotFocus()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "chkEFile_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 HilightControl Me, chkEFile
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "chkEFile_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub chkEFile_LostFocus()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "chkEFile_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ClearControlHilight Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "chkEFile_LostFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub chkIncPtnrTrustEstate_Click()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "chkIncPtnrTrustEstate_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not chkIncPtnrTrustEstate.Enabled Then Exit Sub
 
@@ -3194,62 +3112,38 @@ Else
     'chkEFile.Value = vbChecked
     'DontChangeFocus = DontChangeFocus - 1
     txtField(fStateList).Text = ""
-    
+
     txtField(fResultAGI).Text = ""
-    
+
     'If DontChangeFocus = 0 Then SetFocusWithoutErr txtField(fMinutesToComplete)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "chkIncPtnrTrustEstate_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub chkIncPtnrTrustEstate_GotFocus()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "chkIncPtnrTrustEstate_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 HilightControl Me, chkIncPtnrTrustEstate
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "chkIncPtnrTrustEstate_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub chkIncPtnrTrustEstate_LostFocus()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "chkIncPtnrTrustEstate_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ClearControlHilight Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "chkIncPtnrTrustEstate_LostFocus", Err
 End Sub
 
 '[Mark] Do we need to replace this with something new?
 'Private Sub chkNoStateReturn_Click()
-''errheader>
-'Const PROC_NAME = "frmClientEditPost" & "." & "chkNoStateReturn_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-''<errheader
-'
 'If Not chkNoStateReturn.Enabled Then Exit Sub
 '
 'Dim b As Boolean
@@ -3270,55 +3164,31 @@ End Sub
 '
 '    If DontChangeFocus = 0 Then SetFocusWithoutErr txtField(fResultAGI)
 'End If
-'
-'CLEAN_UP:
-'    'Your code here
-''errfooter>
-'Exit Sub
-'ERR_HANDLER:
-'    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-'    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-''<errfooter
 'End Sub
 
+'EHT=Standard
 Private Sub lblFlagLastYear_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "lblFlagLastYear_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SetLYFlagIndicator Not IsLYFlagIndicatorSet(0, Index), 0, Index
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lblFlagLastYear_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub lblFlagThisYear_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "lblFlagThisYear_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SetCYFlagIndicator Not IsCYFlagIndicatorSet(0, Index), 0, Index
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lblFlagThisYear_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub optInType_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "optInType_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a%, c&
 
@@ -3351,34 +3221,34 @@ End If
 If chkIncPtnrTrustEstate.Value = vbUnchecked Then
     Dim b As Boolean
     b = Not optInType(3).Value
-    
+
     EnableTextbox txtField(fMinutesToComplete), b
-    
+
     EnableTextbox txtField(fCompletionDate), b
     EnableTextbox txtField(fPrepFee), b
     EnableTextbox txtField(fMoneyOwed), b
-    
+
     EnableTextbox txtField(fResultFederal), b
     EnableTextbox txtField(fResultState), b
     EnableTextbox txtField(fResultState2), b
     chkEFile.Enabled = b
     EnableTextbox txtField(fStateList), b
-    
+
     EnableTextbox txtField(fResultAGI), b
-    
+
     chkIncPtnrTrustEstate.Enabled = b
-    
+
     If b Then
         DontChangeFocus = DontChangeFocus + 1
         chkEFile.Value = vbChecked
         DontChangeFocus = DontChangeFocus - 1
     Else
         txtField(fMinutesToComplete).Text = ""
-        
+
         txtField(fCompletionDate).Text = ""
         txtField(fPrepFee).Text = ""
         txtField(fMoneyOwed).Text = ""
-        
+
         txtField(fResultFederal).Text = ""
         txtField(fResultState).Text = ""
         txtField(fResultState2).Text = ""
@@ -3386,59 +3256,38 @@ If chkIncPtnrTrustEstate.Value = vbUnchecked Then
         chkEFile.Value = vbUnchecked
         DontChangeFocus = DontChangeFocus - 1
         txtField(fStateList).Text = ""
-        
+
         txtField(fResultAGI).Text = ""
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "optInType_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub optInType_GotFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "optInType_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 HilightControl Me, optInType(Index)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "optInType_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub optInType_LostFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "optInType_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ClearControlHilight Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "optInType_LostFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtField_Change(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "txtField_Change": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Select Case Index
 Case fResultFederal, fResultState, fResultState2, fResultAGI
@@ -3459,20 +3308,13 @@ Case fResultFederal, fResultState, fResultState2, fResultAGI
     End With
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtField_Change", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtField_GotFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "txtField_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 HilightControl Me, txtField(Index)
 If (ShowFormMode = fPost) Then
@@ -3490,20 +3332,13 @@ If (ShowFormMode = fPost) Then
     End Select
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtField_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub txtField_LostFocus(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "txtField_LostFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 ClearControlHilight Me
 
@@ -3519,39 +3354,25 @@ End Select
 
 LostFocusFormat txtField(Index)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtField_LostFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub lblChangeTabOrder_Click()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "btnChangeTabOrder_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim f As frmChangeTabOrder
 Set f = New frmChangeTabOrder
 f.Form_Show Me
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lblChangeTabOrder_Click", Err
 End Sub
 
+'EHT=Standard
 Sub UpdateDOBandDODtext()
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "UpdateDOBandDODtext": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, DOB&, dod&
 For a = 1 To 2
@@ -3586,20 +3407,13 @@ For a = 1 To 2
     End If
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UpdateDOBandDODtext", Err
 End Sub
 
+'EHT=Standard
 Function CalculateAge(dt1&, dt2&) As Long
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "CalculateAge": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim m1&, d1&, y1&
 Dim m2&, d2&, y2&
@@ -3619,74 +3433,46 @@ Else
     CalculateAge = (y2 - y1 - 1)
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CalculateAge", Err
 End Function
 
+'EHT=Standard
 Function IsCYFlagIndicatorSet(ActualFlag As ClientFlags, Optional ByVal IndIndex& = -1) As Boolean
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "IsCYFlagIndicatorSet": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If IndIndex = -1 Then IndIndex = Log(ActualFlag) / Log(2)    'Convert flag back to a linear index
 IsCYFlagIndicatorSet = (lblFlagThisYear(IndIndex).BackStyle = 1)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "IsCYFlagIndicatorSet", Err
 End Function
 
+'EHT=Standard
 Function IsLYFlagIndicatorSet(ActualFlag As ClientFlags, Optional ByVal IndIndex& = -1) As Boolean
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "IsLYFlagIndicatorSet": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If IndIndex = -1 Then IndIndex = Log(ActualFlag) / Log(2)    'Convert flag back to a linear index
 IsLYFlagIndicatorSet = (lblFlagLastYear(IndIndex).BackStyle = 1)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "IsLYFlagIndicatorSet", Err
 End Function
 
+'EHT=Standard
 Function IsFutureFlagIndicatorSet(ActualFlag As ClientFlags, Optional ByVal IndIndex& = -1) As Boolean
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "IsFutureFlagIndicatorSet": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If IndIndex = -1 Then IndIndex = Log(ActualFlag) / Log(2)    'Convert flag back to a linear index
 IsFutureFlagIndicatorSet = (lblFlagFuture(IndIndex).BackStyle = 1)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "IsFutureFlagIndicatorSet", Err
 End Function
 
+'EHT=Standard
 Sub SetCYFlagIndicator(fset As Boolean, ActualFlag As ClientFlags, Optional ByVal IndIndex& = -1)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "SetCYFlagIndicator": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If (ShowFormMode <> fNew) And (ShowFormMode <> fEdit) Then Err.Raise 1, , "Action only allowed in New or Edit modes!"
 If IndIndex = -1 Then IndIndex = Log(ActualFlag) / Log(2)    'Convert flag back to a linear index
@@ -3698,20 +3484,13 @@ Else
     lblFlagThisYear(IndIndex).BorderStyle = 0
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SetCYFlagIndicator", Err
 End Sub
 
+'EHT=Standard
 Sub SetLYFlagIndicator(fset As Boolean, ActualFlag As ClientFlags, Optional ByVal IndIndex& = -1)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "SetLYFlagIndicator": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If (ShowFormMode <> fNew) And (ShowFormMode <> fEdit) Then Err.Raise 1, , "Action only allowed in New or Edit modes!"
 If IndIndex = -1 Then IndIndex = Log(ActualFlag) / Log(2)    'Convert flag back to a linear index
@@ -3723,20 +3502,13 @@ Else
     lblFlagLastYear(IndIndex).BorderStyle = 0
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SetLYFlagIndicator", Err
 End Sub
 
+'EHT=Standard
 Sub SetFutureFlagIndicator(fset As Boolean, ActualFlag As ClientFlags, Optional ByVal IndIndex& = -1)
-'errheader>
-Const PROC_NAME = "frmClientEditPost" & "." & "SetFutureFlagIndicator": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If (ShowFormMode <> fPost) Then Err.Raise 1, , "Action only allowed in Post mode!"
 If IndIndex = -1 Then IndIndex = Log(ActualFlag) / Log(2)    'Convert flag back to a linear index
@@ -3748,13 +3520,7 @@ Else
     lblFlagFuture(IndIndex).BorderStyle = 0
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SetFutureFlagIndicator", Err
 End Sub
 

@@ -460,6 +460,8 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Const MOD_NAME = "frmMain"
+
 Private FormLoadedAlready As Boolean        'Safety variable to ensure all references to this form are erased before attempting to load it again
 
 Public Enum enumTabName
@@ -489,18 +491,15 @@ Public DontCallChangeCurTab As Boolean
 
 Private IdleNextTimeout As Date
 
+'EHT=Custom
 Private Sub Form_Load()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
-
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 End Sub
 
+'EHT=Cleanup2
 Function Form_Show() As Boolean
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "Form_Show": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 Dim a&
 If DEBUGMODE Then
@@ -558,7 +557,7 @@ Me.Caption = FileToOpen_Year & " Tax Season" & " - " & DataFilesPath & " - " & M
 Me.Tag = Me.Caption
 If DB_Load(DataFilesPath & "EJTSClients" & FileToOpen_Year & ".dat", ActiveDBInstance) Then
     ActiveDBInstance.IsWriteable = Not FileToOpen_OpenReadOnly
-    
+
     #If False Then
         Dim sd As Date, ed As Date, b&
         sd = ActiveDBInstance.ApptBitmap_StartDate
@@ -586,7 +585,7 @@ If DB_Load(DataFilesPath & "EJTSClients" & FileToOpen_Year & ".dat", ActiveDBIns
         ActiveDBInstance.ApptBitmap_StartDate = nsd
     #End If
 Else
-    ERR_COUNT = ERR_COUNT + 1: GoTo CLEAN_UP
+    GoTo CLEANUP
 End If
 ClearChangedIndication
 DayTotal_Update
@@ -614,26 +613,22 @@ ChangeCurTab vSchedule, False
 'If this is a new month, and the user forgot to create a snapshot, create one automatically
 tabStatistics.CreateAutoSnapshotIfNewMonth
 
-CLEAN_UP:
-    If ERR_COUNT = 0 Then
-        Form_Show = True
-    Else
+Form_Show = True
+
+CLEANUP: INCLEANUP = True
+    If HASERROR Then
         ActiveDBInstance.Loaded = False
         HidePopupInfo
         Unload Me
     End If
-'errfooter>
+
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Show", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Function
 
+'EHT=ResumeNext
 Private Sub Form_Resize()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 With pctPopupInfo
     .Left = (Me.ScaleWidth / 2) - (.Width / 2)
@@ -642,17 +637,16 @@ End With
 With TabStrip
     .Width = Me.ScaleWidth - .Left - 8
     .Height = Me.ScaleHeight - .Top - 4
-    
+
     Dim f As Form
     Set f = Tabs(CurTab)
     f.Move (.ClientLeft + 8) * Screen.TwipsPerPixelX, (.ClientTop + 8) * Screen.TwipsPerPixelY, (.ClientWidth - 16) * Screen.TwipsPerPixelX, (.ClientHeight - 16) * Screen.TwipsPerPixelY
 End With
 End Sub
 
+'EHT=Standard
 Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "Form_KeyDown": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 IdleSetAction
 
@@ -713,28 +707,33 @@ Case vbKeyTab
     End If
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyDown", Err
 End Sub
 
+'EHT=Standard
 Sub Form_KeyUp(KeyCode As Integer, Shift As Integer)
+On Error GoTo ERR_HANDLER
+
 'These get called from the tab-forms. Even if we're not using them yet, leave them here.
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyUp", Err
 End Sub
 
+'EHT=Standard
 Sub Form_KeyPress(KeyAscii As Integer)
+On Error GoTo ERR_HANDLER
+
 'These get called from the tab-forms. Even if we're not using them yet, leave them here.
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
 End Sub
 
+'EHT=Standard
 Private Sub Form_DblClick()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "Form_DblClick": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not ActiveDBInstance.IsWriteable Then
     ShowErrorMsg "Not available in read-only mode!"
@@ -807,7 +806,7 @@ Case "t"
                     If .OldestYearFiled <> a Then Stop
                 End If
                 .OldestYearFiled = a
-                
+
                 a = Val(l$(2))
                 If a = 9900 Then a = NullLong
                 If .NewestYearFiled = 9900 Then .NewestYearFiled = NullLong
@@ -822,7 +821,7 @@ Case "t"
     Loop
     fh.CloseFile
     Stop
-    
+
 Case "copynames"
     lstSort.Clear
     For a = 0 To ActiveDBInstance.Clients_Count - 1
@@ -853,20 +852,13 @@ Case Else
     ShowErrorMsg "Unknown debug code!"
 End Select
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_DblClick", Err
 End Sub
 
+'EHT=Cleanup2
 Private Sub Form_Unload(Cancel As Integer)
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "Form_Unload": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 Dim a&
 
@@ -896,20 +888,16 @@ For a = 0 To UBound(Tabs)
     End If
 Next a
 
-CLEAN_UP:
-    If ERR_COUNT > 0 Then Cancel = True
-'errfooter>
+CLEANUP: INCLEANUP = True
+    If HASERROR Then Cancel = True
+
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Unload", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Sub
 
+'EHT=Standard
 Private Sub pctInitialFocus_GotFocus()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "pctInitialFocus_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'If the entire program loses focus and then regains it, pctInitialFocus will get
 '   the focus, since it's TabIndex=0. If the focus is passed back to the sub-form,
@@ -920,20 +908,13 @@ Set f = Tabs(CurTab)
 SetFocusWithoutErr pctSecondFocus
 SetFocusWithoutErr f
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "pctInitialFocus_GotFocus", Err
 End Sub
 
+'EHT=ResumeNext
 Public Sub tmrDate_Timer()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 Dim n As Date, nt As Date, cp As POINTAPI
 
@@ -969,10 +950,9 @@ If IdleNextTimeout <> 0 Then
 End If
 End Sub
 
+'EHT=Standard
 Private Sub btnNewClient_Click()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "btnNewClient_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnNewClient.Enabled Then Exit Sub
 
@@ -986,20 +966,13 @@ If frm.Form_Show(nID, fNew, , tabSearch.txtSearch.Text) Then   'This will mark c
     ChangeCurTab vSchedule, False
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnNewClient_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub btnSave_Click()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "btnSave_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not btnSave.Enabled Then Exit Sub
 
@@ -1018,20 +991,13 @@ If DB_Save(ActiveDBInstance) Then
 End If
 HidePopupInfo
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSave_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub TabStrip_Click()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "TabStrip_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim t As MSComctlLib.Tab
 Static lt As MSComctlLib.Tab
@@ -1042,20 +1008,13 @@ If Not lt Is Nothing Then lt.HighLighted = False
 t.HighLighted = True
 Set lt = t
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "TabStrip_Click", Err
 End Sub
 
+'EHT=ResumeNext
 Private Sub tmrAutoSave_Timer()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 Dim a&
 tmrAutoSave.Enabled = False
@@ -1074,18 +1033,16 @@ If ActiveDBInstance.Changed Then
 End If
 End Sub
 
+'EHT=ResumeNext
 Private Sub tmrPopupInfo_Timer()
-'errheader>
-On Error Resume Next        'ALL ERRORS WILL BE IGNORED IN THIS PROCEDURE
-'<errheader
+On Error Resume Next
 
 HidePopupInfo
 End Sub
 
+'EHT=Standard
 Private Sub CHOS_lstClients_DblClick()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "CHOS_lstClients_DblClick": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim i&
 
@@ -1095,37 +1052,23 @@ SetFocusWithoutErr pctInitialFocus
 i = CHOS_lstClients.ListIndex
 If i >= 0 Then CHOS_Remove i
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_lstClients_DblClick", Err
 End Sub
 
+'EHT=Standard
 Private Sub CHOS_lstClients_GotFocus()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "CHOS_lstClients_GotFocus": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 SetFocusWithoutErr pctInitialFocus
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_lstClients_GotFocus", Err
 End Sub
 
+'EHT=Standard
 Private Sub SRCH_cboSpecialSearch_Click()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "SRCH_cboSpecialSearch_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If tabSearch.SkipChangeEvents Then Exit Sub
 
@@ -1142,56 +1085,35 @@ tabSearch.DoSearch
 tabSearch.UpdateTabAsterisk
 SetFocusWithoutErr pctInitialFocus
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SRCH_cboSpecialSearch_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub SRCH_lblSpecialSearchEdit_Click()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "SRCH_lblSpecialSearchEdit_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim frm As frmEditSearches
 Set frm = New frmEditSearches
 frm.Form_Show
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SRCH_lblSpecialSearchEdit_Click", Err
 End Sub
 
+'EHT=Standard
 Private Sub DTOT_lblDayTotal_Click(Index As Integer)
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "DTOT_lblDayTotal_Click": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 DayTotal_Update
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DTOT_lblDayTotal_Click", Err
 End Sub
 
+'EHT=Standard
 Sub ChangeCurTab(ct As enumTabName, FromTabStripEvent As Boolean)
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "ChangeCurTab": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, oct As enumTabName, f As Form
 
@@ -1233,20 +1155,13 @@ Else
     End If
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ChangeCurTab", Err
 End Sub
 
+'EHT=Standard
 Sub SetChangedFlagAndIndication()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "SetChangedFlagAndIndication": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not ActiveDBInstance.IsWriteable Then
     'This should never actually happen, since there are other protections in the code
@@ -1259,38 +1174,24 @@ btnSave.Caption = btnSave.Tag & " (*)"
 tmrAutoSave.Enabled = False
 tmrAutoSave.Enabled = True
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SetChangedFlagAndIndication", Err
 End Sub
 
+'EHT=Standard
 Sub ClearChangedIndication()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "ClearChangedIndication": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Me.Caption = Me.Tag
 btnSave.Caption = btnSave.Tag
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ClearChangedIndication", Err
 End Sub
 
+'EHT=Standard
 Sub ShowPopupInfo(i$, secondstoshow#)
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "ShowPopupInfo": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 With lblPopupInfo
     .Caption = i$
@@ -1312,52 +1213,36 @@ If secondstoshow > 0 Then
 End If
 PopupInfoActive = True
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ShowPopupInfo", Err
 End Sub
 
+'EHT=Standard
 Sub HidePopupInfo()
-'errheader>
-Const PROC_NAME = "frmMain" & "." & "HidePopupInfo": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 If Not PopupInfoActive Then Exit Sub
 PopupInfoActive = False
 tmrPopupInfo.Enabled = False
 pctPopupInfo.Visible = False
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "HidePopupInfo", Err
 End Sub
 
+'EHT=Custom
 Sub IdleSetAction()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 IdleNextTimeout = Now + (1 / 24 / 60 * 5)
 End Sub
 
+'EHT=Custom
 Sub IdlePauseTimeout()
-'ANY ERRORS HERE ARE HANDLED BY THE CALLING PROCEDURE
-''--..--''--..--''--..--''--..--''--..--''--..--''--.
 IdleNextTimeout = 0
 End Sub
 
+'EHT=Standard
 Sub DayTotal_Update()
-'errheader>
-Const PROC_NAME = "modDayTotal" & "." & "DayTotal_Update": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, cd&, tot&, numappt&, t$
 
@@ -1380,20 +1265,13 @@ Next a
 DTOT_lblDayTotal(0).Caption = "Daily Total: " & FieldToString(tot, mDollar)
 DTOT_lblDayTotal(1).Caption = "Appts Made Today: " & FieldToString(numappt, mNumber)
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DayTotal_Update", Err
 End Sub
 
+'EHT=Standard
 Sub CHOS_Add(ByVal cID&, GotoScheduleIfAlreadyChosen As Boolean)
-'errheader>
-Const PROC_NAME = "modChosenClients" & "." & "CHOS_Add": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim i&, cindex&, foundindex&
 
@@ -1446,40 +1324,26 @@ If Not DEBUGMODE Then
     tabSearch.lstResults.Repaint
 End If
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_Add", Err
 End Sub
 
+'EHT=Standard
 Public Sub CHOS_Add2(cID&, cindex&)
-'errheader>
-Const PROC_NAME = "modChosenClients" & "." & "CHOS_Add2": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 With ActiveDBInstance.Clients(cindex).c
     CHOS_lstClients.AddItem FieldToString(.LastYear_MinutesToComplete, mNumberOrNULL) & vbTab & FormatNumApptSlots(.NumApptSlotsToUse) & vbTab & FormatClientName(fChosenClients, ActiveDBInstance.Clients(cindex).c)
     CHOS_lstClients.ItemData(CHOS_lstClients.NewIndex) = cID
 End With
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_Add2", Err
 End Sub
 
+'EHT=Standard
 Public Sub CHOS_CalculateTotal()
-'errheader>
-Const PROC_NAME = "modChosenClients" & "." & "CHOS_CalculateTotal": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim cclc&, i&, cindex&, totalminutes&, minforslots&
 cclc = CHOS_lstClients.ListCount
@@ -1505,7 +1369,7 @@ Else
             Else
                 minforslots = minforslots + (.NumApptSlotsToUse * 40)
             End If
-            
+
             If .LastYear_MinutesToComplete <> NullLong Then totalminutes = totalminutes + .LastYear_MinutesToComplete
         End With
     Next i
@@ -1524,43 +1388,29 @@ CHOS_lstClients.Visible = b
 CHOS_lblApptInfo.Visible = b
 CHOS_lblClients.Visible = b
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_CalculateTotal", Err
 End Sub
 
+'EHT=Standard
 Public Sub CHOS_Clear()
-'errheader>
-Const PROC_NAME = "modChosenClients" & "." & "CHOS_Clear": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 CHOS_lstClients.Clear
 CHOS_CalculateTotal
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_Clear", Err
 End Sub
 
+'EHT=Standard
 Public Sub CHOS_Remove(ByVal cindex&)
-'errheader>
-Const PROC_NAME = "modChosenClients" & "." & "CHOS_Remove": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 'Caution: cindex is index into CHOS_lstClients
 
 Dim i&, cID&
-If cindex < 0 Then ERR_COUNT = ERR_COUNT + 1: GoTo CLEAN_UP
+If cindex < 0 Then Exit Sub
 
 CHOS_lstClients.RemoveItem cindex
 If CHOS_lstClients.ListCount = 0 Then tabSchedule.ChangeScheduleMode sView
@@ -1568,20 +1418,13 @@ If CHOS_lstClients.ListCount = 0 Then tabSchedule.ChangeScheduleMode sView
 CHOS_CalculateTotal
 tabSearch.lstResults.Repaint
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_Remove", Err
 End Sub
 
+'EHT=Standard
 Public Sub CHOS_UpdateTotal()
-'errheader>
-Const PROC_NAME = "modChosenClients" & "." & "CHOS_UpdateTotal": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim t$
 If CHOS_NumSlots_Overridden Then
@@ -1593,20 +1436,13 @@ Else
 End If
 CHOS_lblApptInfo.Caption = "Total: " & CHOS_NumMinutes & " " & FormatNumApptSlots(CHOS_NumSlots) & t$
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Sub
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_UpdateTotal", Err
 End Sub
 
+'EHT=Standard
 Function CHOS_IsChosen(cID&) As Boolean
-'errheader>
-Const PROC_NAME = "modChosenClients" & "." & "CHOS_IsChosen": Dim ERR_COUNT As Integer: On Error GoTo ERR_HANDLER
-'<errheader
+On Error GoTo ERR_HANDLER
 
 Dim a&, ub&
 ub = CHOS_lstClients.ListCount - 1
@@ -1617,12 +1453,6 @@ For a = 0 To ub
     End If
 Next a
 
-CLEAN_UP:
-    'Your code here
-'errfooter>
 Exit Function
-ERR_HANDLER:
-    If ERR_COUNT >= MAXERRS Then: Err.Raise Err.Number, , Err.Description
-    ERR_COUNT = ERR_COUNT + 1: UNHANDLEDERROR PROC_NAME: Resume CLEAN_UP
-'<errfooter
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_IsChosen", Err
 End Function
