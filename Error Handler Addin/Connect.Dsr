@@ -44,9 +44,22 @@ If ConnectMode <> ext_cm_External Then
     cmdbar.RowIndex = 2
     
     Set btn = cmdbar.Controls.Add(msoControlButton)
+    btn.FaceId = 1048
     btn.Caption = "Check EH"
-    btn.Style = msoButtonCaption
+    btn.Style = msoButtonIconAndCaption
     Set ButtonEvents = VBInstance.Events.CommandBarEvents(btn)
+    
+    #If False Then
+        cmdbar.Position = msoBarFloating
+        Dim a&
+        For a = 0 To 500
+            Set btn = cmdbar.Controls.Add(msoControlButton)
+            btn.Caption = a
+            btn.FaceId = a
+            DoEvents
+        Next a
+        cmdbar.Height = 1200
+    #End If
     
     cmdbar.Visible = True
 End If

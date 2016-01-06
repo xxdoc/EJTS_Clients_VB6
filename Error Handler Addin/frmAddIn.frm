@@ -76,6 +76,8 @@ Private Const Wildcard_SubOrFunc = "<SUBFUNCPROP>"
 Private Const ErrorHandlingConst = "MOD_NAME"
 
 Private AnythingToApply As Boolean
+Private Running As Boolean
+Private Cancel As Boolean
 
 Public CurProject As VBProject
 
@@ -89,11 +91,15 @@ On Error GoTo ERR_HANDLER
 btnApply.Enabled = False
 btnApply.Caption = "Loading templates..."
 Me.Show
+Running = True
+Cancel = False
+
 InitializeTemplates
 
 btnApply.Caption = "Analyzing code..."
 AnythingToApply = False
 If UpdateErrorHandlers(False) Then
+    Running = False
     If AnythingToApply Then
         btnApply.Enabled = True
         btnApply.Caption = btnApply.Tag
@@ -102,7 +108,12 @@ If UpdateErrorHandlers(False) Then
         Unload Me
     End If
 Else
-    btnApply.Caption = "ERRORS!"
+    Running = False
+    If Cancel Then
+        btnApply.Caption = "CANCELLED!"
+    Else
+        btnApply.Caption = "ERRORS!"
+    End If
 End If
 
 Exit Sub
@@ -114,17 +125,29 @@ End Sub
 Private Sub btnApply_Click()
 btnApply.Enabled = False
 btnApply.Caption = "Applying changes..."
+Running = True
+Cancel = False
 
 If UpdateErrorHandlers(True) Then
+    Running = False
     MsgBox "Success!", vbInformation
     Unload Me
 Else
-    btnApply.Caption = "ERRORS!"
+    Running = False
+    If Cancel Then
+        btnApply.Caption = "CANCELLED!"
+    Else
+        btnApply.Caption = "ERRORS!"
+    End If
 End If
 End Sub
 
 Private Sub btnCancel_Click()
-Unload Me
+If Running Then
+    Cancel = True
+Else
+    Unload Me
+End If
 End Sub
 
 Private Sub Form_Resize()
@@ -273,14 +296,15 @@ lstPreview.Clear
 For Each component In CurProject.VBComponents
     Select Case component.Type
     Case vbext_ct_StdModule, vbext_ct_ClassModule, vbext_ct_VBForm, vbext_ct_VBMDIForm, vbext_ct_UserControl
+        DoEvents: If Cancel Then Err.Raise 1, , "*** CANCELLED ***"
         Set code = component.CodeModule
         dl = code.CountOfDeclarationLines
-        'If lstPreview.ListCount > 0 Then lstPreview.AddItem ""
         'If error handling in this module is enabled...
         If ErrorHandlingEnabled(code) Then
-            lstPreview.AddItem "    ANALYZING " & code.Name & "..."
+            lstPreview.AddItem "ANALYZING " & code.Name & "..."
             'For each procedure group in the code module...
             For Each proc In component.CodeModule.Members
+                DoEvents: If Cancel Then Err.Raise 1, , "*** CANCELLED ***"
                 Select Case proc.Type
                 Case vbext_mt_Property, vbext_mt_Event, vbext_mt_Method
                     proclocation = proc.CodeLocation
@@ -295,7 +319,7 @@ For Each component In CurProject.VBComponents
                 End Select
             Next
         Else
-            lstPreview.AddItem "    ANALYZING " & code.Name & "... skipping, since constant " & ErrorHandlingConst & " is not defined."
+            lstPreview.AddItem "ANALYZING " & code.Name & "... skipping, since constant " & ErrorHandlingConst & " is not defined."
         End If
     End Select
 Next
@@ -332,8 +356,6 @@ On Error GoTo ERR_HANDLER
 
 procname2 = procname & Choose(proctype + 1, "", "[Let]", "[Set]", "[Get]")
 
-'TryAgain:
-
 'Determine which template to use
 proclinecount = code.ProcCountLines(procname, proctype)
 curtpl = -1
@@ -345,9 +367,6 @@ For a = 0 To UBound(Templates)
 Next a
 If curtpl < 0 Then
     'All procedures must specify an EHT=, so error at this point if we couldn't find a valid one
-    'bodyfirst = code.ProcBodyLine(procname, proctype)
-    'code.InsertLines bodyfirst, "'EHT=Standard"
-    'GoTo TryAgain
     Err.Raise 1, , "Could not find a valid EHT= definition"
 End If
 
@@ -438,7 +457,7 @@ With Templates(curtpl)
 End With
 
 If Len(logstr) > 0 Then
-    lstPreview.AddItem code.Name & "." & procname2 & " - " & logstr
+    lstPreview.AddItem "    " & code.Name & "." & procname2 & " - " & logstr
     lstPreview.TopIndex = lstPreview.ListCount - 1
 End If
 
@@ -446,7 +465,7 @@ ProcessProcedure = True
 
 Exit Function
 ERR_HANDLER:
-    lstPreview.AddItem code.Name & "." & procname2 & " - ERROR: " & Err.Description
+    lstPreview.AddItem "    " & code.Name & "." & procname2 & " - ERROR: " & Err.Description
     lstPreview.TopIndex = lstPreview.ListCount - 1
 End Function
 
