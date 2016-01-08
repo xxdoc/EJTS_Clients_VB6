@@ -225,7 +225,7 @@ Private ScheduleTemplate(1 To 3, 6, Appointment_NumSlotsUB) As Long     '3D arra
 Private lastMouseMoveX!
 Private lastMouseMoveY!
 
-'EHT=Custom
+'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True

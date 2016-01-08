@@ -491,7 +491,7 @@ Public DontCallChangeCurTab As Boolean
 
 Private IdleNextTimeout As Date
 
-'EHT=Custom
+'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
@@ -1230,12 +1230,12 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "HidePopupInfo", Err
 End Sub
 
-'EHT=Custom
+'EHT=None
 Sub IdleSetAction()
 IdleNextTimeout = Now + (1 / 24 / 60 * 5)
 End Sub
 
-'EHT=Custom
+'EHT=None
 Sub IdlePauseTimeout()
 IdleNextTimeout = 0
 End Sub

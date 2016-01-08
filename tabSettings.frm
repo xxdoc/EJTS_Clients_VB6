@@ -111,7 +111,7 @@ Private EditingListIndex As Integer     'Index in the on-screen listbox
 Private EditingSettingName As String
 Private TextboxLeftOffset As Long
 
-'EHT=Custom
+'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True

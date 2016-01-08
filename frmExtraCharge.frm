@@ -268,7 +268,7 @@ End Enum
 Private EditMode As Boolean
 Private CurIndex&
 
-'EHT=Custom
+'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True

@@ -452,7 +452,7 @@ Public Const NullLong = &H80000000      '-2147483648
 Private MouseNullZoneRef As POINTAPI
 Private MouseNullZonePixels&
 
-'EHT=Custom
+'EHT=None
 Sub AddOpNote(ByRef OpNotes$, ByVal newon$)
 newon$ = Format$(Now, "yyyy-mm-dd hh:mma/p") & " " & newon$
 If Len(OpNotes$) = 0 Then
@@ -462,25 +462,25 @@ Else
 End If
 End Sub
 
-'EHT=Custom
+'EHT=None
 Function CalcNumApptSlotsFromMinuteSum&(numminutes&)
 CalcNumApptSlotsFromMinuteSum = Int((numminutes - 1) / 40) + 1
 If CalcNumApptSlotsFromMinuteSum = 0 Then CalcNumApptSlotsFromMinuteSum = 1
 End Function
 
-'EHT=Custom
+'EHT=None
 Function CapatalizeFirstLetter(s$) As String
 CapatalizeFirstLetter = UCase$(Left$(s$, 1)) & LCase$(Mid$(s$, 2))
 End Function
 
-'EHT=Custom
+'EHT=None
 Function CreateFont2(fHDC&, fName$, fSize!, fBold As Boolean, fItalic As Boolean, fUnderline As Boolean, fStrikeout As Boolean) As Long
 Dim fw&
 If fBold Then fw = FW_BOLD Else fw = FW_NORMAL
 CreateFont2 = CreateFont(-(fSize * GetDeviceCaps(fHDC, LOGPIXELSY)) / 72, 0, 0, 0, fw, fItalic, fUnderline, fStrikeout, 0, 0, 0, 0, 0, fName$)
 End Function
 
-'EHT=Custom
+'EHT=None
 Sub EnableTextbox(txt As TextBox, e As Boolean)
 txt.Enabled = e
 If e Then
@@ -636,7 +636,7 @@ Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "FieldFromString", Err
 End Function
 
-'EHT=Custom
+'EHT=None
 Sub FieldFromTextbox(txt As TextBox, ByRef v As Variant)
 'Converts display format to database format
 v = FieldFromString(txt.Text, Val(txt.Tag))
@@ -712,46 +712,46 @@ Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "FieldToString", Err
 End Function
 
-'EHT=Custom
+'EHT=None
 Sub FieldToTextbox(txt As TextBox, v As Variant, Optional en As Boolean = -100)
 'Converts database format to display format
 txt.Text = FieldToString(v, Val(txt.Tag))
 If en <> -100 Then EnableTextbox txt, en
 End Sub
 
-'EHT=Custom
+'EHT=None
 Function Flag_IsSet(Flags As Long, Flag As Long) As Boolean
 Flag_IsSet = ((Flags And Flag) = Flag)
 End Function
 
-'EHT=Custom
+'EHT=None
 Function Flag_Remove(Flags As Long, Flag As Long) As Long
 Flag_Remove = Not ((Not Flags) Or Flag)
 End Function
 
-'EHT=Custom
+'EHT=None
 Function Flag_ToCheckbox(Flags As Long, Flag As Long) As Integer
 Dim b As Boolean
 b = ((Flags And Flag) = Flag)     'Is flag set?
 Flag_ToCheckbox = (Not b) + 1    'TRUE = 1, FALSE = 0
 End Function
 
-'EHT=Custom
+'EHT=None
 Function FormatApptTime$(Day&, actualtime As Date)
 FormatApptTime$ = Format$(CDate(Day) + actualtime, "m/dd h:mma/p")
 End Function
 
-'EHT=Custom
+'EHT=None
 Function FormatApptTime2$(at As Date)
 FormatApptTime2$ = Format$(at, "m/dd h:mma/p")
 End Function
 
-'EHT=Custom
+'EHT=None
 Function FormatDateForDayTitle$(d As Long)
 FormatDateForDayTitle$ = Format$(CDate(d), "dddd, mmm d, yyyy")
 End Function
 
-'EHT=Custom
+'EHT=None
 Function FormatClientName(formatoption As ClientNameFormatMode, c As Client_DBPortion) As String
 'Dim p&, lp&, t$, m As Boolean, matchingbrace$
 Dim showname1 As Boolean, showname2 As Boolean
@@ -939,7 +939,7 @@ End Select
 '    If formatoption = fPrintLabels Then FormatClientName = UCase$(FormatClientName)
 End Function
 
-'EHT=Custom
+'EHT=None
 Function FormatNumApptSlots$(nastu&)
 Select Case nastu
 Case 0:     FormatNumApptSlots$ = "-"
@@ -951,7 +951,7 @@ Case Else:  FormatNumApptSlots$ = nastu & "A"
 End Select
 End Function
 
-'EHT=Custom
+'EHT=None
 Function FormatRefDue$(p&)
 If p < 0 Then
     FormatRefDue$ = "Due: " & Format$(-p, "$#,##0")
@@ -962,12 +962,12 @@ Else
 End If
 End Function
 
-'EHT=Custom
+'EHT=None
 Function FormatTextForCSV(t$)
 FormatTextForCSV = Replace$(t$, ",", ";")
 End Function
 
-'EHT=Custom
+'EHT=None
 Function FormatTextForDB$(t$)
 FormatTextForDB = Replace(Replace(Replace(Replace$(t$, _
                     vbTab, " "), _
@@ -976,24 +976,24 @@ FormatTextForDB = Replace(Replace(Replace(Replace$(t$, _
                     vbLf, MultiLineSep)
 End Function
 
-'EHT=Custom
+'EHT=None
 Function GetCapsLock() As Boolean
 GetCapsLock = (GetKeyState(VK_CAPITAL) And 1 = 1)
 End Function
 
-'EHT=Custom
+'EHT=None
 Function GetShiftState() As Integer
 GetShiftState = (-1 * ((GetAsyncKeyState(VK_SHIFT) And &H8000&) = &H8000&)) Or _
                 (-2 * ((GetAsyncKeyState(VK_CONTROL) And &H8000&) = &H8000&)) Or _
                 (-4 * ((GetAsyncKeyState(VK_MENU) And &H8000&) = &H8000&))
 End Function
 
-'EHT=Custom
+'EHT=None
 Sub Inc(ByRef t As Long)
 t = t + 1
 End Sub
 
-'EHT=Custom
+'EHT=None
 Sub IncBy(ByRef t As Long, i As Long)
 If i = NullLong Then
     Err.Raise 1, , "Cannot increment by Null"
@@ -1002,12 +1002,12 @@ Else
 End If
 End Sub
 
-'EHT=Custom
+'EHT=None
 Function IsLetterKey(KeyCode As Integer) As Boolean
 IsLetterKey = ((KeyCode >= 65) And (KeyCode <= 90))
 End Function
 
-'EHT=Custom
+'EHT=None
 Function IsNumberOrBlank(ByVal t$) As Boolean
 If t$ = "" Then
     IsNumberOrBlank = True
@@ -1017,7 +1017,7 @@ Else
 End If
 End Function
 
-'EHT=Custom
+'EHT=None
 Function JoinNumberArray1(SourceArray() As Long) As String
 'Joins all
 Dim a&, e As Boolean
@@ -1031,7 +1031,7 @@ For a = 0 To UBound(SourceArray)
 Next a
 End Function
 
-'EHT=Custom
+'EHT=None
 Function JoinNumberArray2(SourceArray() As Long, SourceCount As Long) As String
 'Joins only to SourceCount (allows for 0 elements)
 Dim a&, e As Boolean
@@ -1054,13 +1054,13 @@ m = Val(txt.Tag)
 txt.Text = FieldToString(FieldFromString(txt.Text, m), m)
 End Sub
 
-'EHT=Custom
+'EHT=None
 Sub MouseNullZone_Set(nzp&)
 MouseNullZonePixels = nzp
 GetCursorPos MouseNullZoneRef
 End Sub
 
-'EHT=Custom
+'EHT=None
 Function MouseNullZone_Moved() As Boolean
 Dim cp As POINTAPI
 GetCursorPos cp
@@ -1071,7 +1071,7 @@ ElseIf Abs(cp.Y - MouseNullZoneRef.Y) > MouseNullZonePixels Then
 End If
 End Function
 
-'EHT=Custom
+'EHT=None
 Sub PutKeyAsciiIntoTextbox(txt As TextBox, KeyAscii As Integer, ReplaceContents As Boolean)
 Dim t$
 t$ = Chr$(KeyAscii)
@@ -1084,7 +1084,7 @@ txt.SelStart = Len(txt.Text)
 txt.SelLength = 0
 End Sub
 
-'EHT=Custom
+'EHT=None
 Sub PutKeyCodeIntoTextbox(txt As TextBox, KeyCode As Integer, ReplaceContents As Boolean)
 Dim t$
 If GetCapsLock Then
@@ -1101,7 +1101,7 @@ txt.SelStart = Len(txt.Text)
 txt.SelLength = 0
 End Sub
 
-'EHT=Custom
+'EHT=None
 Sub ResizeFormByInnerScaleDimensions(frm As Form, Optional NewScaleWidth&, Optional NewScaleHeight&)
 If NewScaleWidth <> 0 Then frm.Width = (frm.Width - (frm.ScaleWidth * Screen.TwipsPerPixelX)) + (NewScaleWidth * Screen.TwipsPerPixelX)
 If NewScaleHeight <> 0 Then frm.Height = (frm.Height - (frm.ScaleHeight * Screen.TwipsPerPixelY)) + (NewScaleHeight * Screen.TwipsPerPixelY)
@@ -1117,13 +1117,13 @@ Exit Function
 e: RunningFromIDE = True
 End Function
 
-'EHT=Custom
+'EHT=None
 Sub SelectAll(txt As TextBox)
 txt.SelStart = 0
 txt.SelLength = Len(txt.Text)
 End Sub
 
-'EHT=Custom
+'EHT=None
 Sub SelectFirstItemIfNoSelection(lst As Object)
 If lst.ListIndex < 0 Then
     If lst.ListCount > 0 Then
@@ -1132,7 +1132,7 @@ If lst.ListIndex < 0 Then
 End If
 End Sub
 
-'EHT=Custom
+'EHT=None
 Function SetTabStops(hwnd&, ParamArray TabStops()) As Boolean
 'TabStops() is a 0 based array of tab stop values.
 'The values "represent the number of quarters of the average character width for the font that is selected into the list box"
@@ -1215,7 +1215,7 @@ For a = 0 To UBound(tabordersplit)
 Next a
 End Sub
 
-'EHT=Custom
+'EHT=None
 Function SplitNumberArray1(s$, a&()) As Long
 'Splits string, redims a(), outputs to a(), returns count
 Dim sp$(), b&
@@ -1227,7 +1227,7 @@ Next b
 SplitNumberArray1 = UBound(sp$) + 1
 End Function
 
-'EHT=Custom
+'EHT=None
 Sub SplitNumberArray2(s$, a&())
 'Splits string, outputs to a()
 Dim sp$(), b&
@@ -1282,7 +1282,7 @@ Do
 Loop
 End Sub
 
-'EHT=Custom
+'EHT=None
 Function AddTrailingSlash(t$) As String
 'If app is in root, returns c:\, but everywhere else, it does not include the '\'
 '   Windows XP doesn't mind the '\\', but Windows 98 fails

@@ -216,11 +216,11 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UserControl_WriteProperties", Err
 End Sub
 
 
-'EHT=Custom
+'EHT=None
 Property Get DisplayMode() As eDisplayMode
 DisplayMode = mDisplayMode
 End Property
-'EHT=Custom
+'EHT=None
 Property Let DisplayMode(m As eDisplayMode)
 mDisplayMode = m
 End Property
@@ -283,11 +283,11 @@ Exit Property
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ListIndex[Let]", Err
 End Property
 
-'EHT=Custom
+'EHT=None
 Property Get MultiSel() As Boolean
 MultiSel = mMultiSel
 End Property
-'EHT=Custom
+'EHT=None
 Property Let MultiSel(m As Boolean)
 mMultiSel = m
 End Property
@@ -947,7 +947,7 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UnsetSubclassHooks", Err
 End Sub
 
-'EHT=Custom
+'EHT=None
 Friend Function TranslateAccelerator(lpMsg As VBOleGuids.Msg) As Long
 TranslateAccelerator = S_FALSE
 End Function

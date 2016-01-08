@@ -91,7 +91,7 @@ Public BOOK_Clicked_BKIndex As Long
 Public BOOK_Clicked_MonthIndex As Long
 Public BOOK_Clicked_Changed As Boolean
 
-'EHT=Custom
+'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True

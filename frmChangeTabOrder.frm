@@ -154,7 +154,7 @@ Private FormLoadedAlready As Boolean        'Safety variable to ensure all refer
 Private ParentForm As Form
 Private oldleft As Single
 
-'EHT=Custom
+'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
@@ -367,18 +367,20 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstControls_LostFocus", Err
 End Sub
 
-'EHT=Custom
+'EHT=Silent
 Function GetControlIndexWithoutError(ctrl As Control) As Integer
-On Error GoTo e
+On Error GoTo SILENT_EXIT
+
 GetControlIndexWithoutError = -1
 GetControlIndexWithoutError = ctrl.Index    'If succeeds, then this is a control array
-Exit Function
-e:
+
+SILENT_EXIT:
 End Function
 
-'EHT=Custom
+'EHT=Silent
 Function GetControlTabIndexWithoutError(ctrl As Control) As Integer
-On Error GoTo e
+On Error GoTo SILENT_EXIT
+
 Dim ts As Boolean
 GetControlTabIndexWithoutError = -2     'Assume the control cannot receive focus
 If Not ctrl.Visible Then Exit Function
@@ -394,18 +396,19 @@ If ts Then
 Else
     GetControlTabIndexWithoutError = -1     'TabStop False
 End If
-Exit Function
-e:
+
+SILENT_EXIT:
 End Function
 
-'EHT=Custom
+'EHT=Silent
 Function IsControlTabable(ctrl As Control) As Boolean
-On Error GoTo e
+On Error GoTo SILENT_EXIT
+
 Dim ts As Boolean, ti As Integer
 If Not ctrl.Visible Then Exit Function  'Control must be visible
 ts = ctrl.TabStop                       'If this errors, thin this control cannot receive focus (the actual value doesn't matter)
 ti = ctrl.TabIndex                      'If this errors, this would be weird
 IsControlTabable = True
-Exit Function
-e:
+
+SILENT_EXIT:
 End Function

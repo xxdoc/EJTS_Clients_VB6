@@ -804,7 +804,7 @@ Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SetDefaultSettingValue", Err
 End Function
 
-'EHT=Custom
+'EHT=None
 Function DB_FormatSettingForScreen(s As Setting) As String
 With s
     Select Case .sType
@@ -1206,7 +1206,7 @@ Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_FindNextAvailableSlot", Err
 End Function
 
-'EHT=Custom
+'EHT=None
 Function DB_GetTimeSlotTime(ts&) As String
 DB_GetTimeSlotTime = Format$(CDate(Appointment_FirstSlotTime + (ts * Appointment_SlotLength)), "h:mm AM/PM")
 End Function

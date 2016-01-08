@@ -228,16 +228,26 @@ End Function
 Sub InitializeTemplates()
 Dim a As Long
 
-ReDim Templates(4)
+ReDim Templates(6)
 With Templates(0)
-    .Trigger = "EHT=Custom"
+    .Trigger = "EHT=None"
 End With
 With Templates(1)
+    .Trigger = "EHT=Custom"
+End With
+With Templates(2)
     .Trigger = "EHT=ResumeNext"
     .Header = "On Error Resume Next" & _
               vbCrLf
 End With
-With Templates(2)
+With Templates(3)
+    .Trigger = "EHT=Silent"
+    .Header = "On Error GoTo SILENT_EXIT" & _
+              vbCrLf
+    .Footer = vbCrLf & _
+              "SILENT_EXIT:"
+End With
+With Templates(4)
     .Trigger = "EHT=Standard"
     .Header = "On Error GoTo ERR_HANDLER" & _
               vbCrLf
@@ -245,7 +255,7 @@ With Templates(2)
               "Exit <SUBFUNCPROP>" & vbCrLf & _
               "ERR_HANDLER: UNHANDLEDERROR MOD_NAME, ""<PROCNAME>"", Err"
 End With
-With Templates(3)
+With Templates(5)
     .Trigger = "EHT=Cleanup1"
     .Header = "On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean" & _
               vbCrLf
@@ -257,7 +267,7 @@ With Templates(3)
               "Exit <SUBFUNCPROP>" & vbCrLf & _
               "ERR_HANDLER: UNHANDLEDERROR MOD_NAME, ""<PROCNAME>"", Err, INCLEANUP: Resume CLEANUP"
 End With
-With Templates(4)
+With Templates(6)
     .Trigger = "EHT=Cleanup2"
     .Header = "On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean" & _
               vbCrLf

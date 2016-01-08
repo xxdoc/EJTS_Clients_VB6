@@ -8,3 +8,4 @@ desktop.ini
 ErrorHandler.lib
 ErrorHandler.exp
 ErrorHandler.dll
+*.dca

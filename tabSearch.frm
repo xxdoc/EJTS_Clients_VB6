@@ -225,7 +225,7 @@ Private SyntaxTable_Fields() As enumSyntaxItem
 Private SyntaxTable_Flags() As enumSyntaxItem
 Private mSearchCount&
 
-'EHT=Custom
+'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True

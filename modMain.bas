@@ -160,12 +160,13 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Main_Unload", Err
 End Sub
 
-'EHT=Custom
+'EHT=Silent
 Function Is_SubClassingForVBdll_Registered() As Boolean
-On Error GoTo e
+On Error GoTo SILENT_EXIT
+
 Dim c As SubClass
 Set c = New SubClass
 Is_SubClassingForVBdll_Registered = True
-Exit Function
-e:
+
+SILENT_EXIT:
 End Function

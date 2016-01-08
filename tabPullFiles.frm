@@ -65,7 +65,7 @@ Private Const PLFL_LineHeight = 50
 Private Const PLFL_FontSize = 40
 Public PLFL_Font&
 
-'EHT=Custom
+'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True

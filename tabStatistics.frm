@@ -248,7 +248,7 @@ Private BGBrush&
 Private SnapshotSlot(1) As typeSnapshot
 Private IsSnapshotLive(1) As Boolean
 
-'EHT=Custom
+'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
@@ -1207,7 +1207,7 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CreateAutoSnapshotIfNewMonth", Err
 End Sub
 
-'EHT=Custom
+'EHT=None
 Private Sub InitTable(t As typeTableDef)
 Dim a&, ub&
 ub = UBound(t.ColumnWidth)
@@ -1217,7 +1217,7 @@ For a = 1 To ub
 Next a
 End Sub
 
-'EHT=Custom
+'EHT=None
 Private Sub DrawBorders(table As typeTableDef, c&, r&, nc&, nr&, bt As Boolean, bb As Boolean, bl As Boolean, br As Boolean)
 Dim dr As RECT
 dr.Top = table.OffsetY + r * (table.RowHeight - 1)
@@ -1242,7 +1242,7 @@ If br Then
 End If
 End Sub
 
-'EHT=Custom
+'EHT=None
 Private Sub DrawContent(table As typeTableDef, c&, r&, nc&, nr&, s$, Optional halign& = DT_CENTER, Optional valign& = DT_VCENTER)
 Dim dr As RECT
 dr.Top = 1 + table.OffsetY + r * (table.RowHeight - 1)
@@ -1252,7 +1252,7 @@ dr.Right = -1 + table.OffsetX + table.ColumnLeft(c + nc - 1) + table.ColumnWidth
 DrawText table.pcthdc, s$, Len(s$), dr, halign Or valign Or DT_SINGLELINE
 End Sub
 
-'EHT=Custom
+'EHT=None
 Private Sub FillArea(table As typeTableDef, c&, r&, nc&, nr&)
 Dim dr As RECT
 dr.Top = table.OffsetY + r * (table.RowHeight - 1)
@@ -1262,31 +1262,31 @@ dr.Right = table.OffsetX + table.ColumnLeft(c + nc - 1) + table.ColumnWidth(c + 
 FillRect table.pcthdc, dr, BGBrush
 End Sub
 
-'EHT=Custom
+'EHT=None
 Private Function FmtAvgCountOrBlank$(l1&, l2&)
 If l2 <> 0 Then
     FmtAvgCountOrBlank = Format$(l1 / l2, "#,##0")
 End If
 End Function
 
-'EHT=Custom
+'EHT=None
 Private Function FmtAvgTotalOrBlank$(l1&, l2&)
 If l2 <> 0 Then
     FmtAvgTotalOrBlank = Format$(l1 / l2, "$#,##0")
 End If
 End Function
 
-'EHT=Custom
+'EHT=None
 Private Function FmtCount$(l&)
 FmtCount = Format$(l, "#,##0")
 End Function
 
-'EHT=Custom
+'EHT=None
 Private Function FmtCountOrBlank$(l&)
 If l <> 0 Then FmtCountOrBlank = Format$(l, "#,##0")
 End Function
 
-'EHT=Custom
+'EHT=None
 Private Function FmtPercent$(l1&, l2&)
 Dim p#
 If l2 = 0 Then
@@ -1297,7 +1297,7 @@ End If
 FmtPercent = Format$(p, "0%")
 End Function
 
-'EHT=Custom
+'EHT=None
 Private Function FmtPercentOrBlank$(l1&, l2&)
 Dim p#
 If l2 <> 0 Then
@@ -1306,12 +1306,12 @@ If l2 <> 0 Then
 End If
 End Function
 
-'EHT=Custom
+'EHT=None
 Private Function FmtTotal$(l&)
 FmtTotal = Format$(l, "$#,##0")
 End Function
 
-'EHT=Custom
+'EHT=None
 Private Function FmtTotalOrBlank$(l&)
 If l <> 0 Then FmtTotalOrBlank = Format$(l, "$#,##0")
 End Function
