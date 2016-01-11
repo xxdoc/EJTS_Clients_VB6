@@ -925,10 +925,41 @@ Else
 End If
 
 If ClientIDsCount > 0 Then
-    Printer.PaperSize = DB_GetSetting(ActiveDBInstance, "_MailingList-PaperSize")
-    Printer.ScaleMode = 1
-    Printer.Font.Name = "Sans Serif 10cpi"
-    Printer.Font.SIZE = 12
+    On Error Resume Next
+    Dim newval%, newvals$, newvalc As Currency
+    newval = DB_GetSetting(ActiveDBInstance, "_MailingList-PaperSize")
+    Printer.PaperSize = newval
+    If Err.Number > 0 Then
+        If MsgBox("Error setting Printer.PaperSize to " & newval & ". Continue anyway?", vbCritical Or vbYesNo Or vbDefaultButton1) = vbNo Then
+            GoTo CLEANUP
+        End If
+        Err.Clear
+    End If
+    newval = 1
+    Printer.ScaleMode = newval
+    If Err.Number > 0 Then
+        If MsgBox("Error setting Printer.ScaleMode to " & newval & ". Continue anyway?", vbCritical Or vbYesNo Or vbDefaultButton1) = vbNo Then
+            GoTo CLEANUP
+        End If
+        Err.Clear
+    End If
+    newvals$ = "Sans Serif 10cpi"
+    Printer.Font.Name = newvals$
+    If Err.Number > 0 Then
+        If MsgBox("Error setting Printer.Font.Name to '" & newvals$ & "'. Continue anyway?", vbCritical Or vbYesNo Or vbDefaultButton1) = vbNo Then
+            GoTo CLEANUP
+        End If
+        Err.Clear
+    End If
+    newvalc = 12
+    Printer.Font.SIZE = newvalc
+    If Err.Number > 0 Then
+        If MsgBox("Error setting Printer.Font.Size to " & newvalc & ". Continue anyway?", vbCritical Or vbYesNo Or vbDefaultButton1) = vbNo Then
+            GoTo CLEANUP
+        End If
+        Err.Clear
+    End If
+    On Error GoTo ERR_HANDLER
     For a = 0 To ClientIDsCount - 1
         c = DB_FindClientIndex(ActiveDBInstance, ClientIDsToPrint(a))
         If c < 0 Then
@@ -950,10 +981,10 @@ If ClientIDsCount > 0 Then
             Printer.CurrentY = Printer.CurrentY + 40
         End With
     Next a
-    Printer.EndDoc
 End If
 
 CLEANUP: INCLEANUP = True
+    If ClientIDsCount > 0 Then Printer.EndDoc
     frmMain.HidePopupInfo
 
 Exit Sub
@@ -1036,7 +1067,8 @@ If Not ActiveDBInstance.IsWriteable Then Exit Sub
 'Search for paper size of 8.5 x 12
 Dim p&, ps&
 Dim fh As CMNMOD_CFileHandler
-Set fh = OpenFile(AppPath & "EJTSClients-PaperSizeScan.log", mLineByLine_Output)
+Const papersizelogfile = "EJTSClients-PaperSizeScan.log"
+Set fh = OpenFile(AppPath & papersizelogfile, mLineByLine_Output)
 SkipChangeEvents = True
 ps = 0
 For p = 1 To 512
@@ -1053,7 +1085,7 @@ For p = 1 To 512
 Next p
 If ps = 0 Then
     txtPaperSize.Text = DB_GetSetting(ActiveDBInstance, "_MailingList-PaperSize")
-    ShowErrorMsg "Unable to find new paper size code! Textbox reverted to previous one."
+    ShowErrorMsg "Unable to find the code for an 8.5"" x 12"" paper size! Textbox reverted to previous one. All available paper size codes have been logged to " & papersizelogfile
 Else
     DB_SetSetting ActiveDBInstance, "_MailingList-PaperSize", ps, sLng
     txtPaperSize.Text = ps
