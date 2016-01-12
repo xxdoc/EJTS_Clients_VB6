@@ -574,6 +574,7 @@ End If
 'FILEFOOTER
 fh.WriteString CurDBFileSpecVersion
 
+fh.CloseFile: Set fh = Nothing
 RenameFile tempfile$, destfile$, True
 LocalDBInstance.Changed = False
 
