@@ -14,7 +14,21 @@ Attribute VB_Exposed = False
 Option Explicit
 Private Const MOD_NAME = "CClient"
 
-Private Type PersonData
+'Back reference to database
+Private mDatabase As CDatabase
+
+Public Enum enumMailingListMode
+    mlAuto
+    mlNoOrganizer = 10
+    mlEmailOrganizer = 20
+    mlHardCopyOrganizer = 30
+End Enum
+
+'Primary key (for efficiency, make public and do not put within the core data type)
+Public ID As Long
+
+'Attributes (for efficiency, store within a type object)
+Private Type typePersonData
     NameLast As String
     NameMiddle As String
     NameFirst As String
@@ -23,78 +37,117 @@ Private Type PersonData
     DateOfBirth As Date             '0=Null
     DateOfDeath As Date             '0=Null
 End Type
+Private Type typeCoreData
+    MailingListMode As Long         'enumMailingListMode, but using a Long because enums aren't allowed
+    MailingAddress_Street As String
+    MailingAddress_City As String
+    MailingAddress_State As String
+    MailingAddress_ZipCode As String
+    HomePhone As String
+    NumApptSlots As Long
+    Notes As String
+    ReminderCallAlways As Boolean
+    PersonCount As Long
+    Persons() As typePersonData     '1-based array
+End Type
+Private m As typeCoreData
 
-'Back reference to database
-Private mDatabase As CDatabase
 
-'Primary key
-Public ID As Long
 
-'Attributes
-Public MailingListMode As MailingListStatus
-Public MailingAddress_Street As String
-Public MailingAddress_City As String
-Public MailingAddress_State As String
-Public MailingAddress_ZipCode As String
-Public HomePhone As String
-Public NumApptSlots As Long
-Public Notes As String
-Public ReminderCallAlways As Boolean
-Private mPersons() As PersonData     '1-based array
-Public PersonCount As Long
+
+
+'#################################################################################
+'Serialization
+'#################################################################################
 
 'EHT=None
 Public Sub Init(vDB As CDatabase, vID As Long, vNameFirst As String, vEmail As String)
 Set mDatabase = vDB
-ID = vID
-PersonCount = 1
-ReDim mPersons(1 To PersonCount)
-mPersons(1).NameFirst = vNameFirst
-mPersons(1).Email = vEmail
+ID = vID                    'PK
+'Attr...
+m.PersonCount = 1
+ReDim m.Persons(1 To m.PersonCount)
+m.Persons(1).NameFirst = vNameFirst
+m.Persons(1).Email = vEmail
+
+m.HomePhone = "1234567890"
+m.NumApptSlots = 99
+End Sub
+
+'EHT=None
+Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
+Set mDatabase = vDB
+If schemaversion >= 1 Then
+    ID = fh.ReadLong        'PK
+    Get #fh.FileNum, , m    'Attr
+End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong ID
-fh.WriteLong PersonCount
-fh.WriteStringPlusLen mPersons(1).NameFirst
-fh.WriteStringPlusLen mPersons(1).Email
+fh.WriteLong ID             'PK
+Put #fh.FileNum, , m        'Attr
 End Sub
 
-'EHT=None
-Public Sub Unserialize(vDB As CDatabase, fh As CMNMOD_CFileHandler)
-Set mDatabase = vDB
-ID = fh.ReadLong
-PersonCount = fh.ReadLong
-ReDim mPersons(1 To PersonCount)
-mPersons(1).NameFirst = fh.ReadStringPlusLen
-mPersons(1).Email = fh.ReadStringPlusLen
-End Sub
 
-'EHT=None
-Public Property Get NameLast(personnum As Long) As String
-NameLast = mPersons(personnum).NameLast
-End Property
 
-'EHT=None
-Public Property Get NameMiddle(personnum As Long) As String
-NameMiddle = mPersons(personnum).NameMiddle
-End Property
 
-'EHT=None
-Public Property Get NameFirst(personnum As Long) As String
-NameFirst = mPersons(personnum).NameFirst
-End Property
 
-'EHT=None
-Public Property Get FullName(formatting As Long) As String
-Select Case formatting
-Case 0
-    FullName = mPersons(1).NameLast & ", " & mPersons(1).NameFirst & " & " & mPersons(2).NameFirst
-End Select
-End Property
+'#################################################################################
+'Relational lookups
+'#################################################################################
 
 'EHT=None
 Public Function Appointments() As CAppointment()
 Appointments = mDatabase.AppointmentsByClient(ID)
 End Function
+
+'EHT=None
+Public Function ApptCliLinks() As CApptCliLink()
+ApptCliLinks = mDatabase.ApptCliLinksByClient(ID)
+End Function
+
+'EHT=None
+Public Function TaxReturns() As CTaxReturn()
+TaxReturns = mDatabase.TaxReturnsByClient(ID)
+End Function
+
+
+
+
+
+'#################################################################################
+'ToString
+'#################################################################################
+
+'EHT=None
+Public Function ToString(Optional formatcode As Long) As String
+Select Case formatcode
+Case 0
+    ToString = m.Persons(1).NameLast & ", " & m.Persons(1).NameFirst
+    If m.PersonCount > 1 Then ToString = ToString & " & " & m.Persons(2).NameFirst
+End Select
+End Function
+
+
+
+
+
+'#################################################################################
+'Attributes
+'#################################################################################
+
+'EHT=None
+Public Property Get NameLast(personnum As Long) As String
+NameLast = m.Persons(personnum).NameLast
+End Property
+
+'EHT=None
+Public Property Get NameMiddle(personnum As Long) As String
+NameMiddle = m.Persons(personnum).NameMiddle
+End Property
+
+'EHT=None
+Public Property Get NameFirst(personnum As Long) As String
+NameFirst = m.Persons(personnum).NameFirst
+End Property

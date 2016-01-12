@@ -15,17 +15,18 @@ Option Explicit
 Private Const MOD_NAME = "CDatabase"
 
 'Error descriptions
-Private Const errDBFileMissing = "Database file cannot be found."
+Private Const errDBFileMissing = "Database file '%1%' cannot be found."
 Private Const errAlreadyLoaded = "A database file is already loaded. Cannot open another until the first one is closed."
 Private Const errNotLoaded = "Database not loaded."
-Private Const errNotCurrentVersion = "Database was not saved using the latest specifications, so it cannot be opened."
-Private Const errDamagedDB = "Database file has been damaged."
+Private Const errSchemaNotSupported = "The database schema version of the specified database (%1%) is outside of the range supported by this program (%2% to %3%)."
+Private Const errDamagedDB = "Database file '%1%' has been damaged."
 
 'Internal variables
-Private Const mCurSpecVersion As Long = 1
+Private Const LowestSupportedSchemaVersion As Long = 1
+Private Const LatestSchemaVersion As Long = 1
 Private mDBFile As CMNMOD_CFileHandler
 
-'Database attributes
+'Database attributes (accessible through class properties)
 Private mLoaded As Boolean
 Private mIsWriteable As Boolean
 Private mIsDirty As Boolean
@@ -47,6 +48,10 @@ Public Event OnCreateInitialDB()
 Public Event OnFinishedLoading()
 Public Event OnChange()
 
+
+
+
+
 '#################################################################################
 'Load & save functions
 '#################################################################################
@@ -55,7 +60,7 @@ Public Event OnChange()
 Public Function ConnectToDatabase(vDBFilename As String, Optional vReadOnly As Boolean, Optional vCreateIfNotExists As Boolean) As Boolean
 On Error GoTo ERR_HANDLER
 
-Dim p As Long, a As Long
+Dim p As Long, a As Long, schemaversion As Long
 
 'Initialize
 If mLoaded Then Err.Raise 1, , errAlreadyLoaded
@@ -80,38 +85,39 @@ If FileExists(mDBFilename) Then
     '-------------------------
     
     'Database header
-    If mDBFile.ReadLong <> mCurSpecVersion Then Err.Raise 1, , errNotCurrentVersion
+    schemaversion = mDBFile.ReadLong
+    If (schemaversion < LowestSupportedSchemaVersion) Or (schemaversion > LatestSchemaVersion) Then Err.Raise 1, , FormatErrorMsg(errSchemaNotSupported, schemaversion, LowestSupportedSchemaVersion, LatestSchemaVersion)
     
     'Clients
     mClientCount = mDBFile.ReadLong
     ReDim mClients(mClientCount - 1)
     For a = 0 To mClientCount - 1
-        Set mClients(a) = New CClient: mClients(a).Unserialize Me, mDBFile
+        Set mClients(a) = New CClient: mClients(a).Unserialize Me, schemaversion, mDBFile
     Next a
     
     'Appointments
     mAppointmentCount = mDBFile.ReadLong
     ReDim mAppointments(mAppointmentCount - 1)
     For a = 0 To mAppointmentCount - 1
-        Set mAppointments(a) = New CAppointment: mAppointments(a).Unserialize Me, mDBFile
+        Set mAppointments(a) = New CAppointment: mAppointments(a).Unserialize Me, schemaversion, mDBFile
     Next a
     
     'ApptCliLinks
     mApptCliLinkCount = mDBFile.ReadLong
     ReDim mApptCliLinks(mApptCliLinkCount - 1)
     For a = 0 To mApptCliLinkCount - 1
-        Set mApptCliLinks(a) = New CApptCliLink: mApptCliLinks(a).Unserialize Me, mDBFile
+        Set mApptCliLinks(a) = New CApptCliLink: mApptCliLinks(a).Unserialize Me, schemaversion, mDBFile
     Next a
     
     'TaxReturns
     mTaxReturnCount = mDBFile.ReadLong
     ReDim mTaxReturns(mTaxReturnCount - 1)
     For a = 0 To mTaxReturnCount - 1
-        Set mTaxReturns(a) = New CTaxReturn: mTaxReturns(a).Unserialize Me, mDBFile
+        Set mTaxReturns(a) = New CTaxReturn: mTaxReturns(a).Unserialize Me, schemaversion, mDBFile
     Next a
     
     'Database footer
-    If mDBFile.ReadLong <> mCurSpecVersion Then Err.Raise 1, , errDamagedDB
+    If mDBFile.ReadLong <> schemaversion Then Err.Raise 1, , FormatErrorMsg(errDamagedDB, mDBFilename)
     
     '-------------------------
 
@@ -122,7 +128,7 @@ Else
         mIsDirty = False
         RaiseEvent OnCreateInitialDB
     Else
-        Err.Raise 1, , errDBFileMissing
+        Err.Raise 1, , FormatErrorMsg(errDBFileMissing, mDBFilename)
     End If
 End If
 
@@ -152,7 +158,7 @@ If mIsWriteable Then
         '-------------------------
         
         'Database header
-        mTempFile.WriteLong mCurSpecVersion
+        mTempFile.WriteLong LatestSchemaVersion
         
         'Clients
         mTempFile.WriteLong mClientCount
@@ -179,7 +185,7 @@ If mIsWriteable Then
         Next a
         
         'Database footer
-        mTempFile.WriteLong mCurSpecVersion
+        mTempFile.WriteLong LatestSchemaVersion
         
         '-------------------------
         
@@ -237,6 +243,15 @@ End Sub
 
 
 
+'#################################################################################
+'Log of database changes
+'#################################################################################
+
+'EHT=None
+Public Sub AddLogEntry(logentry As String)
+
+End Sub
+
 
 
 
@@ -265,51 +280,116 @@ End Sub
 
 
 
-
-
-
-
-
-
-
-
 '#################################################################################
-'Relational lookups
+'Lookups by primary key
 '#################################################################################
 
 'EHT=None
-Public Function ClientByID(vClientID As Long) As CClient
+Public Function Client(vClientID As Long) As CClient
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a&
+Dim a As Long
 For a = mClientCount - 1 To 0 Step -1
     If mClients(a).ID = vClientID Then
-        Set ClientByID = mClients(a)
+        Set Client = mClients(a)
+        Exit For
+    End If
+Next a
+End Function
+
+'[ApptCliLink omitted]
+
+'EHT=None
+Public Function Appointment(vAppointmentID As Long) As CAppointment
+If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim a As Long, o As CAppointment
+For a = mAppointmentCount - 1 To 0 Step -1
+    If mAppointments(a).ID = vAppointmentID Then
+        Set Appointment = mAppointments(a)
         Exit For
     End If
 Next a
 End Function
 
 'EHT=None
-Public Function AppointmentByID(vAppointmentID As Long) As CAppointment
+Public Function TaxReturn(vClientID As Long, vTaxYear As Long) As CTaxReturn
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a&
-For a = mAppointmentCount - 1 To 0 Step -1
-    If mAppointments(a).ID = vAppointmentID Then
-        Set AppointmentByID = mAppointments(a)
+Dim a As Long, t As CTaxReturn
+For a = mTaxReturnCount - 1 To 0 Step -1
+    Set t = mTaxReturns(a)
+    If t.ClientID = vClientID And t.TaxYear = vTaxYear Then
+        Set TaxReturn = t
         Exit For
     End If
 Next a
 End Function
+
+
+
+
+
+'#################################################################################
+'One-to-many relational lookups
+'#################################################################################
+
+'EHT=None
+Public Function ApptCliLinksByClient(vClientID As Long) As CApptCliLink()
+If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim a As Long, c As Long, l() As CApptCliLink
+For a = mApptCliLinkCount - 1 To 0 Step -1
+    If mApptCliLinks(a).ClientID = vClientID Then
+        ReDim Preserve l(c)
+        Set l(c) = mApptCliLinks(a)
+        c = c + 1
+    End If
+Next a
+ApptCliLinksByClient = l
+End Function
+
+'EHT=None
+Public Function ApptCliLinksByAppointment(vAppointmentID As Long) As CApptCliLink()
+If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim a As Long, c As Long, l() As CApptCliLink
+For a = mApptCliLinkCount - 1 To 0 Step -1
+    If mApptCliLinks(a).AppointmentID = vAppointmentID Then
+        ReDim Preserve l(c)
+        Set l(c) = mApptCliLinks(a)
+        c = c + 1
+    End If
+Next a
+ApptCliLinksByAppointment = l
+End Function
+
+'EHT=None
+Public Function TaxReturnsByClient(vClientID As Long) As CTaxReturn()
+If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim a As Long, c As Long, l() As CTaxReturn
+For a = mTaxReturnCount - 1 To 0 Step -1
+    If mTaxReturns(a).ClientID = vClientID Then
+        ReDim Preserve l(c)
+        Set l(c) = mTaxReturns(a)
+        c = c + 1
+    End If
+Next a
+TaxReturnsByClient = l
+End Function
+
+
+
+
+
+'#################################################################################
+'Many-to-many relational lookups
+'#################################################################################
 
 'EHT=None
 Public Function AppointmentsByClient(vClientID As Long) As CAppointment()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a&, b&, c&, l() As CAppointment
+Dim a As Long, c As Long, l() As CAppointment
 For a = mApptCliLinkCount - 1 To 0 Step -1
     With mApptCliLinks(a)
         If .ClientID = vClientID Then
             ReDim Preserve l(c)
-            Set l(c) = AppointmentByID(.AppointmentID)
+            Set l(c) = Appointment(.AppointmentID)
             c = c + 1
         End If
     End With
@@ -320,12 +400,12 @@ End Function
 'EHT=None
 Public Function ClientsByAppointment(vAppointmentID As Long) As CClient()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a&, b&, c&, l() As CClient
+Dim a As Long, c As Long, l() As CClient
 For a = mApptCliLinkCount - 1 To 0 Step -1
     With mApptCliLinks(a)
         If .AppointmentID = vAppointmentID Then
             ReDim Preserve l(c)
-            Set l(c) = ClientByID(.ClientID)
+            Set l(c) = Client(.ClientID)
             c = c + 1
         End If
     End With

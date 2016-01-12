@@ -14,44 +14,72 @@ Attribute VB_Exposed = False
 Option Explicit
 Private Const MOD_NAME = "CApptCliLink"
 
+'Back reference to database
+Private mDatabase As CDatabase
+
 Public Enum enumReminderCallStatus
     rcsNoCallNeeded = 0
     rcsNeeded = 10
     rcsCalled = 20
 End Enum
 
-'Back reference to database
-Private mDatabase As CDatabase
-
-'Primary key
+'Primary key (for efficiency, make public and do not put within the core data type)
 Public ClientID As Long
 Public AppointmentID As Long
 
-'Attributes
-Public ReminderCallStatus As enumReminderCallStatus
-Public NoShow As Boolean
-Public PrimaryClient As Boolean
+'Attributes (for efficiency, store within a type object)
+Private Type typeCoreData
+    ReminderCallStatus As Long  'enumReminderCallStatus, but using a Long because enums aren't allowed
+    NoShow As Boolean
+    PrimaryClient As Boolean
+End Type
+Private m As typeCoreData
+
+
+
+
+
+'#################################################################################
+'Serialization
+'#################################################################################
 
 'EHT=None
 Public Sub Init(vDB As CDatabase, vClientID As Long, vAppointmentID As Long, vPrimaryClient As Boolean)
 Set mDatabase = vDB
-ClientID = vClientID
-AppointmentID = vAppointmentID
-PrimaryClient = vPrimaryClient
+ClientID = vClientID: AppointmentID = vAppointmentID        'PK
+'Attr...
+m.PrimaryClient = vPrimaryClient
+End Sub
+
+'EHT=None
+Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
+Set mDatabase = vDB
+If schemaversion >= 1 Then
+    ClientID = fh.ReadLong: AppointmentID = fh.ReadLong     'PK
+    Get #fh.FileNum, , m                                    'Attr
+End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong ClientID
-fh.WriteLong AppointmentID
-fh.WriteLong CLng(PrimaryClient)
+fh.WriteLong ClientID: fh.WriteLong AppointmentID           'PK
+Put #fh.FileNum, , m                                        'Attr
 End Sub
+
+
+
+
+
+'#################################################################################
+'Relational lookups
+'#################################################################################
 
 'EHT=None
-Public Sub Unserialize(vDB As CDatabase, fh As CMNMOD_CFileHandler)
-Set mDatabase = vDB
-ClientID = fh.ReadLong
-AppointmentID = fh.ReadLong
-PrimaryClient = fh.ReadLong
-End Sub
+Public Function Client() As CClient
+Set Client = mDatabase.Client(ClientID)
+End Function
 
+'EHT=None
+Public Function Appointment() As CAppointment
+Set Appointment = mDatabase.Appointment(AppointmentID)
+End Function

@@ -23,6 +23,14 @@ Sub ShowErrorMsg(e As String)
 MsgBox e, vbCritical
 End Sub
 
+Function FormatErrorMsg(e As String, ParamArray args())
+Dim a&
+FormatErrorMsg = e
+For a = 0 To UBound(args)
+    FormatErrorMsg = Replace(FormatErrorMsg, "%" & (a + 1) & "%", args(a))
+Next a
+End Function
+
 Function UNHANDLEDERROR(module As String, section As String, errobj As ErrObject, Optional INCLEANUP As Boolean = False) As Boolean
 ReDim Preserve ErrorLog(ErrorCount)
 With ErrorLog(ErrorCount)
