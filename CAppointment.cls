@@ -22,12 +22,12 @@ Public ID As Long
 
 'Attributes (for efficiency, store within a type object)
 Private Type typeCoreData
-    Day As Date
+    Day As Long
     TimeSlot As Long
-    TimeOverride As Date
+    TimeOverride As Date    'May be NullLong
     NumSlots As Long
     DidntHappen As Boolean
-    Notes As String
+    Notes As String         'May be blank
 End Type
 Private m As typeCoreData
 
@@ -85,6 +85,7 @@ End Function
 'ToString
 '#################################################################################
 
+'EHT=None
 Public Function ToString(Optional formatcode As Long) As String
 Select Case formatcode
 Case 0

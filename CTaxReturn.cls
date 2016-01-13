@@ -18,12 +18,12 @@ Private Const MOD_NAME = "CTaxReturn"
 Private mDatabase As CDatabase
 
 Public Enum enumReturnStatus
-    rsNotStarted = 0
+    rsNotStarted = 0    'Default
     rsIncomplete = 10
     rsComplete = 20
 End Enum
 Public Enum enumInboxType
-    itAppointment = 0
+    itAppointment = 0   'Default
     itDroppedOff = 10
     itMailedIn = 20
 End Enum
@@ -34,20 +34,20 @@ Public TaxYear As Long
 
 'Attributes (for efficiency, store within a type object)
 Private Type typeCoreData
-    Status As Long              'enumReturnStatus, but using a Long because enums aren't allowed
+    Status As Long
     SpecialReturn As Boolean
-    InboxType As Long           'enumInboxType, but using a Long because enums aren't allowed
+    InboxType As Long
     FiledExtension As Boolean
     EFiled As Boolean
-    CompletionDate As Date
-    MinutesToComplete As Long
-    PrepFee As Long
-    PrepFeeOwed As Long
+    CompletionDate As Date      'May be NullLong
+    MinutesToComplete As Long   'May be NullLong
+    Fee As Long
+    FeeOwed As Long
     ReleasedBeforePayment As Boolean
     StateList As String         'Comma-separated list; blank = no state return
-    Results_AGI As Long
-    Results_Fed As Long
-    Results_State As Long
+    Results_AGI As Long         'May be NullLong
+    Results_Fed As Long         'May be NullLong
+    Results_State As Long       'May be NullLong
 End Type
 Private m As typeCoreData
 

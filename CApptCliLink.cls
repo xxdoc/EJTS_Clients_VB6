@@ -18,8 +18,8 @@ Private Const MOD_NAME = "CApptCliLink"
 Private mDatabase As CDatabase
 
 Public Enum enumReminderCallStatus
-    rcsNoCallNeeded = 0
-    rcsNeeded = 10
+    rcsNoneRequired = 0     'Default
+    rcsNeedToCall = 10
     rcsCalled = 20
 End Enum
 
@@ -29,7 +29,7 @@ Public AppointmentID As Long
 
 'Attributes (for efficiency, store within a type object)
 Private Type typeCoreData
-    ReminderCallStatus As Long  'enumReminderCallStatus, but using a Long because enums aren't allowed
+    ReminderCallStatus As Long
     NoShow As Boolean
     PrimaryClient As Boolean
 End Type

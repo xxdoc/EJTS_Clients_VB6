@@ -18,10 +18,10 @@ Private Const MOD_NAME = "CClient"
 Private mDatabase As CDatabase
 
 Public Enum enumMailingListMode
-    mlAuto
-    mlNoOrganizer = 10
-    mlEmailOrganizer = 20
-    mlHardCopyOrganizer = 30
+    mlmAuto = 0  'Default
+    mlmNoOrganizer = 10
+    mlmEmailOrganizer = 20
+    mlmHardCopyOrganizer = 30
 End Enum
 
 'Primary key (for efficiency, make public and do not put within the core data type)
@@ -30,25 +30,28 @@ Public ID As Long
 'Attributes (for efficiency, store within a type object)
 Private Type typePersonData
     NameLast As String
-    NameMiddle As String
+    NameMiddle As String            'May be blank
     NameFirst As String
-    Phone As String                 'Formatted as phone
-    Email As String                 'Formatted as email
-    DateOfBirth As Date             '0=Null
-    DateOfDeath As Date             '0=Null
+    NameNickname As String          'May be blank
+    Phone As String                 'May be blank
+    Email As String                 'May be blank
+    DateOfBirth As Long             'May be NullLong
+    DateOfDeath As Long             'May be NullLong
 End Type
 Private Type typeCoreData
-    MailingListMode As Long         'enumMailingListMode, but using a Long because enums aren't allowed
+    MailingListMode As Long
     MailingAddress_Street As String
     MailingAddress_City As String
-    MailingAddress_State As String
+    MailingAddress_State As String  'Two-letter abbreviation
     MailingAddress_ZipCode As String
-    HomePhone As String
-    NumApptSlots As Long
-    Notes As String
+    HomePhone As String             'May be blank
+    NumApptSlots As Long            'Must be at least 1
+    Notes As String                 'May be blank
     ReminderCallAlways As Boolean
-    PersonCount As Long
-    Persons() As typePersonData     '1-based array
+    OldestYearFiled As Long         'May be NullLong
+    NewestYearFiled As Long         'May be NullLong
+    PersonCount As Long             'Must be at least 1
+    Persons() As typePersonData     'At least one person is required; 1-based array
 End Type
 Private m As typeCoreData
 
@@ -69,9 +72,6 @@ m.PersonCount = 1
 ReDim m.Persons(1 To m.PersonCount)
 m.Persons(1).NameFirst = vNameFirst
 m.Persons(1).Email = vEmail
-
-m.HomePhone = "1234567890"
-m.NumApptSlots = 99
 End Sub
 
 'EHT=None
