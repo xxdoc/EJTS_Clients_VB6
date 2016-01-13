@@ -79,7 +79,6 @@ mLogFilename = vDBFilename & ".log"
 
 'Open the file
 If FileExists(mDBFilename) Then
-    If Not mDBFile Is Nothing Then mDBFile.CloseFile: Set mDBFile = Nothing
     Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
     
     '-------------------------
@@ -144,7 +143,7 @@ End Function
 Public Function SaveChanges() As Boolean
 On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
-Dim tempfile As String, a As Long
+Dim tempfile As String, bakfile As String, a As Long
 
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 
@@ -189,11 +188,17 @@ If mIsWriteable Then
         
         '-------------------------
         
-        'Close and move the file
-        mTempFile.CloseFile: Set mTempFile = Nothing        'Close temp file so it can be moved
-        If Not mDBFile Is Nothing Then mDBFile.CloseFile: Set mDBFile = Nothing     'Release lock
-        RenameFile tempfile, mDBFilename, True              'Overwrite original with temp file
-        Set mDBFile = OpenFile(mDBFilename, mBinary_Input)  'Restablish lock on file
+        'Close the files and release any locks
+        mTempFile.CloseFile: Set mTempFile = Nothing
+        If Not mDBFile Is Nothing Then mDBFile.CloseFile: Set mDBFile = Nothing
+        
+        'Make a backup as of the beginning of the previous day, but don't overwrite it once it has been made
+        bakfile = mDBFilename & ".bak" & Format(Date - 1, "yyyymmdd")
+        If FileExists(mDBFilename) And Not FileExists(bakfile) Then RenameFile mDBFilename, bakfile, False
+        
+        'Move the temp file into position as the new database; then reestablish the lock
+        RenameFile tempfile, mDBFilename, True
+        Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
         mIsDirty = False
     End If
     
