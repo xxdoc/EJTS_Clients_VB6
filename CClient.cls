@@ -159,3 +159,53 @@ End Property
 Public Property Get First(personnum As Long) As String
 First = m.Persons(personnum).First
 End Property
+
+
+
+
+
+'#################################################################################
+'Form
+'#################################################################################
+
+'EHT=None
+Public Sub PopulateForm(frm As frmClientEditPost)
+Dim a&, offset&, tr As CTaxReturn
+
+'Persons
+For a = 0 To m.PersonCount - 1
+    offset = a * 100
+    With m.Persons(a)
+        FieldToTextbox frm.txtField(fncPerson_First + offset), .First, True
+        FieldToTextbox frm.txtField(fncPerson_Nickname + offset), .Nickname, True
+        FieldToTextbox frm.txtField(fncPerson_Middle + offset), .Middle, True
+        FieldToTextbox frm.txtField(fncPerson_Last + offset), .Last, True
+        FieldToTextbox frm.txtField(fncPerson_Email + offset), .Email, True
+        FieldToTextbox frm.txtField(fncPerson_DateOfBirth + offset), .DateOfBirth, True
+        FieldToTextbox frm.txtField(fncPerson_DateOfDeath + offset), .DateOfDeath, True
+        FieldToTextbox frm.txtField(fncPerson_Phone + offset), .Phone, True
+    End With
+Next a
+
+'Common
+FieldToTextbox frm.txtField(fncMailingAddress_Street), m.MailingAddress_Street, True
+FieldToTextbox frm.txtField(fncMailingAddress_City), m.MailingAddress_City, True
+FieldToTextbox frm.txtField(fncMailingAddress_State), m.MailingAddress_State, True
+FieldToTextbox frm.txtField(fncMailingAddress_ZipCode), m.MailingAddress_ZipCode, True
+FieldToTextbox frm.txtField(fncNumApptSlots), m.NumApptSlots, True
+FieldToCheckbox frm.chkField(fncReminderCallAlways), m.ReminderCallAlways, True
+FieldToCombobox frm.cboField(fncMailingListMode), m.MailingListMode, True
+FieldToCheckbox frm.chkField(fncIPTE), m.IPTE, True
+FieldToTextbox frm.txtField(fncHomePhone), m.HomePhone, True
+FieldToTextbox frm.txtField(fncNotes), m.Notes, True
+FieldToTextbox frm.txtField(fncOldestYearFiled), m.OldestYearFiled, True
+FieldToTextbox frm.txtField(fncNewestYearFiled), m.NewestYearFiled, True
+
+'TaxReturns
+offset = 0
+For a = FileToOpen_Year To FileToOpen_Year - 1 Step -1
+    Set tr = mDatabase.TaxReturn(ID, a)
+    If Not tr Is Nothing Then tr.PopulateForm frm, offset
+    offset = offset + 100
+Next a
+End Sub

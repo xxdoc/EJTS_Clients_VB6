@@ -101,3 +101,30 @@ End Sub
 Public Function Client() As CClient
 Set Client = mDatabase.Client(ClientID)
 End Function
+
+
+
+
+
+'#################################################################################
+'Form
+'#################################################################################
+
+'EHT=None
+Public Sub PopulateForm(frm As frmClientEditPost, offset As Long)
+Dim en As Boolean
+en = (offset = 0)
+FieldToCombobox frm.cboField(fncInboxType + offset), m.InboxType, en
+FieldToCombobox frm.cboField(fncStatus + offset), m.Status, en
+FieldToCheckbox frm.chkField(fncFiledExtension + offset), m.FiledExtension, en
+FieldToTextbox frm.txtField(fncCompletionDate + offset), m.CompletionDate, en
+FieldToTextbox frm.txtField(fncMinutesToComplete + offset), m.MinutesToComplete, en
+FieldToCheckbox frm.chkField(fncEFiled + offset), m.EFiled, en
+FieldToTextbox frm.txtField(fncResultAGI + offset), m.Results_AGI, en
+FieldToTextbox frm.txtField(fncResultFederal + offset), m.Results_Fed, en
+FieldToTextbox frm.txtField(fncResultState + offset), m.Results_State, en
+FieldToTextbox frm.txtField(fncStateList + offset), m.StateList, en
+FieldToTextbox frm.txtField(fncFee + offset), m.Fee, en
+FieldToTextbox frm.txtField(fncFeeOwed + offset), m.FeeOwed, en
+FieldToCheckbox frm.chkField(fncReleasedBeforePayment + offset), m.ReleasedBeforePayment, en
+End Sub

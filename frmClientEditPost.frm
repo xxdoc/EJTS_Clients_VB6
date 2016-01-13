@@ -1935,11 +1935,8 @@ End Enum
 
 Private ShowFormMode As enumShowFormMode
 Private PreviouslyMarkedIncomplete As Boolean
-Private DontChangeFlags As Boolean
-Private DontChangeFocus As Long     'Was originally a boolean, but now is a counter of the pieces of code which need this set to True
-Private tempclient As Client
-Private thisID&
-Private Changed As Boolean
+Private this As CClient
+Private DataChanged As Boolean
 
 'EHT=None
 Private Sub Form_Load()
@@ -1948,219 +1945,57 @@ FormLoadedAlready = True
 End Sub
 
 'EHT=Cleanup2
-Function Form_Show(cID&, mShowFormMode As enumShowFormMode, Optional OwnerForm_OtherThanFrmMainOrTabs As Form, Optional NewClientInputString As String) As Boolean
+Function Form_Show(vShowFormMode As enumShowFormMode, vClient As CClient, Optional vReadOnly As Boolean, Optional ByVal vOwnerForm As Form, Optional vNewClientInputString As String) As Boolean
 On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
-'If Post/Edit, cID(input) is the ClientID to open
-'If New, cID(output) is where the new ClientID is returned, or -1 if canceled
+'vShowFormMode              can be fPost, fEdit, or fNew
+'vClient                    if fPost/fEdit, this is the CClient to open; if fNew, the new CClient will be set to this parameter (ByRef)
+'vReadOnly                  if True, changes to vClient will not be allowed
+'vOwnerForm                 only specify this if it is not frmMain or one of the tab 'forms'
+'vNewClientInputString      only valid in fNew mode; initializes the new CClient with the specified data
+'Return value               True if the CClient was changed in any way or if new client; False if Cancel button was used to close the form
 
-Dim cindex&, a&, f&
-
-ShowFormMode = mShowFormMode
-If OwnerForm_OtherThanFrmMainOrTabs Is Nothing Then Set OwnerForm_OtherThanFrmMainOrTabs = frmMain
-DontChangeFocus = 1
-
+'Copy some parameters to global for later access
+ShowFormMode = vShowFormMode
 If ShowFormMode = fNew Then
-    thisID = -1
+    Set this = New CClient
 Else
-    thisID = cID
-    cindex = DB_FindClientIndex(ActiveDBInstance, cID)
-    If cindex < 0 Then
-        Err.Raise 1, , "Client #" & cID & " not found!"
-    End If
-    tempclient = ActiveDBInstance.Clients(cindex)
+    Set this = vClient
 End If
 
-If ShowFormMode = fPost Then
-    pctPostSpecificArea.Move 8, 8
-    pctPostSpecificArea.Visible = True
-
-    pctMainEditArea.Move pctPostSpecificArea.Left + pctPostSpecificArea.Width - 1, 8, txtField(fResultState2).Left + txtField(fResultState2).Width + 8
-
-    txtField(fResultState2).Visible = True
-    lbl(fResultState2).Visible = True
-    chkEFile.Visible = True
-
-    txtField(fOperationNotes).Visible = False
-    lbl(fOperationNotes).Visible = False
-
-    pctFlags.Visible = False
-    pctFutureFlags.Visible = True
-Else
-    pctMainEditArea.Move 8, 8, txtField(fMoneyOwed).Left + txtField(fMoneyOwed).Width + 8
-End If
-ResizeFormByInnerScaleDimensions Me, pctMainEditArea.Left + pctMainEditArea.Width
-lblChangeTabOrder.Move Me.ScaleWidth - lblChangeTabOrder.Width - 1, Me.ScaleHeight - lblChangeTabOrder.Height - 1
-
-With tempclient.c
-    If ShowFormMode = fNew Then
-        'Initialize a few fields that are not defaulted to the correct values by Visual Basic
-        If NewClientInputString$ <> "" Then
-            a = InStr(NewClientInputString$, ",")
-            If a Then
-                .Person1.Last = CapatalizeFirstLetter(Trim$(Left$(NewClientInputString$, a - 1)))
-                .Person1.First = CapatalizeFirstLetter(Trim$(Mid$(NewClientInputString$, a + 1)))
-            Else
-                .Person1.Last = CapatalizeFirstLetter(Trim$(NewClientInputString$))
-            End If
-        End If
-        .Person1.DOB = NullLong
-        .Person1.dod = NullLong
-        .Person2.DOB = NullLong
-        .Person2.dod = NullLong
-
-        .NumApptSlotsToUse = 0  'New clients should be set to Auto (CHOS will calculate it properly later)
-        .Flags = NewClient
-
-        .LastYear_MinutesToComplete = NullLong
-        .LastYear_PrepFee = NullLong
-        .LastYear_Flags = 0
-        .OldestYearFiled = NullLong
-        .NewestYearFiled = NullLong
-
-        .CompletionDate = NullLong
-        .MinutesToComplete = NullLong
-        .PrepFee = NullLong
-        .MoneyOwed = NullLong
-        .ResultAGI = NullLong
-        .ResultFederal = NullLong
-        .ResultState = NullLong
-    End If
-
-    FieldToTextbox txtField(fPerson1First), .Person1.First, True
-    FieldToTextbox txtField(fPerson1Nickname), .Person1.Nickname, True
-    FieldToTextbox txtField(fPerson1Initial), .Person1.Initial, True
-    FieldToTextbox txtField(fPerson1Last), .Person1.Last, True
-    FieldToTextbox txtField(fPerson1Phone), .Person1.Phone, True
-    FieldToTextbox txtField(fPerson1Email), .Person1.Email, True
-    FieldToTextbox txtField(fPerson1DOB), .Person1.DOB, True
-    FieldToTextbox txtField(fPerson1DOD), .Person1.dod, True
-
-    FieldToTextbox txtField(fPerson2First), .Person2.First, True
-    FieldToTextbox txtField(fPerson2Nickname), .Person2.Nickname, True
-    FieldToTextbox txtField(fPerson2Initial), .Person2.Initial, True
-    FieldToTextbox txtField(fPerson2Last), .Person2.Last, True
-    FieldToTextbox txtField(fPerson2Phone), .Person2.Phone, True
-    FieldToTextbox txtField(fPerson2Email), .Person2.Email, True
-    FieldToTextbox txtField(fPerson2DOB), .Person2.DOB, True
-    FieldToTextbox txtField(fPerson2DOD), .Person2.dod, True
-
-    FieldToTextbox txtField(fAddressStreet), .AddressStreet, True
-    FieldToTextbox txtField(fAddressCity), .AddressCity, True
-    FieldToTextbox txtField(fAddressState), .AddressState, True
-    FieldToTextbox txtField(fAddressZipCode), .AddressZipCode, True
-    FieldToTextbox txtField(fNotes), .Notes, (ShowFormMode <> fPost)
-
-    FieldToTextbox txtField(fPhoneHome), .PhoneHome, True
-    FieldToTextbox txtField(fNumApptSlotsToUse), .NumApptSlotsToUse, (ShowFormMode <> fPost)
-    FieldToTextbox txtField(fLastYear_MinutesToComplete), .LastYear_MinutesToComplete, (ShowFormMode <> fPost)
-    FieldToTextbox txtField(fLastYear_PrepFee), .LastYear_PrepFee, (ShowFormMode <> fPost)
-    If (ShowFormMode = fPost) And (.CompletionDate = NullLong) Then
-        FieldToTextbox txtField(fCompletionDate), Date, True
-    Else
-        FieldToTextbox txtField(fCompletionDate), .CompletionDate, True
-    End If
-    FieldToTextbox txtField(fMinutesToComplete), .MinutesToComplete, True
-
-    FieldToTextbox txtField(fOperationNotes), .OpNotes, (ShowFormMode <> fPost)
-
-    FieldToTextbox txtField(fPrepFee), .PrepFee, True
-    FieldToTextbox txtField(fMoneyOwed), .MoneyOwed, True
-    FieldToTextbox txtField(fResultAGI), .ResultAGI, True
-    FieldToTextbox txtField(fResultFederal), .ResultFederal, True
-    If (ShowFormMode = fPost) And (Len(.StateList) = 0) Then
-        FieldToTextbox txtField(fStateList), DB_GetSetting(ActiveDBInstance, "GLOBAL_DefaultState"), True
-    Else
-        FieldToTextbox txtField(fStateList), .StateList, True
-    End If
-    FieldToTextbox txtField(fResultState), .ResultState, True
-    FieldToTextbox txtField(fResultState2), NullLong, (ShowFormMode = fPost)
-
-    FieldToTextbox txtField(fOldestYearFiled), .OldestYearFiled, (ShowFormMode <> fPost)
-    FieldToTextbox txtField(fNewestYearFiled), .NewestYearFiled, (ShowFormMode <> fPost)
-
-    pctFlags.Enabled = (ShowFormMode <> fPost)
-    If ShowFormMode = fPost Then
-        For a = 0 To ClientFlags_DATAITEMUBOUND
-            SetFutureFlagIndicator False, 0, a
-        Next a
-
-        'Make a working copy of the Flags
-        PreviouslyMarkedIncomplete = Flag_IsSet(.Flags, PartiallyComplete)
-
-        'Initialize them for posting...
-        '   Inc       '0    OFF always
-        'x  Comp      '1    ON if not NNTF
-        'x  Appt      '?    ON if not DO/MI/NNTF
-        'x  DO        'same Copy from DB
-        'x  MI        'same Copy from DB
-        'x  NNTF      '?    ON if NNTF LY
-        'x  Ext       'same Copy from DB
-        '   I/P/T/E   '?    ON if IPTE LY (takes precedence over NNTF, since you can't have both)
-        'x  New       'same Copy from DB
-        '   E-Filed   '?    ON if Not IPTE
-        'x  RBefPmt   'same Copy from DB
-
-        Me.Visible = True
-
-        'Copy over the 'same' flags (above)
-        SetFutureFlagIndicator Flag_IsSet(.Flags, Extension), Extension
-        SetFutureFlagIndicator Flag_IsSet(.Flags, NewClient), NewClient
-        SetFutureFlagIndicator Flag_IsSet(.Flags, ReleasedBeforePayment), ReleasedBeforePayment
-
-
-        'Then initialize a few of them, depending on certain conditions
-        chkEFile.Value = vbChecked  'Everything is E-filed by default
-        If Flag_IsSet(.LastYear_Flags, IncPtnrTrustEstate) Then
-            chkIncPtnrTrustEstate.Value = vbChecked
-        End If
-        If Flag_IsSet(.Flags, DroppedOff) Then
-            optInType(1).Value = True
-        ElseIf Flag_IsSet(.Flags, MailedIn) Then
-            optInType(2).Value = True
-        ElseIf Flag_IsSet(.LastYear_Flags, NoNeedToFile) And (Not Flag_IsSet(.LastYear_Flags, IncPtnrTrustEstate)) Then
-            optInType(3).Value = True
-        Else
-            optInType(0).Value = True
-        End If
-        If IsFutureFlagIndicatorSet(EFiled) And (Not Flag_IsSet(.LastYear_Flags, IncPtnrTrustEstate)) Then
-            chkEFile.Value = vbChecked
-        End If
-    Else
-        For a = 0 To ClientFlags_DATAITEMUBOUND
-            f = 2 ^ a
-            SetCYFlagIndicator Flag_IsSet(.Flags, f), 0, a
-            SetLYFlagIndicator Flag_IsSet(.LastYear_Flags, f), 0, a
-        Next a
-    End If
-End With
+'Basic form initialize
 If ShowFormMode = fNew Then
     Me.Caption = "New Client"
 Else
-    Me.Caption = "Client #" & tempclient.c.ID & " - " & Choose(ShowFormMode + 1, "Post", "Edit")
+    Me.Caption = "Client #" & this.ID & " - " & Choose(ShowFormMode + 1, "Post", "Edit")
 End If
-UpdateDOBandDODtext
 btnSavePost.Caption = IIf(ShowFormMode = fPost, "&Post", "Save")
-btnSavePost.Enabled = ActiveDBInstance.IsWriteable
-If ShowFormMode = fPost Then
-    'Set a new tab order for Post Mode
-    TabOrderSetting = "GLOBAL_TabOrder_ClientPost"
-    SetControlTabOrder Me, DB_GetSetting(ActiveDBInstance, TabOrderSetting)
-Else
-    'Set a new tab order for Edit/New Mode
-    TabOrderSetting = "GLOBAL_TabOrder_ClientEdit"
-    SetControlTabOrder Me, DB_GetSetting(ActiveDBInstance, TabOrderSetting)
-End If
+btnSavePost.Enabled = Not vReadOnly
+
+'Populate the form with real data
+this.PopulateForm Me
+UpdateDOBandDODtext
+DataChanged = False
+
+'Set the tab order of controls
+TabOrderSetting = IIf(ShowFormMode = fPost, "GLOBAL_TabOrder_ClientPost", "GLOBAL_TabOrder_ClientEdit")
+SetControlTabOrder Me, DB_GetSetting(ActiveDBInstance, TabOrderSetting)
+
+'Pause the main form's idle timer, so nothing changes in the background while we are on-screen
 frmMain.IdlePauseTimeout
-DontChangeFocus = 0
-Changed = False
-'-----------------------------------
-Me.Visible = False
-Me.Show 1, OwnerForm_OtherThanFrmMainOrTabs
-'-----------------------------------
-Form_Show = Changed
+
+'Show ourselves, modal to the specified owner form
+If vOwnerForm Is Nothing Then Set vOwnerForm = frmMain
+Me.Show 1, vOwnerForm
+
+'* * * * * * * * * CODE PAUSES AT THIS POINT UNTIL FORM IS CLOSED * * * * * * * * *
+
+'Start the main form's idle timer again
 frmMain.IdleSetAction
-If ShowFormMode = fNew Then cID = thisID
+
+'Return values
+Form_Show = DataChanged
+If ShowFormMode = fNew Then vClient = this
 
 CLEANUP: INCLEANUP = True
     If HASERROR Then Unload Me
