@@ -18,14 +18,15 @@ Private Const MOD_NAME = "CTaxReturn"
 Private mDatabase As CDatabase
 
 Public Enum enumReturnStatus
-    rsNotStarted = 0    'Default
-    rsIncomplete = 10
-    rsComplete = 20
+    rsNotStarted    'Default
+    rsIncomplete
+    rsComplete
+    rsNoNeedToFile
 End Enum
 Public Enum enumInboxType
-    itAppointment = 0   'Default
-    itDroppedOff = 10
-    itMailedIn = 20
+    itAppointment   'Default
+    itDroppedOff
+    itMailedIn
 End Enum
 
 'Primary key (for efficiency, make public and do not put within the core data type)
@@ -35,11 +36,10 @@ Public TaxYear As Long
 'Attributes (for efficiency, store within a type object)
 Private Type typeCoreData
     Status As Long
-    SpecialReturn As Boolean
     InboxType As Long
     FiledExtension As Boolean
-    EFiled As Boolean
-    CompletionDate As Date      'May be NullLong
+    EFiled As Boolean           'Default=True
+    CompletionDate As Long      'May be NullLong
     MinutesToComplete As Long   'May be NullLong
     Fee As Long
     FeeOwed As Long
@@ -65,6 +65,13 @@ Set mDatabase = vDB
 TaxYear = vTaxYear: ClientID = vClientID            'PK
 'Attr...
 m.InboxType = vInboxType
+'Defaults...
+m.EFiled = True
+m.CompletionDate = NullLong
+m.MinutesToComplete = NullLong
+m.Results_AGI = NullLong
+m.Results_Fed = NullLong
+m.Results_State = NullLong
 End Sub
 
 'EHT=None

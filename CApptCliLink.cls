@@ -18,9 +18,9 @@ Private Const MOD_NAME = "CApptCliLink"
 Private mDatabase As CDatabase
 
 Public Enum enumReminderCallStatus
-    rcsNoneRequired = 0     'Default
-    rcsNeedToCall = 10
-    rcsCalled = 20
+    rcsNoneRequired     'Default
+    rcsNeedToCall
+    rcsCalled
 End Enum
 
 'Primary key (for efficiency, make public and do not put within the core data type)

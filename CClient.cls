@@ -18,10 +18,10 @@ Private Const MOD_NAME = "CClient"
 Private mDatabase As CDatabase
 
 Public Enum enumMailingListMode
-    mlmAuto = 0  'Default
-    mlmNoOrganizer = 10
-    mlmEmailOrganizer = 20
-    mlmHardCopyOrganizer = 30
+    mlmAuto         'Default
+    mlmNoOrganizer
+    mlmEmailOrganizer
+    mlmHardCopyOrganizer
 End Enum
 
 'Primary key (for efficiency, make public and do not put within the core data type)
@@ -29,10 +29,10 @@ Public ID As Long
 
 'Attributes (for efficiency, store within a type object)
 Private Type typePersonData
-    NameLast As String
-    NameMiddle As String            'May be blank
-    NameFirst As String
-    NameNickname As String          'May be blank
+    Last As String
+    Middle As String                'May be blank
+    First As String
+    Nickname As String              'May be blank
     Phone As String                 'May be blank
     Email As String                 'May be blank
     DateOfBirth As Long             'May be NullLong
@@ -46,12 +46,13 @@ Private Type typeCoreData
     MailingAddress_ZipCode As String
     HomePhone As String             'May be blank
     NumApptSlots As Long            'Must be at least 1
-    Notes As String                 'May be blank
     ReminderCallAlways As Boolean
+    IPTE As Boolean                 'True means it's an Inc/Ptnr/Trust/Estate
+    Notes As String                 'May be blank
     OldestYearFiled As Long         'May be NullLong
     NewestYearFiled As Long         'May be NullLong
     PersonCount As Long             'Must be at least 1
-    Persons() As typePersonData     'At least one person is required; 1-based array
+    Persons() As typePersonData     'At least one person is required
 End Type
 Private m As typeCoreData
 
@@ -64,14 +65,20 @@ Private m As typeCoreData
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vID As Long, vNameFirst As String, vEmail As String)
+Public Sub Init(vDB As CDatabase, vID As Long, vFirst As String, vEmail As String)
 Set mDatabase = vDB
 ID = vID                    'PK
 'Attr...
 m.PersonCount = 1
-ReDim m.Persons(1 To m.PersonCount)
-m.Persons(1).NameFirst = vNameFirst
-m.Persons(1).Email = vEmail
+ReDim m.Persons(m.PersonCount - 1)
+m.Persons(0).First = vFirst
+m.Persons(0).Email = vEmail
+'Defaults...
+m.NumApptSlots = 2
+m.OldestYearFiled = NullLong
+m.NewestYearFiled = NullLong
+m.Persons(0).DateOfBirth = NullLong
+m.Persons(0).DateOfDeath = NullLong
 End Sub
 
 'EHT=None
@@ -125,8 +132,8 @@ Public Function ToString(Optional formatcode As Long) As String
 Select Case formatcode
 Case 0
     'Lastname, First1 & First2
-    ToString = m.Persons(1).NameLast & ", " & m.Persons(1).NameFirst
-    If m.PersonCount > 1 Then ToString = ToString & " & " & m.Persons(2).NameFirst
+    ToString = m.Persons(0).Last & ", " & m.Persons(0).First
+    If m.PersonCount > 1 Then ToString = ToString & " & " & m.Persons(1).First
 End Select
 End Function
 
@@ -139,16 +146,16 @@ End Function
 '#################################################################################
 
 'EHT=None
-Public Property Get NameLast(personnum As Long) As String
-NameLast = m.Persons(personnum).NameLast
+Public Property Get Last(personnum As Long) As String
+Last = m.Persons(personnum).Last
 End Property
 
 'EHT=None
-Public Property Get NameMiddle(personnum As Long) As String
-NameMiddle = m.Persons(personnum).NameMiddle
+Public Property Get Middle(personnum As Long) As String
+Middle = m.Persons(personnum).Middle
 End Property
 
 'EHT=None
-Public Property Get NameFirst(personnum As Long) As String
-NameFirst = m.Persons(personnum).NameFirst
+Public Property Get First(personnum As Long) As String
+First = m.Persons(personnum).First
 End Property

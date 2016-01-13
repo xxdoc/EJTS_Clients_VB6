@@ -24,7 +24,8 @@ Public ID As Long
 Private Type typeCoreData
     Day As Long
     TimeSlot As Long
-    TimeOverride As Date    'May be NullLong
+    CustomTimeSet As Boolean
+    CustomTime As Date      'Ignored if CustomTimeSet=False
     NumSlots As Long
     DidntHappen As Boolean
     Notes As String         'May be blank
