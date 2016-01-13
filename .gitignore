@@ -10,3 +10,4 @@ ErrorHandler.exp
 ErrorHandler.dll
 *.dca
 *.db
+*.db.bak*

@@ -124,6 +124,7 @@ End Function
 Public Function ToString(Optional formatcode As Long) As String
 Select Case formatcode
 Case 0
+    'Lastname, First1 & First2
     ToString = m.Persons(1).NameLast & ", " & m.Persons(1).NameFirst
     If m.PersonCount > 1 Then ToString = ToString & " & " & m.Persons(2).NameFirst
 End Select

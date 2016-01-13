@@ -15,7 +15,7 @@ Option Explicit
 Private Const MOD_NAME = "CDatabase"
 
 'Error descriptions
-Private Const errDBFileMissing = "Database file '%1%' cannot be found."
+Private Const errDBFileMissing = "Database file '%1%' could not be found (or was an empty file)."
 Private Const errAlreadyLoaded = "A database file is already loaded. Cannot open another until the first one is closed."
 Private Const errNotLoaded = "Database not loaded."
 Private Const errSchemaNotSupported = "The database schema version of the specified database (%1%) is outside of the range supported by this program (%2% to %3%)."
@@ -77,8 +77,8 @@ If p > 0 Then
 End If
 mLogFilename = vDBFilename & ".log"
 
-'Open the file
 If FileExists(mDBFilename) Then
+    'Open the file
     Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
     
     '-------------------------
@@ -123,6 +123,7 @@ If FileExists(mDBFilename) Then
     mIsDirty = False
 Else
     If vCreateIfNotExists Then
+        'If the database doesn't exist, create it
         CreateFile mDBFilename
         mIsDirty = False
         RaiseEvent OnCreateInitialDB
@@ -217,8 +218,13 @@ End Function
 Public Function DisconnectFromDatabase() As Boolean
 On Error GoTo ERR_HANDLER
 
+'This function does not raise any errors if the database is not loaded; that way, the calling function need not check first
+
 If mLoaded Then
-    If Not mDBFile Is Nothing Then mDBFile.CloseFile: Set mDBFile = Nothing     'Release lock
+    'Release the file lock
+    If Not mDBFile Is Nothing Then mDBFile.CloseFile: Set mDBFile = Nothing
+
+    'Clear out the data in memory
     mLoaded = False
     mDBFilename = ""
     mLogFilename = ""

@@ -89,6 +89,7 @@ End Function
 Public Function ToString(Optional formatcode As Long) As String
 Select Case formatcode
 Case 0
-    ToString = m.Day & ", " & m.TimeSlot & ", " & m.NumSlots
+    '5/6/2015, 4, 2
+    ToString = CDate(m.Day) & ", " & m.TimeSlot & ", " & m.NumSlots
 End Select
 End Function
