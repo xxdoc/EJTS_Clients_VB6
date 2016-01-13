@@ -46,7 +46,7 @@ Private mTaxReturnCount As Long
 'Events
 Public Event OnCreateInitialDB()
 Public Event OnFinishedLoading()
-Public Event OnChange()
+Public Event OnDirtyChanged(IsDirty As Boolean)
 
 
 
@@ -60,7 +60,7 @@ Public Event OnChange()
 Public Function ConnectToDatabase(vDBFilename As String, Optional vReadOnly As Boolean, Optional vCreateIfNotExists As Boolean) As Boolean
 On Error GoTo ERR_HANDLER
 
-Dim p As Long, a As Long, schemaversion As Long
+Dim p As Long, a As Long, loadable As Boolean, schemaversion As Long
 
 'Initialize
 If mLoaded Then Err.Raise 1, , errAlreadyLoaded
@@ -77,8 +77,10 @@ If p > 0 Then
 End If
 mLogFilename = vDBFilename & ".log"
 
-If FileExists(mDBFilename) Then
-    'Open the file
+loadable = FileExists(mDBFilename)
+If loadable Then loadable = loadable And (FileLen(mDBFilename) > 0)
+If loadable Then
+    'File exists, and is not empty, so open it
     Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
     
     '-------------------------
@@ -119,17 +121,16 @@ If FileExists(mDBFilename) Then
     If mDBFile.ReadLong <> schemaversion Then Err.Raise 1, , FormatErrorMsg(errDamagedDB, mDBFilename)
     
     '-------------------------
-
-    mIsDirty = False
+    
+    ClearDirty
+ElseIf vCreateIfNotExists Then
+    'If the database doesn't exist, create it
+    CreateFile mDBFilename, True
+    ClearDirty
+    RaiseEvent OnCreateInitialDB
 Else
-    If vCreateIfNotExists Then
-        'If the database doesn't exist, create it
-        CreateFile mDBFilename
-        mIsDirty = False
-        RaiseEvent OnCreateInitialDB
-    Else
-        Err.Raise 1, , FormatErrorMsg(errDBFileMissing, mDBFilename)
-    End If
+    'If we're not allowed to create it, error
+    Err.Raise 1, , FormatErrorMsg(errDBFileMissing, mDBFilename)
 End If
 
 'Success
@@ -144,63 +145,67 @@ End Function
 Public Function SaveChanges() As Boolean
 On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 
-Dim tempfile As String, bakfile As String, a As Long
+'This function does not raise any errors if the database is not loaded; that way, the calling function need not check first
 
-If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim tempfile As CMNMOD_CFileHandler, tempfilename As String, bakfilename As String, a As Long
 
-If mIsWriteable Then
+If mLoaded And mIsWriteable Then
     If mIsDirty Then
         'Open the file
-        Dim mTempFile As CMNMOD_CFileHandler
-        tempfile = mDBFilename & ".sav"
-        Set mTempFile = OpenFile(tempfile, mBinary_Output)
+        tempfilename = mDBFilename & ".sav"
+        Set tempfile = OpenFile(tempfilename, mBinary_Output)
         
         '-------------------------
         
         'Database header
-        mTempFile.WriteLong LatestSchemaVersion
+        tempfile.WriteLong LatestSchemaVersion
         
         'Clients
-        mTempFile.WriteLong mClientCount
+        tempfile.WriteLong mClientCount
         For a = 0 To mClientCount - 1
-            mClients(a).Serialize mTempFile
+            mClients(a).Serialize tempfile
         Next a
         
         'Appointments
-        mTempFile.WriteLong mAppointmentCount
+        tempfile.WriteLong mAppointmentCount
         For a = 0 To mAppointmentCount - 1
-            mAppointments(a).Serialize mTempFile
+            mAppointments(a).Serialize tempfile
         Next a
         
         'ApptCliLinks
-        mTempFile.WriteLong mApptCliLinkCount
+        tempfile.WriteLong mApptCliLinkCount
         For a = 0 To mApptCliLinkCount - 1
-            mApptCliLinks(a).Serialize mTempFile
+            mApptCliLinks(a).Serialize tempfile
         Next a
         
         'TaxReturns
-        mTempFile.WriteLong mTaxReturnCount
+        tempfile.WriteLong mTaxReturnCount
         For a = 0 To mTaxReturnCount - 1
-            mTaxReturns(a).Serialize mTempFile
+            mTaxReturns(a).Serialize tempfile
         Next a
         
         'Database footer
-        mTempFile.WriteLong LatestSchemaVersion
+        tempfile.WriteLong LatestSchemaVersion
         
         '-------------------------
         
         'Close the files and release any locks
-        mTempFile.CloseFile: Set mTempFile = Nothing
+        tempfile.CloseFile: Set tempfile = Nothing
         If Not mDBFile Is Nothing Then mDBFile.CloseFile: Set mDBFile = Nothing
         
-        'Make a backup as of the beginning of the previous day, but don't overwrite it once it has been made
-        bakfile = mDBFilename & ".bak" & Format(Date - 1, "yyyymmdd")
-        If FileExists(mDBFilename) And Not FileExists(bakfile) Then RenameFile mDBFilename, bakfile, False
+        'Make a backup, but don't overwrite it once it has been made. Each backup will contain all changes up to and including the day
+        'indicated (.bak20160111 would include all changes from the beginning of time through 1/11 but none of the changes of 1/12).
+        'Unfortunately, to make this work, the first backup created will be a 0-byte file (it means that prior to that first save of
+        'the day, there was no data).
+        If FileExists(mDBFilename) Then
+            bakfilename = mDBFilename & ".bak" & Format(Date - 1, "yyyymmdd")
+            If Not FileExists(bakfilename) Then RenameFile mDBFilename, bakfilename, False
+        End If
         
         'Move the temp file into position as the new database; then reestablish the lock
-        RenameFile tempfile, mDBFilename, True
+        RenameFile tempfilename, mDBFilename, True
         Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
-        mIsDirty = False
+        ClearDirty
     End If
     
     'Return value of True means that the database file now reflects the data (regardless if we had to write any data to make that happen)
@@ -208,7 +213,7 @@ If mIsWriteable Then
 End If
 
 CLEANUP: INCLEANUP = True
-    If Not mTempFile Is Nothing Then mTempFile.CloseFile: Set mTempFile = Nothing
+    If Not tempfile Is Nothing Then tempfile.CloseFile: Set tempfile = Nothing
 
 Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SaveChanges", Err, INCLEANUP: Resume CLEANUP
@@ -279,12 +284,13 @@ End Property
 'EHT=None
 Public Sub SetDirty()
 mIsDirty = True
-RaiseEvent OnChange
+RaiseEvent OnDirtyChanged(mIsDirty)
 End Sub
 
 'EHT=None
 Public Sub ClearDirty()
 mIsDirty = False
+RaiseEvent OnDirtyChanged(mIsDirty)
 End Sub
 
 
