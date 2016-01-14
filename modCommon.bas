@@ -447,6 +447,9 @@ Public Enum ScheduleShapeStyle
     Style_ShowAppt
 End Enum
 
+Public Const frmClientEditPost_PersonOffset = 100
+Public Const frmClientEditPost_TaxReturnOffset = 100
+
 Public Const NullLong = &H80000000      '-2147483648
 
 Private MouseNullZoneRef As POINTAPI
@@ -783,10 +786,10 @@ If Len(c.Person2.First) > 0 Then showname2 = True
 If showname1 And showname2 Then
     'If there are 2 people AND 1 is still living, then the deceased person is hidden
     'But if both people are deceased, show the names because tabSearch will cross out the whole list
-    If (c.Person1.DOD = NullLong) Or (c.Person2.DOD = NullLong) Then
-        If c.Person1.DOD <> NullLong Then
+    If (c.Person1.dod = NullLong) Or (c.Person2.dod = NullLong) Then
+        If c.Person1.dod <> NullLong Then
             showname1 = False
-        ElseIf c.Person2.DOD <> NullLong Then
+        ElseIf c.Person2.dod <> NullLong Then
             showname2 = False
         End If
     End If

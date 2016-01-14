@@ -2168,7 +2168,7 @@ On Error Resume Next
 ClearControlHilight Me
 
 Select Case Index
-Case fncPerson_DateOfBirth, fncPerson_DateOfDeath, fncPerson_DateOfBirth + 100, fncPerson_DateOfDeath + 100
+Case fncPerson_DateOfBirth, fncPerson_DateOfDeath, fncPerson_DateOfBirth + frmClientEditPost_PersonOffset, fncPerson_DateOfDeath + frmClientEditPost_PersonOffset
     UpdateDOBandDODtext
 End Select
 
@@ -2306,8 +2306,8 @@ On Error GoTo ERR_HANDLER
 
 Dim a&, DOB&, dod&
 For a = 0 To 1
-    FieldFromTextbox txtField(fncPerson_DateOfBirth + (a * 100)), DOB
-    FieldFromTextbox txtField(fncPerson_DateOfDeath + (a * 100)), dod
+    FieldFromTextbox txtField(fncPerson_DateOfBirth + (a * frmClientEditPost_PersonOffset)), DOB
+    FieldFromTextbox txtField(fncPerson_DateOfDeath + (a * frmClientEditPost_PersonOffset)), dod
     If dod <> NullLong Then
         If DOB = NullLong Then
             lblDODCalc(a).Caption = "Died " & CalculateAge(dod, Date) & "yr ago"
