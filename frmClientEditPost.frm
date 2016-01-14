@@ -694,7 +694,6 @@ Begin VB.Form frmClientEditPost
       Left            =   11520
       TabIndex        =   22
       Tag             =   "31"
-      Text            =   "12/31/2015"
       Top             =   2040
       Width           =   1215
    End
@@ -1105,9 +1104,9 @@ Begin VB.Form frmClientEditPost
       Top             =   7380
       Width           =   255
    End
-   Begin VB.Label lbl 
+   Begin VB.Label lblTaxYear 
       Alignment       =   2  'Center
-      Caption         =   "2014"
+      Caption         =   "0000"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   12
@@ -1118,15 +1117,15 @@ Begin VB.Form frmClientEditPost
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Index           =   24
+      Index           =   100
       Left            =   12840
       TabIndex        =   0
       Top             =   120
       Width           =   1215
    End
-   Begin VB.Label lbl 
+   Begin VB.Label lblTaxYear 
       Alignment       =   2  'Center
-      Caption         =   "2015"
+      Caption         =   "0000"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   12
@@ -1137,7 +1136,7 @@ Begin VB.Form frmClientEditPost
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Index           =   14
+      Index           =   0
       Left            =   11520
       TabIndex        =   78
       Top             =   120

@@ -481,7 +481,7 @@ CreateFont2 = CreateFont(-(fSize * GetDeviceCaps(fHDC, LOGPIXELSY)) / 72, 0, 0, 
 End Function
 
 'EHT=None
-Sub EnableTextbox(txt As TextBox, e As Boolean)
+Sub EnableTextbox(txt As Control, e As Boolean)
 txt.Enabled = e
 If e Then
     txt.BackColor = vbWindowBackground
@@ -713,10 +713,32 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "FieldToString", Err
 End Function
 
 'EHT=None
-Sub FieldToTextbox(txt As TextBox, v As Variant, Optional en As Boolean = -100)
+Sub FieldToTextbox(txt As TextBox, v As Variant, Optional enablefield As Boolean = -100)
 'Converts database format to display format
 txt.Text = FieldToString(v, Val(txt.Tag))
-If en <> -100 Then EnableTextbox txt, en
+If enablefield <> -100 Then EnableTextbox txt, enablefield
+End Sub
+
+'EHT=None
+Sub FieldToCheckbox(chk As CheckBox, v As Variant, Optional enablefield As Boolean = -100)
+'Converts database format to display format
+If VarType(v) = vbBoolean Then
+    chk.Value = (Not v) + 1
+Else
+    chk.Value = v
+End If
+If enablefield <> -100 Then chk.Enabled = enablefield
+End Sub
+
+'EHT=None
+Sub FieldToCombobox(cbo As ComboBox, v As Long, Optional enablefield As Boolean = -100)
+'Converts database format to display format
+If v >= cbo.ListCount Then
+    cbo.ListIndex = -1
+Else
+    cbo.ListIndex = v
+End If
+If enablefield <> -100 Then EnableTextbox cbo, enablefield
 End Sub
 
 'EHT=None
@@ -761,10 +783,10 @@ If Len(c.Person2.First) > 0 Then showname2 = True
 If showname1 And showname2 Then
     'If there are 2 people AND 1 is still living, then the deceased person is hidden
     'But if both people are deceased, show the names because tabSearch will cross out the whole list
-    If (c.Person1.dod = NullLong) Or (c.Person2.dod = NullLong) Then
-        If c.Person1.dod <> NullLong Then
+    If (c.Person1.DOD = NullLong) Or (c.Person2.DOD = NullLong) Then
+        If c.Person1.DOD <> NullLong Then
             showname1 = False
-        ElseIf c.Person2.dod <> NullLong Then
+        ElseIf c.Person2.DOD <> NullLong Then
             showname2 = False
         End If
     End If
