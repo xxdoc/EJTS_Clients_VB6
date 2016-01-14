@@ -114,7 +114,6 @@ End Function
 Public Sub PopulateForm(frm As frmClientEditPost, offset As Long)
 Dim en As Boolean
 en = (offset = 0)
-frm.lblTaxYear(offset).Caption = TaxYear
 FieldToCombobox frm.cboField(fncInboxType + offset), m.InboxType, en
 FieldToCombobox frm.cboField(fncStatus + offset), m.Status, en
 FieldToCheckbox frm.chkField(fncFiledExtension + offset), m.FiledExtension, en

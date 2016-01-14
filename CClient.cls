@@ -204,24 +204,13 @@ FieldToTextbox frm.txtField(fncNewestYearFiled), m.NewestYearFiled, True
 'TaxReturns
 offset = 0
 For a = FileToOpen_Year To FileToOpen_Year - 1 Step -1
+    frm.lblTaxYear(offset).Caption = a
     Set tr = mDatabase.TaxReturn(ID, a)
     If tr Is Nothing Then
-        frm.lblTaxYear(offset).Caption = "-"
-        FieldToCombobox frm.cboField(fncInboxType + offset), -1, False
-        FieldToCombobox frm.cboField(fncStatus + offset), -1, False
-        FieldToCheckbox frm.chkField(fncFiledExtension + offset), vbGrayed, False
-        FieldToTextbox frm.txtField(fncCompletionDate + offset), "", False
-        FieldToTextbox frm.txtField(fncMinutesToComplete + offset), "", False
-        FieldToCheckbox frm.chkField(fncEFiled + offset), vbGrayed, False
-        FieldToTextbox frm.txtField(fncResultAGI + offset), "", False
-        FieldToTextbox frm.txtField(fncResultFederal + offset), "", False
-        FieldToTextbox frm.txtField(fncResultState + offset), "", False
-        FieldToTextbox frm.txtField(fncStateList + offset), "", False
-        FieldToTextbox frm.txtField(fncFee + offset), "", False
-        FieldToTextbox frm.txtField(fncFeeOwed + offset), "", False
-        FieldToCheckbox frm.chkField(fncReleasedBeforePayment + offset), vbGrayed, False
+        frm.pctTaxReturn(offset).Visible = False
     Else
         tr.PopulateForm frm, offset
+        frm.pctTaxReturn(offset).Visible = True
     End If
     offset = offset + 100
 Next a
