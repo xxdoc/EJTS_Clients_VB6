@@ -17,38 +17,27 @@ Private Const MOD_NAME = "CApptCliLink"
 'Back reference to database
 Private mDatabase As CDatabase
 
-Public Enum enumReminderCallStatus
-    rcsNoneRequired     'Default
-    rcsNeedToCall
-    rcsCalled
-End Enum
-
 'Primary key (for efficiency, make public and do not put within the core data type)
-Public ClientID As Long
-Public AppointmentID As Long
+Public ClientID As Long, AppointmentID As Long
 
 'Attributes (for efficiency, store within a type object)
-Private Type typeCoreData
-    ReminderCallStatus As Long
-    NoShow As Boolean
-    PrimaryClient As Boolean
-End Type
-Private m As typeCoreData
+Private m As typeCoreData_ApptCliLink
 
 
 
 
 
 '#################################################################################
-'Serialization
+'Initialization & Serialization
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vClientID As Long, vAppointmentID As Long, vPrimaryClient As Boolean)
+Public Sub Init(vDB As CDatabase, vClientID As Long, vAppointmentID As Long)
 Set mDatabase = vDB
-ClientID = vClientID: AppointmentID = vAppointmentID        'PK
-'Attr...
-m.PrimaryClient = vPrimaryClient
+'Primary key...
+ClientID = vClientID: AppointmentID = vAppointmentID
+'Defaults...
+m.PrimaryClient = True
 End Sub
 
 'EHT=None
@@ -83,3 +72,21 @@ End Function
 Public Function Appointment() As CAppointment
 Set Appointment = mDatabase.Appointment(AppointmentID)
 End Function
+
+
+
+
+
+'#################################################################################
+'Attributes
+'#################################################################################
+
+'EHT=None
+Public Property Get PrimaryClient() As Boolean
+PrimaryClient = m.PrimaryClient
+End Property
+
+'EHT=None
+Public Property Let PrimaryClient(ByVal vNewValue As Boolean)
+m.PrimaryClient = vNewValue
+End Property

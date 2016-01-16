@@ -17,54 +17,25 @@ Private Const MOD_NAME = "CTaxReturn"
 'Back reference to database
 Private mDatabase As CDatabase
 
-Public Enum enumReturnStatus
-    rsNotStarted    'Default
-    rsIncomplete
-    rsComplete
-    rsNoNeedToFile
-End Enum
-Public Enum enumInboxType
-    itAppointment   'Default
-    itDroppedOff
-    itMailedIn
-End Enum
-
 'Primary key (for efficiency, make public and do not put within the core data type)
-Public ClientID As Long
-Public TaxYear As Long
+Public ClientID As Long, TaxYear As Long
 
 'Attributes (for efficiency, store within a type object)
-Private Type typeCoreData
-    Status As Long
-    InboxType As Long
-    FiledExtension As Boolean
-    EFiled As Boolean           'Default=True
-    CompletionDate As Long      'May be NullLong
-    MinutesToComplete As Long   'May be NullLong
-    Fee As Long
-    FeeOwed As Long
-    ReleasedBeforePayment As Boolean
-    StateList As String         'Comma-separated list; blank = no state return
-    Results_AGI As Long         'May be NullLong
-    Results_Fed As Long         'May be NullLong
-    Results_State As Long       'May be NullLong
-End Type
-Private m As typeCoreData
+Private m As typeCoreData_TaxReturn
 
 
 
 
 
 '#################################################################################
-'Serialization
+'Initialization & Serialization
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vClientID As Long, vTaxYear As Long, vInboxType As enumInboxType)
+Public Sub Init(vDB As CDatabase, vClientID As Long, vTaxYear As Long)
 Set mDatabase = vDB
-TaxYear = vTaxYear: ClientID = vClientID            'PK
-'Attr...
-m.InboxType = vInboxType
+'Primary key...
+TaxYear = vTaxYear: ClientID = vClientID
 'Defaults...
 m.EFiled = True
 m.CompletionDate = NullLong

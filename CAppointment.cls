@@ -21,30 +21,25 @@ Private mDatabase As CDatabase
 Public ID As Long
 
 'Attributes (for efficiency, store within a type object)
-Private Type typeCoreData
-    Day As Long
-    TimeSlot As Long
-    CustomTimeSet As Boolean
-    CustomTime As Date      'Ignored if CustomTimeSet=False
-    NumSlots As Long
-    DidntHappen As Boolean
-    Notes As String         'May be blank
-End Type
-Private m As typeCoreData
+Private m As typeCoreData_Appointment
 
 
 
 
 
 '#################################################################################
-'Serialization
+'Initialization & Serialization
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vID As Long, vDay As Date, vTimeSlot As Long, vNumSlots As Long)
+Public Sub Init(vDB As CDatabase, vID As Long)
 Set mDatabase = vDB
-ID = vID                    'PK
-'Attr...
+'Primary key...
+ID = vID
+End Sub
+
+'EHT=None
+Public Sub QuickSetData(vDay As Date, vTimeSlot As Long, vNumSlots As Long)
 m.Day = vDay
 m.TimeSlot = vTimeSlot
 m.NumSlots = vNumSlots

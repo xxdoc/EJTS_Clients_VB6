@@ -17,68 +17,39 @@ Private Const MOD_NAME = "CClient"
 'Back reference to database
 Private mDatabase As CDatabase
 
-Public Enum enumMailingListMode
-    mlmAuto         'Default
-    mlmNoOrganizer
-    mlmEmailOrganizer
-    mlmHardCopyOrganizer
-End Enum
-
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public ID As Long
 
 'Attributes (for efficiency, store within a type object)
-Private Type typePersonData
-    Last As String
-    Middle As String                'May be blank
-    First As String
-    Nickname As String              'May be blank
-    Phone As String                 'May be blank
-    Email As String                 'May be blank
-    DateOfBirth As Long             'May be NullLong
-    DateOfDeath As Long             'May be NullLong
-End Type
-Private Type typeCoreData
-    MailingListMode As Long
-    MailingAddress_Street As String
-    MailingAddress_City As String
-    MailingAddress_State As String  'Two-letter abbreviation
-    MailingAddress_ZipCode As String
-    HomePhone As String             'May be blank
-    NumApptSlots As Long            'Must be at least 1
-    ReminderCallAlways As Boolean
-    IPTE As Boolean                 'True means it's an Inc/Ptnr/Trust/Estate
-    Notes As String                 'May be blank
-    OldestYearFiled As Long         'May be NullLong
-    NewestYearFiled As Long         'May be NullLong
-    PersonCount As Long             'Must be at least 1
-    Persons() As typePersonData     'At least one person is required
-End Type
-Private m As typeCoreData
+Private m As typeCoreData_Client
 
 
 
 
 
 '#################################################################################
-'Serialization
+'Initialization & Serialization
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vID As Long, vFirst As String, vEmail As String)
+Public Sub Init(vDB As CDatabase, vID As Long)
 Set mDatabase = vDB
-ID = vID                    'PK
-'Attr...
-m.PersonCount = 1
-ReDim m.Persons(m.PersonCount - 1)
-m.Persons(0).First = vFirst
-m.Persons(0).Email = vEmail
+'Primary key...
+ID = vID
 'Defaults...
+m.PersonCount = 1
+ReDim m.Persons(0)
 m.NumApptSlots = 2
 m.OldestYearFiled = NullLong
 m.NewestYearFiled = NullLong
 m.Persons(0).DateOfBirth = NullLong
 m.Persons(0).DateOfDeath = NullLong
+End Sub
+
+'EHT=None
+Public Sub QuickSetData(vFirst As String, vEmail As String)
+m.Persons(0).First = vFirst
+m.Persons(0).Email = vEmail
 End Sub
 
 'EHT=None
@@ -168,13 +139,15 @@ End Property
 'Form
 '#################################################################################
 
-'EHT=None
-Public Sub PopulateForm(frm As frmClientEditPost)
+'EHT=Standard
+Public Function PopulateToForm(frm As frmClientEditPost) As Boolean
+On Error GoTo ERR_HANDLER
+
 Dim a&, offset&, tr As CTaxReturn
 
 'Persons
 For a = 0 To m.PersonCount - 1
-    offset = a * 100
+    offset = a * frmClientEditPost_PersonOffset
     With m.Persons(a)
         FieldToTextbox frm.txtField(fncPerson_First + offset), .First, True
         FieldToTextbox frm.txtField(fncPerson_Nickname + offset), .Nickname, True
@@ -212,6 +185,11 @@ For a = FileToOpen_Year To FileToOpen_Year - 1 Step -1
         tr.PopulateForm frm, offset
         frm.pctTaxReturn(offset).Visible = True
     End If
-    offset = offset + 100
+    offset = offset + frmClientEditPost_TaxReturnOffset
 Next a
-End Sub
+
+PopulateToForm = True
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateToForm", Err
+End Function

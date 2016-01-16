@@ -21,12 +21,34 @@ Private mDatabase As CDatabase
 Public ID As Long
 
 'Attributes (for efficiency, store within a type object)
-Private Type typeCoreData
-    ClientID As Long        'May be NullLong
-    ClientName As String    'May be blank; ignored if ClientID <> NullLong
-    Description As String   'May be blank
-    CompletionDate As Date
-    Fee As Long
-    FeeOwed As Long
-End Type
-Private m As typeCoreData
+Private m As typeCoreData_ExtraCharge
+
+
+
+
+
+'#################################################################################
+'Initialization & Serialization
+'#################################################################################
+
+'EHT=None
+Public Sub Init(vDB As CDatabase, vID As Long)
+Set mDatabase = vDB
+'Primary key...
+ID = vID
+End Sub
+
+'EHT=None
+Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
+Set mDatabase = vDB
+If schemaversion >= 1 Then
+    ID = fh.ReadLong        'PK
+    Get #fh.FileNum, , m    'Attr
+End If
+End Sub
+
+'EHT=None
+Public Sub Serialize(fh As CMNMOD_CFileHandler)
+fh.WriteLong ID             'PK
+Put #fh.FileNum, , m        'Attr
+End Sub

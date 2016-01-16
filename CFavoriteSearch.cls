@@ -21,9 +21,34 @@ Private mDatabase As CDatabase
 Public ID As Long
 
 'Attributes (for efficiency, store within a type object)
-Private Type typeCoreData
-    DisplayName As String
-    ResultsDisplayMode As Long
-    SearchString As String
-End Type
-Private m As typeCoreData
+Private m As typeCoreData_FavoriteSearch
+
+
+
+
+
+'#################################################################################
+'Initialization & Serialization
+'#################################################################################
+
+'EHT=None
+Public Sub Init(vDB As CDatabase, vID As Long)
+Set mDatabase = vDB
+'Primary key...
+ID = vID
+End Sub
+
+'EHT=None
+Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
+Set mDatabase = vDB
+If schemaversion >= 1 Then
+    ID = fh.ReadLong        'PK
+    Get #fh.FileNum, , m    'Attr
+End If
+End Sub
+
+'EHT=None
+Public Sub Serialize(fh As CMNMOD_CFileHandler)
+fh.WriteLong ID             'PK
+Put #fh.FileNum, , m        'Attr
+End Sub

@@ -46,6 +46,7 @@ Class=CApptCliLink; CApptCliLink.cls
 Class=CFavoriteSearch; CFavoriteSearch.cls
 Class=CExtraCharge; CExtraCharge.cls
 Class=CBookkeepingJob; CBookkeepingJob.cls
+Module=modDatabase; modDatabase.bas
 ResFile32="XP.manifest.res"
 IconForm="frmMain"
 Startup="Sub Main"
