@@ -2038,7 +2038,10 @@ btnSavePost.Caption = IIf(ShowFormMode = fPost, "&Post", "Save")
 btnSavePost.Enabled = Not vReadOnly
 
 'Populate the form with real data
-This.PopulateForm Me
+If Not This.PopulateToForm(Me) Then
+    'An error occured, and the user was already notified, so just quit
+    HASERROR = True: GoTo CLEANUP
+End If
 UpdateDOBandDODtext
 DataChanged = False
 
@@ -2068,6 +2071,25 @@ CLEANUP: INCLEANUP = True
 Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Show", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
 End Function
+
+'EHT=Standard
+Private Sub btnSavePost_Click()
+On Error GoTo ERR_HANDLER
+
+If Not btnSavePost.Enabled Then Exit Sub
+
+If This.PopulateFromForm(Me) Then
+    If ShowFormMode = fNew Then
+        'Add it to the database
+    End If
+    frmMain.SetChangedFlagAndIndication
+    DataChanged = True
+    Unload Me
+End If
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSavePost_Click", Err
+End Sub
 
 'EHT=Standard
 Private Sub btnCancel_Click()
@@ -2304,16 +2326,16 @@ End Sub
 Sub UpdateDOBandDODtext()
 On Error GoTo ERR_HANDLER
 
-Dim a&, DOB&, dod&
+Dim a&, DOB&, DOD&
 For a = 0 To 1
     FieldFromTextbox txtField(fncPerson_DateOfBirth + (a * frmClientEditPost_PersonOffset)), DOB
-    FieldFromTextbox txtField(fncPerson_DateOfDeath + (a * frmClientEditPost_PersonOffset)), dod
-    If dod <> NullLong Then
+    FieldFromTextbox txtField(fncPerson_DateOfDeath + (a * frmClientEditPost_PersonOffset)), DOD
+    If DOD <> NullLong Then
         If DOB = NullLong Then
-            lblDODCalc(a).Caption = "Died " & CalculateAge(dod, Date) & "yr ago"
+            lblDODCalc(a).Caption = "Died " & CalculateAge(DOD, Date) & "yr ago"
         Else
-            If dod >= DOB Then
-                lblDODCalc(a).Caption = "Died at age " & CalculateAge(DOB, dod)
+            If DOD >= DOB Then
+                lblDODCalc(a).Caption = "Died at age " & CalculateAge(DOB, DOD)
             Else
                 lblDODCalc(a).Caption = "ERR"
             End If

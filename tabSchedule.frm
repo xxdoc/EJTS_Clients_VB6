@@ -745,11 +745,15 @@ On Error GoTo ERR_HANDLER
 If DoubleClickAllowed Then
     If ClickedApptIndex >= 0 Then
         If ActiveDBInstance.Appointments(ClickedApptIndex).ClientID_Count > 0 Then
-            Dim frme As frmClientEditPost
-            Set frme = New frmClientEditPost
-            If frme.Form_Show(ActiveDBInstance.Appointments(ClickedApptIndex).ClientIDs(0), fEdit) Then   'This will mark changed if necessary
-                frmMain.DayTotal_Update
-                DrawSchedule
+            Dim c As CClient
+            Set c = frmMain.NEWDATABASE.Client(ActiveDBInstance.Appointments(ClickedApptIndex).ClientIDs(0))
+            If Not c Is Nothing Then
+                Dim frme As New frmClientEditPost
+                If frme.Form_Show(fEdit, c) Then
+                    frmMain.NEWDATABASE.SetDirty
+                    frmMain.DayTotal_Update
+                    DrawSchedule
+                End If
             End If
         Else
             Dim frm As frmApptEdit, aID&

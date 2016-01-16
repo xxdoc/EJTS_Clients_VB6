@@ -40,7 +40,7 @@ Public Type PersonStruct_v06
     Nickname As String
     Initial As String
     Last As String
-    dod As Long
+    DOD As Long
     Phone As String
     Email As String
 End Type
@@ -50,7 +50,7 @@ Public Type PersonStruct
     Initial As String
     Last As String
     DOB As Long
-    dod As Long
+    DOD As Long
     Phone As String
     Email As String
 End Type
@@ -263,7 +263,7 @@ Else
                 .Person1.Initial = fh.ReadStringPlusLen
                 .Person1.Last = fh.ReadStringPlusLen
                 .Person1.DOB = NullLong     'New field
-                .Person1.dod = fh.ReadLong
+                .Person1.DOD = fh.ReadLong
                 .Person1.Phone = fh.ReadStringPlusLen
                 .Person1.Email = fh.ReadStringPlusLen
                 .Person2.First = fh.ReadStringPlusLen
@@ -271,7 +271,7 @@ Else
                 .Person2.Initial = fh.ReadStringPlusLen
                 .Person2.Last = fh.ReadStringPlusLen
                 .Person2.DOB = NullLong     'New field
-                .Person2.dod = fh.ReadLong
+                .Person2.DOD = fh.ReadLong
                 .Person2.Phone = fh.ReadStringPlusLen
                 .Person2.Email = fh.ReadStringPlusLen
                 .PhoneHome = fh.ReadStringPlusLen

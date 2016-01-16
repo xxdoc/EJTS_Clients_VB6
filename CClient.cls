@@ -143,7 +143,7 @@ End Property
 Public Function PopulateToForm(frm As frmClientEditPost) As Boolean
 On Error GoTo ERR_HANDLER
 
-Dim a&, offset&, tr As CTaxReturn
+Dim a As Long, offset As Long, tr As CTaxReturn
 
 'Persons
 For a = 0 To m.PersonCount - 1
@@ -192,4 +192,62 @@ PopulateToForm = True
 
 Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateToForm", Err
+End Function
+
+'EHT=Standard
+Public Function PopulateFromForm(frm As frmClientEditPost) As Boolean
+On Error GoTo ERR_HANDLER
+
+Dim temp As typeCoreData_Client, a As Long, b As Long, offset As Long
+Dim pd(1) As typePersonData, isempty(1) As Boolean
+
+'Load the person data initially into local variables
+For a = 0 To 1
+    With pd(a)
+        offset = a * frmClientEditPost_PersonOffset
+        FieldFromTextbox frm.txtField(fncPerson_First + offset), .First
+        FieldFromTextbox frm.txtField(fncPerson_Nickname + offset), .Nickname
+        FieldFromTextbox frm.txtField(fncPerson_Middle + offset), .Middle
+        FieldFromTextbox frm.txtField(fncPerson_Last + offset), .Last
+        FieldFromTextbox frm.txtField(fncPerson_Email + offset), .Email
+        FieldFromTextbox frm.txtField(fncPerson_DateOfBirth + offset), .DateOfBirth
+        FieldFromTextbox frm.txtField(fncPerson_DateOfDeath + offset), .DateOfDeath
+        FieldFromTextbox frm.txtField(fncPerson_Phone + offset), .Phone
+        isempty(a) = (.First = "") And (.Nickname = "") And (.Middle = "") And (.Last = "") And (.Email = "") And _
+                     (.DateOfBirth = NullLong) And (.DateOfDeath = NullLong) And (.Phone = "")
+    End With
+Next a
+
+'Now check which ones have data
+temp.PersonCount = 0
+b = 0
+If isempty(0) Then
+    If isempty(1) Then
+        Err.Raise 1, , "There must be data for at least one person"
+    Else
+        'There is only data for Person #2 ...
+        temp.PersonCount = 1
+        '... so shift that data to Person #1
+        b = 1
+    End If
+Else
+    If isempty(1) Then
+        'There is only data for Person #1
+        temp.PersonCount = 1
+    Else
+        'There is data for both Persons
+        temp.PersonCount = 2
+    End If
+End If
+ReDim temp.Persons(temp.PersonCount - 1)
+For a = 0 To temp.PersonCount - 1
+    temp.Persons(a) = pd(a + b)
+Next a
+
+'If we've gotten this far without errors, then save the data for real
+m = temp
+PopulateFromForm = True
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateFromForm", Err
 End Function

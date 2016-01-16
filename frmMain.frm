@@ -491,6 +491,9 @@ Public DontCallChangeCurTab As Boolean
 
 Private IdleNextTimeout As Date
 
+Public WithEvents NEWDATABASE As CDatabase
+Attribute NEWDATABASE.VB_VarHelpID = -1
+
 'EHT=None
 Private Sub Form_Load()
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
@@ -557,36 +560,11 @@ Me.Caption = FileToOpen_Year & " Tax Season" & " - " & DataFilesPath & " - " & M
 Me.Tag = Me.Caption
 If DB_Load(DataFilesPath & "EJTSClients" & FileToOpen_Year & ".dat", ActiveDBInstance) Then
     ActiveDBInstance.IsWriteable = Not FileToOpen_OpenReadOnly
-
-    #If False Then
-        Dim sd As Date, ed As Date, b&
-        sd = ActiveDBInstance.ApptBitmap_StartDate
-        ed = ActiveDBInstance.ApptBitmap_StartDate + ActiveDBInstance.ApptBitmap_Count - 1
-        Dim nsd As Date, ned As Date, napptbm() As Long, nc&
-        nsd = DateSerial(Year(sd), 1, 1)
-        ned = DateSerial(Year(sd), 12, 31)
-        nc = ned - nsd + 1
-        ReDim napptbm(nc - 1, Appointment_NumSlotsUB)
-        For a = 0 To nc - 1
-            If ((nsd + a) < sd) Or ((nsd + a) > ed) Then
-                Debug.Print "" & a & " <- NEW"
-                For b = 0 To Appointment_NumSlotsUB
-                    napptbm(a, b) = -99999999
-                Next b
-            Else
-                Debug.Print "" & a & " <- " & (nsd + a - sd)
-                For b = 0 To Appointment_NumSlotsUB
-                    napptbm(a, b) = ActiveDBInstance.ApptBitmap(nsd + a - sd, b)
-                Next b
-            End If
-        Next a
-        ActiveDBInstance.ApptBitmap = napptbm
-        ActiveDBInstance.ApptBitmap_Count = nc
-        ActiveDBInstance.ApptBitmap_StartDate = nsd
-    #End If
 Else
     GoTo CLEANUP
 End If
+Set NEWDATABASE = New CDatabase
+NEWDATABASE.ConnectToDatabase DataFilesPath & "EJTSClients.db", FileToOpen_OpenReadOnly, True
 ClearChangedIndication
 DayTotal_Update
 HidePopupInfo
@@ -880,6 +858,8 @@ If ActiveDBInstance.Loaded And ActiveDBInstance.Changed Then
         Exit Sub
     End If
 End If
+NEWDATABASE.SaveChanges
+NEWDATABASE.DisconnectFromDatabase
 
 For a = 0 To UBound(Tabs)
     If Not Tabs(a) Is Nothing Then
