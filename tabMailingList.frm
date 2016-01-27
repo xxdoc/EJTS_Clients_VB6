@@ -781,8 +781,8 @@ Dim li&, sec&
 With ActiveDBInstance.Clients(cindex).c
     If .MailingListStatus = MailingListStatus.Auto Then
         sec = 3
-        If ((Len(.Person1.First) > 0) And (.Person1.dod = NullLong)) Or _
-           ((Len(.Person2.First) > 0) And (.Person2.dod = NullLong)) Then
+        If ((Len(.Person1.First) > 0) And (.Person1.DOD = NullLong)) Or _
+           ((Len(.Person2.First) > 0) And (.Person2.DOD = NullLong)) Then
             'At least one of the people is alive...
             If Flag_IsSet(.LastYear_Flags, CompletedReturn) And _
                 (Not Flag_IsSet(.LastYear_Flags, IncPtnrTrustEstate)) And _
