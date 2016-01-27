@@ -82,9 +82,9 @@ End Function
 '#################################################################################
 
 'EHT=None
-Public Sub PopulateForm(frm As frmClientEditPost, offset As Long)
+Public Sub PopulateForm(frm As frmClientEditPost, offset As Long, enablefields As Boolean)
 Dim en As Boolean
-en = (offset = 0)
+en = (offset = 0) And enablefields
 FieldToCombobox frm.cboField(fncInboxType + offset), m.InboxType, en
 FieldToCombobox frm.cboField(fncStatus + offset), m.Status, en
 FieldToCheckbox frm.chkField(fncFiledExtension + offset), m.FiledExtension, en

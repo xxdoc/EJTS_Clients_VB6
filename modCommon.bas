@@ -639,12 +639,6 @@ Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "FieldFromString", Err
 End Function
 
-'EHT=None
-Sub FieldFromTextbox(txt As TextBox, ByRef v As Variant)
-'Converts display format to database format
-v = FieldFromString(txt.Text, Val(txt.Tag))
-End Sub
-
 'EHT=Standard
 Function FieldToString(v As Variant, m As FieldFormatMode) As String
 On Error GoTo ERR_HANDLER
@@ -716,6 +710,12 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "FieldToString", Err
 End Function
 
 'EHT=None
+Sub FieldFromTextbox(txt As TextBox, ByRef v As Variant)
+'Converts display format to database format
+v = FieldFromString(txt.Text, CLng(txt.Tag))
+End Sub
+
+'EHT=None
 Sub FieldToTextbox(txt As TextBox, v As Variant, Optional enablefield As Boolean = -100)
 'Converts database format to display format
 txt.Text = FieldToString(v, Val(txt.Tag))
@@ -723,8 +723,14 @@ If enablefield <> -100 Then EnableTextbox txt, enablefield
 End Sub
 
 'EHT=None
+Sub FieldFromCheckbox(chk As CheckBox, ByRef v As Variant)
+'Converts the checkbox's status to a Boolean for the database
+v = (chk.Value = vbChecked)
+End Sub
+
+'EHT=None
 Sub FieldToCheckbox(chk As CheckBox, v As Variant, Optional enablefield As Boolean = -100)
-'Converts database format to display format
+'Converts the given value to a Boolean, then updates the checkbox's status accordingly
 If VarType(v) = vbBoolean Then
     chk.Value = (Not v) + 1
 Else
@@ -734,9 +740,18 @@ If enablefield <> -100 Then chk.Enabled = enablefield
 End Sub
 
 'EHT=None
+Sub FieldFromCombobox(cbo As ComboBox, ByRef v As Long)
+'Converts the combobox's ListIndex to a Long for the database
+Dim i As Integer
+i = cbo.ListIndex
+If i < 0 Then Err.Raise 1, , "Combobox does not have any item selected"
+v = i
+End Sub
+
+'EHT=None
 Sub FieldToCombobox(cbo As ComboBox, v As Long, Optional enablefield As Boolean = -100)
-'Converts database format to display format
-If v >= cbo.ListCount Then
+'Selects the item in the combobox that matches the given value. If none found, blank out the combobox
+If (v < 0) Or (v >= cbo.ListCount) Then
     cbo.ListIndex = -1
 Else
     cbo.ListIndex = v

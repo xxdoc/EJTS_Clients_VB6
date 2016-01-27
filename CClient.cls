@@ -145,34 +145,37 @@ On Error GoTo ERR_HANDLER
 
 Dim a As Long, offset As Long, tr As CTaxReturn
 
+Dim en As Boolean
+en = True
+
 'Persons
 For a = 0 To m.PersonCount - 1
     offset = a * frmClientEditPost_PersonOffset
     With m.Persons(a)
-        FieldToTextbox frm.txtField(fncPerson_First + offset), .First, True
-        FieldToTextbox frm.txtField(fncPerson_Nickname + offset), .Nickname, True
-        FieldToTextbox frm.txtField(fncPerson_Middle + offset), .Middle, True
-        FieldToTextbox frm.txtField(fncPerson_Last + offset), .Last, True
-        FieldToTextbox frm.txtField(fncPerson_Email + offset), .Email, True
-        FieldToTextbox frm.txtField(fncPerson_DateOfBirth + offset), .DateOfBirth, True
-        FieldToTextbox frm.txtField(fncPerson_DateOfDeath + offset), .DateOfDeath, True
-        FieldToTextbox frm.txtField(fncPerson_Phone + offset), .Phone, True
+        FieldToTextbox frm.txtField(fncPerson_First + offset), .First, en
+        FieldToTextbox frm.txtField(fncPerson_Nickname + offset), .Nickname, en
+        FieldToTextbox frm.txtField(fncPerson_Middle + offset), .Middle, en
+        FieldToTextbox frm.txtField(fncPerson_Last + offset), .Last, en
+        FieldToTextbox frm.txtField(fncPerson_Email + offset), .Email, en
+        FieldToTextbox frm.txtField(fncPerson_DateOfBirth + offset), .DateOfBirth, en
+        FieldToTextbox frm.txtField(fncPerson_DateOfDeath + offset), .DateOfDeath, en
+        FieldToTextbox frm.txtField(fncPerson_Phone + offset), .Phone, en
     End With
 Next a
 
 'Common
-FieldToTextbox frm.txtField(fncMailingAddress_Street), m.MailingAddress_Street, True
-FieldToTextbox frm.txtField(fncMailingAddress_City), m.MailingAddress_City, True
-FieldToTextbox frm.txtField(fncMailingAddress_State), m.MailingAddress_State, True
-FieldToTextbox frm.txtField(fncMailingAddress_ZipCode), m.MailingAddress_ZipCode, True
-FieldToTextbox frm.txtField(fncNumApptSlots), m.NumApptSlots, True
-FieldToCheckbox frm.chkField(fncReminderCallAlways), m.ReminderCallAlways, True
-FieldToCombobox frm.cboField(fncMailingListMode), m.MailingListMode, True
-FieldToCheckbox frm.chkField(fncIPTE), m.IPTE, True
-FieldToTextbox frm.txtField(fncHomePhone), m.HomePhone, True
-FieldToTextbox frm.txtField(fncNotes), m.Notes, True
-FieldToTextbox frm.txtField(fncOldestYearFiled), m.OldestYearFiled, True
-FieldToTextbox frm.txtField(fncNewestYearFiled), m.NewestYearFiled, True
+FieldToTextbox frm.txtField(fncMailingAddress_Street), m.MailingAddress_Street, en
+FieldToTextbox frm.txtField(fncMailingAddress_City), m.MailingAddress_City, en
+FieldToTextbox frm.txtField(fncMailingAddress_State), m.MailingAddress_State, en
+FieldToTextbox frm.txtField(fncMailingAddress_ZipCode), m.MailingAddress_ZipCode, en
+FieldToTextbox frm.txtField(fncNumApptSlots), m.NumApptSlots, en
+FieldToCheckbox frm.chkField(fncReminderCallAlways), m.ReminderCallAlways, en
+FieldToCombobox frm.cboField(fncMailingListMode), m.MailingListMode, en
+FieldToCheckbox frm.chkField(fncIPTE), m.IPTE, en
+FieldToTextbox frm.txtField(fncHomePhone), m.HomePhone, en
+FieldToTextbox frm.txtField(fncNotes), m.Notes, en
+FieldToTextbox frm.txtField(fncOldestYearFiled), m.OldestYearFiled, en
+FieldToTextbox frm.txtField(fncNewestYearFiled), m.NewestYearFiled, en
 
 'TaxReturns
 offset = 0
@@ -182,7 +185,7 @@ For a = FileToOpen_Year To FileToOpen_Year - 1 Step -1
     If tr Is Nothing Then
         frm.pctTaxReturn(offset).Visible = False
     Else
-        tr.PopulateForm frm, offset
+        tr.PopulateForm frm, offset, en
         frm.pctTaxReturn(offset).Visible = True
     End If
     offset = offset + frmClientEditPost_TaxReturnOffset
@@ -198,7 +201,11 @@ End Function
 Public Function PopulateFromForm(frm As frmClientEditPost) As Boolean
 On Error GoTo ERR_HANDLER
 
-Dim temp As typeCoreData_Client, a As Long, b As Long, offset As Long
+'Create a temporary structure for data, so if there are any errors the original data is left in a partial state
+'DO NOT ACCESS THE `m` STRUCTURE ANYWHERE IN THIS FUNCTION EXCEPT ON THE `m = temp` LINE AT THE END!!
+Dim temp As typeCoreData_Client
+
+Dim a As Long, b As Long, offset As Long
 Dim pd(1) As typePersonData, isempty(1) As Boolean
 
 'Load the person data initially into local variables
@@ -243,6 +250,22 @@ ReDim temp.Persons(temp.PersonCount - 1)
 For a = 0 To temp.PersonCount - 1
     temp.Persons(a) = pd(a + b)
 Next a
+
+'Common
+FieldFromTextbox frm.txtField(fncMailingAddress_Street), temp.MailingAddress_Street
+FieldFromTextbox frm.txtField(fncMailingAddress_City), temp.MailingAddress_City
+FieldFromTextbox frm.txtField(fncMailingAddress_State), temp.MailingAddress_State
+FieldFromTextbox frm.txtField(fncMailingAddress_ZipCode), temp.MailingAddress_ZipCode
+FieldFromTextbox frm.txtField(fncNumApptSlots), temp.NumApptSlots
+FieldFromCheckbox frm.chkField(fncReminderCallAlways), temp.ReminderCallAlways
+FieldFromCombobox frm.cboField(fncMailingListMode), temp.MailingListMode
+FieldFromCheckbox frm.chkField(fncIPTE), temp.IPTE
+FieldFromTextbox frm.txtField(fncHomePhone), temp.HomePhone
+FieldFromTextbox frm.txtField(fncNotes), temp.Notes
+FieldFromTextbox frm.txtField(fncOldestYearFiled), temp.OldestYearFiled
+FieldFromTextbox frm.txtField(fncNewestYearFiled), temp.NewestYearFiled
+
+'<Tax Return stuff here>
 
 'If we've gotten this far without errors, then save the data for real
 m = temp

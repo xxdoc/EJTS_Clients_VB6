@@ -51,7 +51,6 @@ Begin VB.Form frmClientEditPost
          Index           =   707
          Left            =   60
          TabIndex        =   105
-         Tag             =   "21"
          Top             =   3420
          Width           =   1215
       End
@@ -71,7 +70,6 @@ Begin VB.Form frmClientEditPost
          Index           =   708
          Left            =   60
          TabIndex        =   104
-         Tag             =   "21"
          Top             =   3900
          Width           =   1215
       End
@@ -91,7 +89,6 @@ Begin VB.Form frmClientEditPost
          Index           =   706
          Left            =   60
          TabIndex        =   103
-         Tag             =   "21"
          Top             =   2940
          Width           =   1215
       End
@@ -111,7 +108,6 @@ Begin VB.Form frmClientEditPost
          Index           =   711
          Left            =   60
          TabIndex        =   102
-         Tag             =   "23"
          Top             =   5340
          Width           =   1215
       End
@@ -131,7 +127,6 @@ Begin VB.Form frmClientEditPost
          Index           =   710
          Left            =   60
          TabIndex        =   101
-         Tag             =   "23"
          Top             =   4860
          Width           =   1215
       End
@@ -151,7 +146,6 @@ Begin VB.Form frmClientEditPost
          Index           =   709
          Left            =   60
          TabIndex        =   100
-         Tag             =   "54"
          Top             =   4380
          Width           =   1215
       End
@@ -171,7 +165,6 @@ Begin VB.Form frmClientEditPost
          Index           =   703
          Left            =   60
          TabIndex        =   99
-         Tag             =   "31"
          Top             =   1500
          Width           =   1215
       End
@@ -191,7 +184,6 @@ Begin VB.Form frmClientEditPost
          Index           =   704
          Left            =   60
          TabIndex        =   98
-         Tag             =   "12"
          Top             =   1980
          Width           =   1215
       End
@@ -399,6 +391,7 @@ Begin VB.Form frmClientEditPost
       Height          =   375
       Index           =   202
       Left            =   4560
+      MaxLength       =   1
       TabIndex        =   9
       Tag             =   "51"
       Top             =   2520
@@ -489,6 +482,7 @@ Begin VB.Form frmClientEditPost
       Height          =   375
       Index           =   102
       Left            =   4560
+      MaxLength       =   1
       TabIndex        =   2
       Tag             =   "51"
       Top             =   720
@@ -1456,7 +1450,7 @@ Begin VB.Form frmClientEditPost
       Width           =   1455
    End
    Begin VB.Label lbl 
-      Caption         =   "Middle:"
+      Caption         =   "Initial:"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   9
