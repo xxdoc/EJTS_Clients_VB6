@@ -204,8 +204,7 @@ Next
 'End If
 
 'Check if Win7 compositing is enabled. If it is, all requests (including API) for form position/size will be off by 5px
-DwmIsCompositionEnabled offsetforaero
-If offsetforaero Then offsetforaero = 5
+If IsCompositionEnabled Then offsetforaero = 5
 
 'Calculate dimensions
 SystemParametersInfo SPI_GETWORKAREA, 0, scr, 0
@@ -409,6 +408,18 @@ If Not ctrl.Visible Then Exit Function  'Control must be visible
 ts = ctrl.TabStop                       'If this errors, thin this control cannot receive focus (the actual value doesn't matter)
 ti = ctrl.TabIndex                      'If this errors, this would be weird
 IsControlTabable = True
+
+SILENT_EXIT:
+End Function
+
+'EHT=Silent
+Function IsCompositionEnabled() As Boolean
+On Error GoTo SILENT_EXIT
+
+Dim a&
+If DwmIsCompositionEnabled(a) = S_OK Then
+    If a Then IsCompositionEnabled = True
+End If
 
 SILENT_EXIT:
 End Function
