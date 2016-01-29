@@ -95,15 +95,17 @@ If Not DEBUGMODE Then
     hParent = UserControl.hwnd
 
     'Initialize phonedetails_columns
-    ReDim phonedetails_columns(7)
+    ReDim phonedetails_columns(9)
     phonedetails_columns(0).cWidth = 25:  phonedetails_columns(0).cAlign = TA_RIGHT
     phonedetails_columns(1).cWidth = 26:  phonedetails_columns(1).cAlign = TA_CENTER
     phonedetails_columns(2).cWidth = 26:  phonedetails_columns(2).cAlign = TA_CENTER
     phonedetails_columns(3).cWidth = 275: phonedetails_columns(3).cAlign = TA_LEFT
     phonedetails_columns(4).cWidth = 97:  phonedetails_columns(4).cAlign = TA_RIGHT
-    phonedetails_columns(5).cWidth = 340: phonedetails_columns(5).cAlign = TA_LEFT
-    phonedetails_columns(6).cWidth = 75:  phonedetails_columns(6).cAlign = TA_LEFT
-    phonedetails_columns(7).cWidth = 67:  phonedetails_columns(7).cAlign = TA_LEFT
+    phonedetails_columns(5).cWidth = 97:  phonedetails_columns(5).cAlign = TA_RIGHT
+    phonedetails_columns(6).cWidth = 97:  phonedetails_columns(6).cAlign = TA_RIGHT
+    phonedetails_columns(7).cWidth = 340: phonedetails_columns(7).cAlign = TA_LEFT
+    phonedetails_columns(8).cWidth = 75:  phonedetails_columns(8).cAlign = TA_LEFT
+    phonedetails_columns(9).cWidth = 67:  phonedetails_columns(9).cAlign = TA_LEFT
     For a = 1 To UBound(phonedetails_columns)
         phonedetails_columns(a).cx = phonedetails_columns(a - 1).cx + phonedetails_columns(a - 1).cWidth
     Next a
@@ -480,7 +482,7 @@ End Sub
 Private Sub DrawItem_PhoneDetails(cindex&, dis As DRAWITEMSTRUCT)
 On Error GoTo ERR_HANDLER
 
-Dim tc&, p$(), a&, ci&, c As Boolean, nx&, ny&, t$, atleastoneliving As Boolean
+Dim tc&, p$(), a&, b&, ci&, c As Boolean, nx&, ny&, t$, atleastoneliving As Boolean
 
 If ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData Then tabSearch.RegenerateClientTempData cindex
 
@@ -568,17 +570,23 @@ With ActiveDBInstance.Clients(cindex).c
     SetTextAlign dis.hdc, TA_NOUPDATECP
 
     'Phone numbers
-    ci = ci + 1
-    t$ = FieldToString(.PhoneHome, mPhoneHideLocalAreaCode)
-    a = InStr(t$, "x")
-    If a > 0 Then
-        SetTextAlign dis.hdc, TA_LEFT
-        TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)) - 5, ny, "x", 1
-
-        t$ = Left$(t$, a - 1)
-    End If
-    SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign
-    TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)) - 6, ny, t$, Len(t$)
+    For b = 0 To 2
+        ci = ci + 1
+        Select Case b
+        Case 0: t$ = FieldToString(.Person1.Phone, mPhoneHideLocalAreaCode)
+        Case 1: t$ = FieldToString(.Person2.Phone, mPhoneHideLocalAreaCode)
+        Case 2: t$ = FieldToString(.PhoneHome, mPhoneHideLocalAreaCode)
+        End Select
+        a = InStr(t$, "x")
+        If a > 0 Then
+            SetTextAlign dis.hdc, TA_LEFT
+            TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)) - 5, ny, "x", 1
+    
+            t$ = Left$(t$, a - 1)
+        End If
+        SetTextAlign dis.hdc, phonedetails_columns(ci).cAlign
+        TextOut dis.hdc, nx + GetTextDrawPos(phonedetails_columns(ci)) - 6, ny, t$, Len(t$)
+    Next b
 
     'Notes
     ci = ci + 1
