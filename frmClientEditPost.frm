@@ -2641,9 +2641,9 @@ With tempclient.c
             End If
         End If
         .Person1.DOB = NullLong
-        .Person1.dod = NullLong
+        .Person1.DOD = NullLong
         .Person2.DOB = NullLong
-        .Person2.dod = NullLong
+        .Person2.DOD = NullLong
 
         .NumApptSlotsToUse = 0  'New clients should be set to Auto (CHOS will calculate it properly later)
         .Flags = NewClient
@@ -2670,7 +2670,7 @@ With tempclient.c
     FieldToTextbox txtField(fPerson1Phone), .Person1.Phone, True
     FieldToTextbox txtField(fPerson1Email), .Person1.Email, True
     FieldToTextbox txtField(fPerson1DOB), .Person1.DOB, True
-    FieldToTextbox txtField(fPerson1DOD), .Person1.dod, True
+    FieldToTextbox txtField(fPerson1DOD), .Person1.DOD, True
 
     FieldToTextbox txtField(fPerson2First), .Person2.First, True
     FieldToTextbox txtField(fPerson2Nickname), .Person2.Nickname, True
@@ -2679,7 +2679,7 @@ With tempclient.c
     FieldToTextbox txtField(fPerson2Phone), .Person2.Phone, True
     FieldToTextbox txtField(fPerson2Email), .Person2.Email, True
     FieldToTextbox txtField(fPerson2DOB), .Person2.DOB, True
-    FieldToTextbox txtField(fPerson2DOD), .Person2.dod, True
+    FieldToTextbox txtField(fPerson2DOD), .Person2.DOD, True
 
     FieldToTextbox txtField(fAddressStreet), .AddressStreet, True
     FieldToTextbox txtField(fAddressCity), .AddressCity, True
@@ -2882,7 +2882,7 @@ With tempclient.c
     FieldFromTextbox txtField(fPerson1Phone), .Person1.Phone
     FieldFromTextbox txtField(fPerson1Email), .Person1.Email
     FieldFromTextbox txtField(fPerson1DOB), .Person1.DOB
-    FieldFromTextbox txtField(fPerson1DOD), .Person1.dod
+    FieldFromTextbox txtField(fPerson1DOD), .Person1.DOD
 
     FieldFromTextbox txtField(fPerson2First), .Person2.First
     FieldFromTextbox txtField(fPerson2Nickname), .Person2.Nickname
@@ -2891,7 +2891,7 @@ With tempclient.c
     FieldFromTextbox txtField(fPerson2Phone), .Person2.Phone
     FieldFromTextbox txtField(fPerson2Email), .Person2.Email
     FieldFromTextbox txtField(fPerson2DOB), .Person2.DOB
-    FieldFromTextbox txtField(fPerson2DOD), .Person2.dod
+    FieldFromTextbox txtField(fPerson2DOD), .Person2.DOD
 
     FieldFromTextbox txtField(fAddressStreet), .AddressStreet
     FieldFromTextbox txtField(fAddressCity), .AddressCity
@@ -3374,21 +3374,21 @@ End Sub
 Sub UpdateDOBandDODtext()
 On Error GoTo ERR_HANDLER
 
-Dim a&, DOB&, dod&
+Dim a&, DOB&, DOD&
 For a = 1 To 2
     If a = 1 Then
         FieldFromTextbox txtField(fPerson1DOB), DOB
-        FieldFromTextbox txtField(fPerson1DOD), dod
+        FieldFromTextbox txtField(fPerson1DOD), DOD
     Else
         FieldFromTextbox txtField(fPerson2DOB), DOB
-        FieldFromTextbox txtField(fPerson2DOD), dod
+        FieldFromTextbox txtField(fPerson2DOD), DOD
     End If
-    If dod <> NullLong Then
+    If DOD <> NullLong Then
         If DOB = NullLong Then
-            lblAge(a).Caption = "Died " & CalculateAge(dod, Date) & "yr ago"
+            lblAge(a).Caption = "Died " & CalculateAge(DOD, Date) & "yr ago"
         Else
-            If dod >= DOB Then
-                lblAge(a).Caption = "Died at age " & CalculateAge(DOB, dod)
+            If DOD >= DOB Then
+                lblAge(a).Caption = "Died at age " & CalculateAge(DOB, DOD)
             Else
                 lblAge(a).Caption = "ERR"
             End If

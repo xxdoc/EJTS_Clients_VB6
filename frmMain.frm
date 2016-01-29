@@ -769,7 +769,7 @@ Case "copyfees"
     Clipboard.SetText t$
     MsgBox "Data copied to the clipboard.", vbInformation
 
-Case "dod"
+Case "dateofdeath"
     lstSort.Clear
     For a = 0 To ActiveDBInstance.Clients_Count - 1
         With ActiveDBInstance.Clients(a)
@@ -779,8 +779,8 @@ Case "dod"
     Next a
     For a = 0 To lstSort.ListCount - 1
         With ActiveDBInstance.Clients(lstSort.ItemData(a))
-            If (.c.Person1.dod <> NullLong) Or (.c.Person2.dod <> NullLong) Then
-                t$ = t$ & .c.ID & vbTab & .c.Person1.Last & vbTab & .c.Person1.First & vbTab & .c.Person2.First & vbTab & IIf(.c.Person1.dod = NullLong, "", "D") & vbTab & IIf(.c.Person2.dod = NullLong, "", "D") & vbTab & FormatClientName(fSearchResults, .c) & vbCrLf
+            If (.c.Person1.DOD <> NullLong) Or (.c.Person2.DOD <> NullLong) Then
+                t$ = t$ & .c.ID & vbTab & .c.Person1.Last & vbTab & .c.Person1.First & vbTab & .c.Person2.First & vbTab & IIf(.c.Person1.DOD = NullLong, "", "D") & vbTab & IIf(.c.Person2.DOD = NullLong, "", "D") & vbTab & FormatClientName(fSearchResults, .c) & vbCrLf
             End If
         End With
     Next a

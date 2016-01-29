@@ -485,7 +485,7 @@ Dim tc&, p$(), a&, ci&, c As Boolean, nx&, ny&, t$, atleastoneliving As Boolean
 If ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData Then tabSearch.RegenerateClientTempData cindex
 
 With ActiveDBInstance.Clients(cindex).c
-    atleastoneliving = ((Len(.Person1.First) > 0) And (.Person1.dod = NullLong)) Or ((Len(.Person2.First) > 0) And (.Person2.dod = NullLong))
+    atleastoneliving = ((Len(.Person1.First) > 0) And (.Person1.DOD = NullLong)) Or ((Len(.Person2.First) > 0) And (.Person2.DOD = NullLong))
     If frmMain.CHOS_IsChosen(dis.ItemData) Then
         tc = ChosenTextColor
     ElseIf Flag_IsSet(.Flags, CompletedReturn) Then
