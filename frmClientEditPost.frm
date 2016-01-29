@@ -2880,34 +2880,38 @@ With tempclient.c
     FieldFromTextbox txtField(fResultAGI), .ResultAGI
     FieldFromTextbox txtField(fResultFederal), .ResultFederal
     FieldFromTextbox txtField(fStateList), .StateList
-    FieldFromTextbox txtField(fResultState), p1
-    FieldFromTextbox txtField(fResultState2), p2
-    If Len(.StateList) = 0 Then
-        If (p1 <> NullLong) Or (p2 <> NullLong) Then
-            ShowErrorMsg "If no states are listed, then there cannot be any state results entered either."
-            Exit Sub
-        End If
-        .ResultState = NullLong
-    Else
-        'The user can enter the single value in either box. We'll just shift it over to p1
-        If (p1 = NullLong) And (p2 <> NullLong) Then p1 = p2: p2 = NullLong
-        If Len(.StateList) = 2 Then
-            If p1 = NullLong Then
-                ShowErrorMsg "If a state is listed, there must also be a state result entered."
+    If (ShowFormMode = fPost) Then
+        FieldFromTextbox txtField(fResultState), p1
+        FieldFromTextbox txtField(fResultState2), p2
+        If Len(.StateList) = 0 Then
+            If (p1 <> NullLong) Or (p2 <> NullLong) Then
+                ShowErrorMsg "If no states are listed, then there cannot be any state results entered either."
                 Exit Sub
             End If
-            If p2 <> NullLong Then
-                ShowErrorMsg "Only one state is listed, yet there are two results entered."
-                Exit Sub
-            End If
-            .ResultState = p1
+            .ResultState = NullLong
         Else
-            If (p1 = NullLong) Or (p2 = NullLong) Then
-                ShowErrorMsg "If two or more states are listed, there must be two state results entered."
-                Exit Sub
+            'The user can enter the single value in either box. We'll just shift it over to p1
+            If (p1 = NullLong) And (p2 <> NullLong) Then p1 = p2: p2 = NullLong
+            If Len(.StateList) = 2 Then
+                If p1 = NullLong Then
+                    ShowErrorMsg "If a state is listed, there must also be a state result entered."
+                    Exit Sub
+                End If
+                If p2 <> NullLong Then
+                    ShowErrorMsg "Only one state is listed, yet there are two results entered."
+                    Exit Sub
+                End If
+                .ResultState = p1
+            Else
+                If (p1 = NullLong) Or (p2 = NullLong) Then
+                    ShowErrorMsg "If two or more states are listed, there must be two state results entered."
+                    Exit Sub
+                End If
+                .ResultState = p1 + p2
             End If
-            .ResultState = p1 + p2
         End If
+    Else
+        FieldFromTextbox txtField(fResultState), .ResultState
     End If
     FieldFromTextbox txtField(fOldestYearFiled), .OldestYearFiled
     FieldFromTextbox txtField(fNewestYearFiled), .NewestYearFiled
