@@ -1101,12 +1101,6 @@ txt.SelStart = Len(txt.Text)
 txt.SelLength = 0
 End Sub
 
-'EHT=None
-Sub ResizeFormByInnerScaleDimensions(frm As Form, Optional NewScaleWidth&, Optional NewScaleHeight&)
-If NewScaleWidth <> 0 Then frm.Width = (frm.Width - (frm.ScaleWidth * Screen.TwipsPerPixelX)) + (NewScaleWidth * Screen.TwipsPerPixelX)
-If NewScaleHeight <> 0 Then frm.Height = (frm.Height - (frm.ScaleHeight * Screen.TwipsPerPixelY)) + (NewScaleHeight * Screen.TwipsPerPixelY)
-End Sub
-
 'EHT=Custom
 Function RunningFromIDE() As Boolean
 'Because debug statements are ignored when the app is compiled, the next statment will

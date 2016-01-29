@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form frmClientEditPost 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Edit/Post Client"
-   ClientHeight    =   8535
+   ClientHeight    =   8295
    ClientLeft      =   45
    ClientTop       =   435
-   ClientWidth     =   13815
+   ClientWidth     =   12990
    BeginProperty Font 
       Name            =   "Arial"
       Size            =   9.75
@@ -20,1717 +20,174 @@ Begin VB.Form frmClientEditPost
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   569
+   ScaleHeight     =   553
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   921
+   ScaleWidth      =   866
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
-   Begin VB.PictureBox pctPostSpecificArea 
-      BorderStyle     =   0  'None
-      Height          =   7335
+   Begin VB.CheckBox chkIncPtnrTrustEstate 
+      Caption         =   "&INC, PTNR, TRUST, ESTATE"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   855
       Left            =   120
-      ScaleHeight     =   489
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   89
-      TabIndex        =   97
+      TabIndex        =   0
+      TabStop         =   0   'False
+      Top             =   480
+      Visible         =   0   'False
+      Width           =   1215
+   End
+   Begin VB.OptionButton optInType 
+      Caption         =   "&MI"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   2
+      Left            =   10320
+      TabIndex        =   124
+      TabStop         =   0   'False
+      Top             =   840
+      Visible         =   0   'False
+      Width           =   1095
+   End
+   Begin VB.OptionButton optInType 
+      Caption         =   "&DO"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   1
+      Left            =   10320
+      TabIndex        =   123
+      TabStop         =   0   'False
+      Top             =   480
+      Visible         =   0   'False
+      Width           =   1095
+   End
+   Begin VB.OptionButton optInType 
+      Caption         =   "&Appt"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   0
+      Left            =   10320
+      TabIndex        =   122
       TabStop         =   0   'False
       Top             =   120
       Visible         =   0   'False
-      Width           =   1335
-      Begin VB.CheckBox chkEFile 
-         Caption         =   "E-Filed"
-         Height          =   495
-         Left            =   120
-         TabIndex        =   124
-         TabStop         =   0   'False
-         Top             =   3360
-         Visible         =   0   'False
-         Width           =   1095
-      End
-      Begin VB.CheckBox chkIncPtnrTrustEstate 
-         Caption         =   "&INC, PTNR, TRUST, ESTATE"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   975
-         Left            =   120
-         TabIndex        =   104
-         TabStop         =   0   'False
-         Top             =   1920
-         Width           =   1095
-      End
-      Begin VB.OptionButton optInType 
-         Caption         =   "&NNTF"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   3
-         Left            =   120
-         TabIndex        =   103
-         TabStop         =   0   'False
-         Top             =   1200
-         Width           =   1095
-      End
-      Begin VB.OptionButton optInType 
-         Caption         =   "&Appt"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   0
-         Left            =   120
-         TabIndex        =   102
-         TabStop         =   0   'False
-         Top             =   120
-         Width           =   1095
-      End
-      Begin VB.OptionButton optInType 
-         Caption         =   "&DO"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   1
-         Left            =   120
-         TabIndex        =   101
-         TabStop         =   0   'False
-         Top             =   480
-         Width           =   1095
-      End
-      Begin VB.OptionButton optInType 
-         Caption         =   "&MI"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   2
-         Left            =   120
-         TabIndex        =   100
-         TabStop         =   0   'False
-         Top             =   840
-         Width           =   1095
-      End
-      Begin VB.Line Line7 
-         X1              =   88
-         X2              =   88
-         Y1              =   0
-         Y2              =   488
-      End
+      Width           =   1095
    End
-   Begin VB.PictureBox pctMainEditArea 
-      BorderStyle     =   0  'None
-      Height          =   7395
-      Left            =   1440
-      ScaleHeight     =   493
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   817
-      TabIndex        =   0
+   Begin VB.OptionButton optInType 
+      Caption         =   "&NNTF"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   3
+      Left            =   11520
+      TabIndex        =   121
       TabStop         =   0   'False
       Top             =   120
-      Width           =   12255
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   136
-         Left            =   5280
-         TabIndex        =   122
-         Tag             =   "31"
-         Top             =   2520
-         Width           =   1215
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   135
-         Left            =   5280
-         TabIndex        =   120
-         Tag             =   "31"
-         Top             =   960
-         Width           =   1215
-      End
-      Begin VB.PictureBox pctFutureFlags 
-         BorderStyle     =   0  'None
-         Height          =   3735
-         Left            =   10200
-         ScaleHeight     =   249
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   81
-         TabIndex        =   106
-         TabStop         =   0   'False
-         Top             =   3600
-         Visible         =   0   'False
-         Width           =   1215
-         Begin VB.Label lblFlagNew_Title 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "CurrYr:"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   700
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Left            =   120
-            TabIndex        =   118
-            Top             =   360
-            Width           =   1095
-         End
-         Begin VB.Line Line8 
-            X1              =   8
-            X2              =   72
-            Y1              =   40
-            Y2              =   40
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Inc"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   0
-            Left            =   120
-            TabIndex        =   117
-            Top             =   720
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Comp"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   1
-            Left            =   120
-            TabIndex        =   116
-            Top             =   960
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "NNTF"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   5
-            Left            =   120
-            TabIndex        =   115
-            Top             =   2040
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Ext"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   6
-            Left            =   120
-            TabIndex        =   114
-            Top             =   2400
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Appt"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   2
-            Left            =   120
-            TabIndex        =   113
-            Top             =   1320
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "DO"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   3
-            Left            =   120
-            TabIndex        =   112
-            Top             =   1560
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "MI"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   4
-            Left            =   120
-            TabIndex        =   111
-            Top             =   1800
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "I/P/T/E"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   7
-            Left            =   120
-            TabIndex        =   110
-            Top             =   2640
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "New"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   8
-            Left            =   120
-            TabIndex        =   109
-            Top             =   2880
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "E-Filed"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   9
-            Left            =   120
-            TabIndex        =   108
-            Top             =   3120
-            Width           =   975
-         End
-         Begin VB.Label lblFlagFuture 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "RBefPmt"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   10
-            Left            =   120
-            TabIndex        =   107
-            Top             =   3360
-            Width           =   975
-         End
-         Begin VB.Shape Shape1 
-            FillColor       =   &H00FFFFFF&
-            FillStyle       =   0  'Solid
-            Height          =   3495
-            Left            =   0
-            Top             =   240
-            Width           =   1215
-         End
-         Begin VB.Label lblPctFlagsTitle 
-            Caption         =   "Flags:"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   1
-            Left            =   0
-            TabIndex        =   119
-            Top             =   0
-            Width           =   1215
-         End
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   134
-         Left            =   11280
-         TabIndex        =   98
-         TabStop         =   0   'False
-         Tag             =   "21"
-         Top             =   2400
-         Visible         =   0   'False
-         Width           =   975
-      End
-      Begin VB.PictureBox pctFlags 
-         BorderStyle     =   0  'None
-         Height          =   3735
-         Left            =   10200
-         ScaleHeight     =   249
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   137
-         TabIndex        =   37
-         TabStop         =   0   'False
-         Top             =   3600
-         Width           =   2055
-         Begin VB.Label lblFlagThisYear_Title 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "CurrYr:"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   700
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Left            =   1080
-            TabIndex        =   95
-            Top             =   360
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear_Title 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H80000005&
-            BackStyle       =   0  'Transparent
-            Caption         =   "LastYr:"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   700
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Left            =   120
-            TabIndex        =   94
-            Top             =   360
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H0000FFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Inc"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   0
-            Left            =   1080
-            TabIndex        =   93
-            Top             =   720
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H0000FF00&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Comp"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   1
-            Left            =   1080
-            TabIndex        =   92
-            Top             =   960
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FF00FF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "NNTF"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   5
-            Left            =   1080
-            TabIndex        =   91
-            Top             =   2040
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FF00FF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Ext"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   6
-            Left            =   1080
-            TabIndex        =   90
-            Top             =   2400
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFF00&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Appt"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   2
-            Left            =   1080
-            TabIndex        =   89
-            Top             =   1320
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFF00&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "DO"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   3
-            Left            =   1080
-            TabIndex        =   88
-            Top             =   1560
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFF00&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "MI"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   4
-            Left            =   1080
-            TabIndex        =   87
-            Top             =   1800
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00C0C0C0&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "I/P/T/E"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   7
-            Left            =   1080
-            TabIndex        =   86
-            Top             =   2640
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00C0C000&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "New"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   8
-            Left            =   1080
-            TabIndex        =   85
-            Top             =   2880
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00C0C0C0&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "E-Filed"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   9
-            Left            =   1080
-            TabIndex        =   84
-            Top             =   3120
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Inc"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   0
-            Left            =   120
-            TabIndex        =   83
-            Top             =   720
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Comp"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   1
-            Left            =   120
-            TabIndex        =   82
-            Top             =   960
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "NNTF"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   5
-            Left            =   120
-            TabIndex        =   81
-            Top             =   2040
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Ext"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   6
-            Left            =   120
-            TabIndex        =   80
-            Top             =   2400
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "Appt"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   2
-            Left            =   120
-            TabIndex        =   79
-            Top             =   1320
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "DO"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   3
-            Left            =   120
-            TabIndex        =   78
-            Top             =   1560
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "MI"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   4
-            Left            =   120
-            TabIndex        =   77
-            Top             =   1800
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "I/P/T/E"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   7
-            Left            =   120
-            TabIndex        =   76
-            Top             =   2640
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "New"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   8
-            Left            =   120
-            TabIndex        =   75
-            Top             =   2880
-            Width           =   855
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "E-Filed"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   9
-            Left            =   120
-            TabIndex        =   74
-            Top             =   3120
-            Width           =   855
-         End
-         Begin VB.Line Line1 
-            X1              =   8
-            X2              =   128
-            Y1              =   40
-            Y2              =   40
-         End
-         Begin VB.Label lblFlagLastYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H00FFFFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "RBefPmt"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   10
-            Left            =   120
-            TabIndex        =   73
-            Top             =   3360
-            Width           =   855
-         End
-         Begin VB.Label lblFlagThisYear 
-            Alignment       =   2  'Center
-            Appearance      =   0  'Flat
-            BackColor       =   &H0000FFFF&
-            BorderStyle     =   1  'Fixed Single
-            Caption         =   "RBefPmt"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H80000008&
-            Height          =   255
-            Index           =   10
-            Left            =   1080
-            TabIndex        =   72
-            Top             =   3360
-            Width           =   855
-         End
-         Begin VB.Shape Shape2 
-            FillColor       =   &H00FFFFFF&
-            FillStyle       =   0  'Solid
-            Height          =   3495
-            Left            =   0
-            Top             =   240
-            Width           =   2055
-         End
-         Begin VB.Label lblPctFlagsTitle 
-            Caption         =   "Flags (click to toggle):"
-            BeginProperty Font 
-               Name            =   "Arial"
-               Size            =   9
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            Height          =   255
-            Index           =   0
-            Left            =   0
-            TabIndex        =   96
-            Top             =   0
-            Width           =   2055
-         End
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   133
-         Left            =   11280
-         TabIndex        =   34
-         Tag             =   "70"
-         Top             =   3120
-         Width           =   975
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   132
-         Left            =   10200
-         TabIndex        =   33
-         Tag             =   "70"
-         Top             =   3120
-         Width           =   975
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   113
-         Left            =   6600
-         TabIndex        =   13
-         Tag             =   "31"
-         Top             =   2520
-         Width           =   1215
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   109
-         Left            =   5760
-         TabIndex        =   10
-         Tag             =   "51"
-         Top             =   1800
-         Width           =   495
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   108
-         Left            =   3960
-         TabIndex        =   9
-         Tag             =   "50"
-         Top             =   1800
-         Width           =   1695
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   110
-         Left            =   6360
-         TabIndex        =   11
-         Tag             =   "50"
-         Top             =   1800
-         Width           =   3615
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   107
-         Left            =   1320
-         TabIndex        =   8
-         Tag             =   "50"
-         Top             =   1800
-         Width           =   2535
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   106
-         Left            =   6600
-         TabIndex        =   6
-         Tag             =   "31"
-         Top             =   960
-         Width           =   1215
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   102
-         Left            =   5760
-         TabIndex        =   3
-         Tag             =   "51"
-         Top             =   240
-         Width           =   495
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   101
-         Left            =   3960
-         TabIndex        =   2
-         Tag             =   "50"
-         Top             =   240
-         Width           =   1695
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   112
-         Left            =   1320
-         TabIndex        =   12
-         Tag             =   "52"
-         Top             =   2520
-         Width           =   3855
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   122
-         Left            =   9000
-         TabIndex        =   23
-         Tag             =   "23"
-         Top             =   4080
-         Width           =   975
-      End
-      Begin VB.TextBox txtField 
-         Height          =   1815
-         Index           =   125
-         Left            =   1320
-         MultiLine       =   -1  'True
-         ScrollBars      =   3  'Both
-         TabIndex        =   26
-         TabStop         =   0   'False
-         Tag             =   "53"
-         Top             =   5520
-         Width           =   8655
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   128
-         Left            =   11280
-         TabIndex        =   29
-         Tag             =   "21"
-         Top             =   960
-         Width           =   975
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   129
-         Left            =   10200
-         TabIndex        =   30
-         Tag             =   "21"
-         Top             =   2400
-         Width           =   975
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   130
-         Left            =   10200
-         TabIndex        =   31
-         Tag             =   "21"
-         Top             =   960
-         Width           =   975
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   127
-         Left            =   11280
-         TabIndex        =   28
-         Tag             =   "23"
-         Top             =   240
-         Width           =   975
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   126
-         Left            =   10200
-         TabIndex        =   27
-         Tag             =   "23"
-         Top             =   240
-         Width           =   975
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   131
-         Left            =   10200
-         TabIndex        =   32
-         Tag             =   "54"
-         Top             =   1680
-         Width           =   2055
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   123
-         Left            =   7440
-         TabIndex        =   24
-         Tag             =   "31"
-         Top             =   4800
-         Width           =   1335
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   121
-         Left            =   8280
-         TabIndex        =   22
-         Tag             =   "12"
-         Top             =   4080
-         Width           =   615
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   124
-         Left            =   8880
-         TabIndex        =   25
-         Tag             =   "12"
-         Top             =   4800
-         Width           =   1095
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   120
-         Left            =   7440
-         TabIndex        =   21
-         Tag             =   "13"
-         Top             =   4080
-         Width           =   735
-      End
-      Begin VB.TextBox txtField 
-         Height          =   615
-         Index           =   118
-         Left            =   1320
-         MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   19
-         Tag             =   "50"
-         Top             =   4560
-         Width           =   6015
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   105
-         Left            =   1320
-         TabIndex        =   5
-         Tag             =   "52"
-         Top             =   960
-         Width           =   3855
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   117
-         Left            =   6240
-         TabIndex        =   18
-         Tag             =   "51"
-         Top             =   3840
-         Width           =   1095
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   116
-         Left            =   5640
-         TabIndex        =   17
-         Tag             =   "51"
-         Top             =   3840
-         Width           =   495
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   115
-         Left            =   1320
-         TabIndex        =   16
-         Tag             =   "51"
-         Top             =   3840
-         Width           =   4215
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   114
-         Left            =   1320
-         TabIndex        =   15
-         Tag             =   "51"
-         Top             =   3360
-         Width           =   6015
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   111
-         Left            =   7920
-         TabIndex        =   14
-         Tag             =   "60"
-         Top             =   2520
-         Width           =   2055
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   104
-         Left            =   7920
-         TabIndex        =   7
-         Tag             =   "60"
-         Top             =   960
-         Width           =   2055
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   119
-         Left            =   7440
-         TabIndex        =   20
-         Tag             =   "60"
-         Top             =   3360
-         Width           =   2535
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   100
-         Left            =   1320
-         TabIndex        =   1
-         Tag             =   "50"
-         Top             =   240
-         Width           =   2535
-      End
-      Begin VB.TextBox txtField 
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   103
-         Left            =   6360
-         TabIndex        =   4
-         Tag             =   "50"
-         Top             =   240
-         Width           =   3615
-      End
-      Begin VB.Label lblAge 
+      Visible         =   0   'False
+      Width           =   1095
+   End
+   Begin VB.CheckBox chkEFile 
+      Caption         =   "E-Filed"
+      Height          =   375
+      Left            =   10320
+      TabIndex        =   120
+      TabStop         =   0   'False
+      Top             =   2640
+      Visible         =   0   'False
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   136
+      Left            =   5400
+      TabIndex        =   116
+      Tag             =   "31"
+      Top             =   2640
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   135
+      Left            =   5400
+      TabIndex        =   114
+      Tag             =   "31"
+      Top             =   1080
+      Width           =   1215
+   End
+   Begin VB.PictureBox pctFutureFlags 
+      BorderStyle     =   0  'None
+      Height          =   3735
+      Left            =   8520
+      ScaleHeight     =   249
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   81
+      TabIndex        =   100
+      TabStop         =   0   'False
+      Top             =   3960
+      Visible         =   0   'False
+      Width           =   1215
+      Begin VB.Label lblFlagNew_Title 
          Alignment       =   2  'Center
-         Caption         =   "114 yr old today"
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "CurrYr:"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -1740,108 +197,71 @@ Begin VB.Form frmClientEditPost
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         ForeColor       =   &H80000008&
          Height          =   255
-         Index           =   2
-         Left            =   5760
-         TabIndex        =   126
-         Top             =   2280
-         Width           =   1575
+         Left            =   120
+         TabIndex        =   112
+         Top             =   360
+         Width           =   1095
       End
-      Begin VB.Label lblAge 
+      Begin VB.Line Line8 
+         X1              =   8
+         X2              =   72
+         Y1              =   40
+         Y2              =   40
+      End
+      Begin VB.Label lblFlagFuture 
          Alignment       =   2  'Center
-         Caption         =   "114 yr old today"
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Inc"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
             Charset         =   0
-            Weight          =   700
+            Weight          =   400
             Underline       =   0   'False
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   &H000000D0&
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   111
+         Top             =   720
+         Width           =   975
+      End
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Comp"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
          Height          =   255
          Index           =   1
-         Left            =   5760
-         TabIndex        =   125
-         Top             =   720
-         Width           =   1575
-      End
-      Begin VB.Label lbl 
-         Caption         =   "DOB:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   136
-         Left            =   5280
-         TabIndex        =   123
-         Top             =   2280
-         Width           =   495
-      End
-      Begin VB.Label lbl 
-         Caption         =   "DOB:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   135
-         Left            =   5280
-         TabIndex        =   121
-         Top             =   720
-         Width           =   495
-      End
-      Begin VB.Label lbl 
-         Caption         =   "State returns (if any):"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   23
-         Left            =   10200
-         TabIndex        =   69
-         Top             =   1440
-         Width           =   2055
-      End
-      Begin VB.Label lbl 
-         Caption         =   "St result 2:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   134
-         Left            =   11280
-         TabIndex        =   99
-         Top             =   2160
-         Visible         =   0   'False
+         Left            =   120
+         TabIndex        =   110
+         Top             =   960
          Width           =   975
       End
-      Begin VB.Label lbl 
-         Caption         =   "Newest:"
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "NNTF"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -1851,15 +271,158 @@ Begin VB.Form frmClientEditPost
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         ForeColor       =   &H80000008&
          Height          =   255
-         Index           =   36
-         Left            =   11280
-         TabIndex        =   71
+         Index           =   5
+         Left            =   120
+         TabIndex        =   109
+         Top             =   2040
+         Width           =   975
+      End
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Ext"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   6
+         Left            =   120
+         TabIndex        =   108
+         Top             =   2400
+         Width           =   975
+      End
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Appt"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   2
+         Left            =   120
+         TabIndex        =   107
+         Top             =   1320
+         Width           =   975
+      End
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "DO"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   3
+         Left            =   120
+         TabIndex        =   106
+         Top             =   1560
+         Width           =   975
+      End
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "MI"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   4
+         Left            =   120
+         TabIndex        =   105
+         Top             =   1800
+         Width           =   975
+      End
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "I/P/T/E"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   7
+         Left            =   120
+         TabIndex        =   104
+         Top             =   2640
+         Width           =   975
+      End
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "New"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   8
+         Left            =   120
+         TabIndex        =   103
          Top             =   2880
          Width           =   975
       End
-      Begin VB.Label lbl 
-         Caption         =   "Oldest:"
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "E-Filed"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -1869,34 +432,20 @@ Begin VB.Form frmClientEditPost
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         ForeColor       =   &H80000008&
          Height          =   255
-         Index           =   35
-         Left            =   10200
-         TabIndex        =   70
-         Top             =   2880
+         Index           =   9
+         Left            =   120
+         TabIndex        =   102
+         Top             =   3120
          Width           =   975
       End
-      Begin VB.Label lbl 
-         Alignment       =   1  'Right Justify
-         Caption         =   "Common: "
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   12
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   17
-         Left            =   0
-         TabIndex        =   56
-         Top             =   3360
-         Width           =   1335
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Phone ('SP WORK'):"
+      Begin VB.Label lblFlagFuture 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "RBefPmt"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -1906,161 +455,24 @@ Begin VB.Form frmClientEditPost
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Height          =   255
-         Index           =   34
-         Left            =   7920
-         TabIndex        =   53
-         Top             =   2280
-         Width           =   2055
-      End
-      Begin VB.Label lbl 
-         Alignment       =   1  'Right Justify
-         Caption         =   "DOD:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   113
-         Left            =   7320
-         TabIndex        =   52
-         Top             =   2280
-         Width           =   495
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Initial:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   32
-         Left            =   5760
-         TabIndex        =   49
-         Top             =   1560
-         Width           =   495
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Nickname:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   31
-         Left            =   3960
-         TabIndex        =   48
-         Top             =   1560
-         Width           =   1695
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Email address:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   30
-         Left            =   1320
-         TabIndex        =   51
-         Top             =   2280
-         Width           =   3855
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Last name (if different than taxpayer's):"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   29
-         Left            =   6360
-         TabIndex        =   47
-         Top             =   1560
-         Width           =   3615
-      End
-      Begin VB.Label lbl 
-         Caption         =   "First name:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   11
-         Left            =   1320
-         TabIndex        =   46
-         Top             =   1560
-         Width           =   2535
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Phone ('TP WORK'):"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
+         ForeColor       =   &H80000008&
          Height          =   255
          Index           =   10
-         Left            =   7920
-         TabIndex        =   44
-         Top             =   720
-         Width           =   2055
+         Left            =   120
+         TabIndex        =   101
+         Top             =   3360
+         Width           =   975
       End
-      Begin VB.Label lbl 
-         Alignment       =   1  'Right Justify
-         Caption         =   "DOD:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   106
-         Left            =   7320
-         TabIndex        =   45
-         Top             =   720
-         Width           =   495
+      Begin VB.Shape Shape1 
+         FillColor       =   &H00FFFFFF&
+         FillStyle       =   0  'Solid
+         Height          =   3495
+         Left            =   0
+         Top             =   240
+         Width           =   1215
       End
-      Begin VB.Label lbl 
-         Caption         =   "Initial:"
+      Begin VB.Label lblPctFlagsTitle 
+         Caption         =   "Flags:"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -2072,13 +484,93 @@ Begin VB.Form frmClientEditPost
          EndProperty
          Height          =   255
          Index           =   1
-         Left            =   5760
-         TabIndex        =   39
+         Left            =   0
+         TabIndex        =   113
          Top             =   0
-         Width           =   495
+         Width           =   1095
       End
-      Begin VB.Label lbl 
-         Caption         =   "Nickname:"
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   134
+      Left            =   11640
+      TabIndex        =   97
+      TabStop         =   0   'False
+      Tag             =   "21"
+      Top             =   5520
+      Visible         =   0   'False
+      Width           =   1215
+   End
+   Begin VB.PictureBox pctFlags 
+      BorderStyle     =   0  'None
+      Height          =   3735
+      Left            =   8040
+      ScaleHeight     =   249
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   137
+      TabIndex        =   37
+      TabStop         =   0   'False
+      Top             =   3960
+      Width           =   2055
+      Begin VB.Label lblFlagThisYear_Title 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "CurrYr:"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Left            =   1080
+         TabIndex        =   95
+         Top             =   360
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear_Title 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "LastYr:"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Left            =   120
+         TabIndex        =   94
+         Top             =   360
+         Width           =   855
+      End
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H0000FFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Inc"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -2088,15 +580,112 @@ Begin VB.Form frmClientEditPost
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   0
+         Left            =   1080
+         TabIndex        =   93
+         Top             =   720
+         Width           =   855
+      End
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H0000FF00&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Comp"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   1
+         Left            =   1080
+         TabIndex        =   92
+         Top             =   960
+         Width           =   855
+      End
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FF00FF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "NNTF"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   5
+         Left            =   1080
+         TabIndex        =   91
+         Top             =   2040
+         Width           =   855
+      End
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FF00FF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Ext"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   6
+         Left            =   1080
+         TabIndex        =   90
+         Top             =   2400
+         Width           =   855
+      End
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFF00&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Appt"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
          Height          =   255
          Index           =   2
-         Left            =   3960
-         TabIndex        =   40
-         Top             =   0
-         Width           =   1695
+         Left            =   1080
+         TabIndex        =   89
+         Top             =   1320
+         Width           =   855
       End
-      Begin VB.Label lbl 
-         Caption         =   "LY Fee:"
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFF00&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "DO"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -2106,15 +695,20 @@ Begin VB.Form frmClientEditPost
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         ForeColor       =   &H80000008&
          Height          =   255
-         Index           =   14
-         Left            =   9000
-         TabIndex        =   60
-         Top             =   3840
-         Width           =   975
+         Index           =   3
+         Left            =   1080
+         TabIndex        =   88
+         Top             =   1560
+         Width           =   855
       End
-      Begin VB.Label lbl 
-         Caption         =   "Operation notes:"
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFF00&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "MI"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -2124,15 +718,375 @@ Begin VB.Form frmClientEditPost
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         ForeColor       =   &H80000008&
          Height          =   255
-         Index           =   125
-         Left            =   1320
-         TabIndex        =   65
-         Top             =   5280
-         Width           =   8655
+         Index           =   4
+         Left            =   1080
+         TabIndex        =   87
+         Top             =   1800
+         Width           =   855
       End
-      Begin VB.Label lbl 
-         Caption         =   "First name:"
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00C0C0C0&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "I/P/T/E"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   7
+         Left            =   1080
+         TabIndex        =   86
+         Top             =   2640
+         Width           =   855
+      End
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00C0C000&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "New"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   8
+         Left            =   1080
+         TabIndex        =   85
+         Top             =   2880
+         Width           =   855
+      End
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00C0C0C0&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "E-Filed"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   9
+         Left            =   1080
+         TabIndex        =   84
+         Top             =   3120
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Inc"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   83
+         Top             =   720
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Comp"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   82
+         Top             =   960
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "NNTF"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   5
+         Left            =   120
+         TabIndex        =   81
+         Top             =   2040
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Ext"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   6
+         Left            =   120
+         TabIndex        =   80
+         Top             =   2400
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "Appt"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   2
+         Left            =   120
+         TabIndex        =   79
+         Top             =   1320
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "DO"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   3
+         Left            =   120
+         TabIndex        =   78
+         Top             =   1560
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "MI"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   4
+         Left            =   120
+         TabIndex        =   77
+         Top             =   1800
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "I/P/T/E"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   7
+         Left            =   120
+         TabIndex        =   76
+         Top             =   2640
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "New"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   8
+         Left            =   120
+         TabIndex        =   75
+         Top             =   2880
+         Width           =   855
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "E-Filed"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   9
+         Left            =   120
+         TabIndex        =   74
+         Top             =   3120
+         Width           =   855
+      End
+      Begin VB.Line Line1 
+         X1              =   8
+         X2              =   128
+         Y1              =   40
+         Y2              =   40
+      End
+      Begin VB.Label lblFlagLastYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H00FFFFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "RBefPmt"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   10
+         Left            =   120
+         TabIndex        =   73
+         Top             =   3360
+         Width           =   855
+      End
+      Begin VB.Label lblFlagThisYear 
+         Alignment       =   2  'Center
+         Appearance      =   0  'Flat
+         BackColor       =   &H0000FFFF&
+         BorderStyle     =   1  'Fixed Single
+         Caption         =   "RBefPmt"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H80000008&
+         Height          =   255
+         Index           =   10
+         Left            =   1080
+         TabIndex        =   72
+         Top             =   3360
+         Width           =   855
+      End
+      Begin VB.Shape Shape2 
+         FillColor       =   &H00FFFFFF&
+         FillStyle       =   0  'Solid
+         Height          =   3495
+         Left            =   0
+         Top             =   240
+         Width           =   2055
+      End
+      Begin VB.Label lblPctFlagsTitle 
+         Caption         =   "Flags (click to toggle):"
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   9
@@ -2144,327 +1098,618 @@ Begin VB.Form frmClientEditPost
          EndProperty
          Height          =   255
          Index           =   0
-         Left            =   1320
-         TabIndex        =   38
-         Top             =   0
-         Width           =   2535
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Last name:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   3
-         Left            =   6360
-         TabIndex        =   41
-         Top             =   0
-         Width           =   3615
-      End
-      Begin VB.Label lbl 
-         Caption         =   "St result:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   22
-         Left            =   10200
-         TabIndex        =   68
-         Top             =   2160
-         Width           =   975
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Fed result:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   21
-         Left            =   11280
-         TabIndex        =   67
-         Top             =   720
-         Width           =   975
-      End
-      Begin VB.Label lbl 
-         Caption         =   "AGI:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   20
-         Left            =   10200
-         TabIndex        =   66
-         Top             =   720
-         Width           =   975
-      End
-      Begin VB.Label lbl 
-         Caption         =   "$ Owed:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   19
-         Left            =   11280
-         TabIndex        =   64
-         Top             =   0
-         Width           =   975
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Prep fee:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   18
-         Left            =   10200
-         TabIndex        =   63
-         Top             =   0
-         Width           =   975
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Minutes:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   16
-         Left            =   8880
-         TabIndex        =   62
-         Top             =   4560
-         Width           =   1095
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Completed on:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   15
-         Left            =   7440
-         TabIndex        =   61
-         Top             =   4560
-         Width           =   1335
-      End
-      Begin VB.Label lbl 
-         Caption         =   "LY Min:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   13
-         Left            =   8280
-         TabIndex        =   59
-         Top             =   3840
-         Width           =   615
-      End
-      Begin VB.Label lbl 
-         Caption         =   "# Slots:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   12
-         Left            =   7440
-         TabIndex        =   58
-         Top             =   3840
-         Width           =   735
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Notes:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   6
-         Left            =   1320
-         TabIndex        =   57
-         Top             =   4320
-         Width           =   6015
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Email address:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   5
-         Left            =   1320
-         TabIndex        =   43
-         Top             =   720
-         Width           =   3855
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Phone ('TP HOME'):"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   8
-         Left            =   7440
-         TabIndex        =   55
-         Top             =   3120
-         Width           =   2535
-      End
-      Begin VB.Label lbl 
-         Caption         =   "Address:"
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Index           =   4
-         Left            =   1320
-         TabIndex        =   54
-         Top             =   3120
-         Width           =   6015
-      End
-      Begin VB.Label lbl 
-         Alignment       =   1  'Right Justify
-         Caption         =   "Spouse: "
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   12
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   9
          Left            =   0
-         TabIndex        =   50
-         Top             =   1800
-         Width           =   1335
+         TabIndex        =   96
+         Top             =   0
+         Width           =   1935
       End
-      Begin VB.Label lbl 
-         Alignment       =   1  'Right Justify
-         Caption         =   "Taxpayer: "
-         BeginProperty Font 
-            Name            =   "Arial"
-            Size            =   12
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Index           =   27
-         Left            =   0
-         TabIndex        =   42
-         Top             =   240
-         Width           =   1335
-      End
-      Begin VB.Line Line4 
-         X1              =   672
-         X2              =   672
-         Y1              =   0
-         Y2              =   488
-      End
-      Begin VB.Line Line2 
-         X1              =   8
-         X2              =   664
-         Y1              =   96
-         Y2              =   96
-      End
-      Begin VB.Line Line3 
-         X1              =   8
-         X2              =   664
-         Y1              =   200
-         Y2              =   200
-      End
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   133
+      Left            =   5640
+      TabIndex        =   34
+      Tag             =   "70"
+      Top             =   4680
+      Width           =   975
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   132
+      Left            =   4560
+      TabIndex        =   33
+      Tag             =   "70"
+      Top             =   4680
+      Width           =   975
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   113
+      Left            =   6720
+      TabIndex        =   13
+      Tag             =   "31"
+      Top             =   2640
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   109
+      Left            =   5880
+      TabIndex        =   10
+      Tag             =   "51"
+      Top             =   1920
+      Width           =   495
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   108
+      Left            =   4080
+      TabIndex        =   9
+      Tag             =   "50"
+      Top             =   1920
+      Width           =   1695
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   110
+      Left            =   6480
+      TabIndex        =   11
+      Tag             =   "50"
+      Top             =   1920
+      Width           =   3615
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   107
+      Left            =   1440
+      TabIndex        =   8
+      Tag             =   "50"
+      Top             =   1920
+      Width           =   2535
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   106
+      Left            =   6720
+      TabIndex        =   6
+      Tag             =   "31"
+      Top             =   1080
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   102
+      Left            =   5880
+      TabIndex        =   3
+      Tag             =   "51"
+      Top             =   360
+      Width           =   495
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   101
+      Left            =   4080
+      TabIndex        =   2
+      Tag             =   "50"
+      Top             =   360
+      Width           =   1695
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   112
+      Left            =   1440
+      TabIndex        =   12
+      Tag             =   "52"
+      Top             =   2640
+      Width           =   3855
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   122
+      Left            =   11640
+      TabIndex        =   23
+      Tag             =   "23"
+      Top             =   6240
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      Height          =   855
+      Index           =   125
+      Left            =   1440
+      MultiLine       =   -1  'True
+      ScrollBars      =   3  'Both
+      TabIndex        =   26
+      TabStop         =   0   'False
+      Tag             =   "53"
+      Top             =   6360
+      Width           =   6495
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   128
+      Left            =   10320
+      TabIndex        =   29
+      Tag             =   "21"
+      Top             =   4080
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   129
+      Left            =   10320
+      TabIndex        =   30
+      Tag             =   "21"
+      Top             =   5520
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   130
+      Left            =   10320
+      TabIndex        =   31
+      Tag             =   "21"
+      Top             =   3360
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   127
+      Left            =   10320
+      TabIndex        =   28
+      Tag             =   "23"
+      Top             =   6960
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   126
+      Left            =   10320
+      TabIndex        =   27
+      Tag             =   "23"
+      Top             =   6240
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   131
+      Left            =   10320
+      TabIndex        =   32
+      Tag             =   "54"
+      Top             =   4800
+      Width           =   1215
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   123
+      Left            =   10320
+      TabIndex        =   24
+      Tag             =   "31"
+      Top             =   1440
+      Width           =   1815
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   121
+      Left            =   11280
+      TabIndex        =   22
+      Tag             =   "12"
+      Top             =   2160
+      Width           =   855
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   124
+      Left            =   10320
+      TabIndex        =   25
+      Tag             =   "12"
+      Top             =   2160
+      Width           =   855
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   120
+      Left            =   3240
+      TabIndex        =   21
+      Tag             =   "13"
+      Top             =   4680
+      Width           =   735
+   End
+   Begin VB.TextBox txtField 
+      Height          =   615
+      Index           =   118
+      Left            =   1440
+      MultiLine       =   -1  'True
+      ScrollBars      =   2  'Vertical
+      TabIndex        =   19
+      Tag             =   "50"
+      Top             =   5400
+      Width           =   6495
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   105
+      Left            =   1440
+      TabIndex        =   5
+      Tag             =   "52"
+      Top             =   1080
+      Width           =   3855
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   117
+      Left            =   6480
+      TabIndex        =   18
+      Tag             =   "51"
+      Top             =   3960
+      Width           =   1455
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   116
+      Left            =   5880
+      TabIndex        =   17
+      Tag             =   "51"
+      Top             =   3960
+      Width           =   495
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   115
+      Left            =   1440
+      TabIndex        =   16
+      Tag             =   "51"
+      Top             =   3960
+      Width           =   4335
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   114
+      Left            =   1440
+      TabIndex        =   15
+      Tag             =   "51"
+      Top             =   3480
+      Width           =   6495
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   111
+      Left            =   8040
+      TabIndex        =   14
+      Tag             =   "60"
+      Top             =   2640
+      Width           =   2055
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   104
+      Left            =   8040
+      TabIndex        =   7
+      Tag             =   "60"
+      Top             =   1080
+      Width           =   2055
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   119
+      Left            =   8040
+      TabIndex        =   20
+      Tag             =   "60"
+      Top             =   3480
+      Width           =   2055
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   100
+      Left            =   1440
+      TabIndex        =   1
+      Tag             =   "50"
+      Top             =   360
+      Width           =   2535
+   End
+   Begin VB.TextBox txtField 
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   103
+      Left            =   6480
+      TabIndex        =   4
+      Tag             =   "50"
+      Top             =   360
+      Width           =   3615
    End
    Begin VB.CommandButton btnCancel 
       Cancel          =   -1  'True
       Caption         =   "Cancel"
       Height          =   615
-      Left            =   7560
+      Left            =   5880
       TabIndex        =   36
-      Top             =   7680
+      Top             =   7440
       Width           =   1575
    End
    Begin VB.CommandButton btnSavePost 
@@ -2479,10 +1724,736 @@ Begin VB.Form frmClientEditPost
          Strikethrough   =   0   'False
       EndProperty
       Height          =   855
-      Left            =   4080
+      Left            =   2400
       TabIndex        =   35
-      Top             =   7560
+      Top             =   7320
       Width           =   3135
+   End
+   Begin VB.Label lblAge 
+      Alignment       =   2  'Center
+      Caption         =   "114 yr old today"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   2
+      Left            =   5880
+      TabIndex        =   119
+      Top             =   2400
+      Width           =   1575
+   End
+   Begin VB.Label lblAge 
+      Alignment       =   2  'Center
+      Caption         =   "114 yr old today"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H000000D0&
+      Height          =   255
+      Index           =   1
+      Left            =   5880
+      TabIndex        =   118
+      Top             =   840
+      Width           =   1575
+   End
+   Begin VB.Label lbl 
+      Caption         =   "DOB:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   136
+      Left            =   5400
+      TabIndex        =   117
+      Top             =   2400
+      Width           =   495
+   End
+   Begin VB.Label lbl 
+      Caption         =   "DOB:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   135
+      Left            =   5400
+      TabIndex        =   115
+      Top             =   840
+      Width           =   495
+   End
+   Begin VB.Label lbl 
+      Caption         =   "State returns (if any):"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   23
+      Left            =   10320
+      TabIndex        =   69
+      Top             =   4560
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "St result 2:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   134
+      Left            =   11640
+      TabIndex        =   98
+      Top             =   5280
+      Visible         =   0   'False
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Newest:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   36
+      Left            =   5640
+      TabIndex        =   71
+      Top             =   4440
+      Width           =   975
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Oldest:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   35
+      Left            =   4560
+      TabIndex        =   70
+      Top             =   4440
+      Width           =   975
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Common"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   17
+      Left            =   120
+      TabIndex        =   56
+      Top             =   3240
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Cell phone"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   34
+      Left            =   8040
+      TabIndex        =   53
+      Top             =   2400
+      Width           =   2055
+   End
+   Begin VB.Label lbl 
+      Alignment       =   1  'Right Justify
+      Caption         =   "DOD:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   113
+      Left            =   7440
+      TabIndex        =   52
+      Top             =   2400
+      Width           =   495
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Initial:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   32
+      Left            =   5880
+      TabIndex        =   49
+      Top             =   1680
+      Width           =   495
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Nickname:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   31
+      Left            =   4080
+      TabIndex        =   48
+      Top             =   1680
+      Width           =   1695
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Email address:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   30
+      Left            =   1440
+      TabIndex        =   51
+      Top             =   2400
+      Width           =   3855
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Last name (if different than taxpayer's):"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   29
+      Left            =   6480
+      TabIndex        =   47
+      Top             =   1680
+      Width           =   3615
+   End
+   Begin VB.Label lbl 
+      Caption         =   "First name:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   11
+      Left            =   1440
+      TabIndex        =   46
+      Top             =   1680
+      Width           =   2535
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Cell phone"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   10
+      Left            =   8040
+      TabIndex        =   44
+      Top             =   840
+      Width           =   2055
+   End
+   Begin VB.Label lbl 
+      Alignment       =   1  'Right Justify
+      Caption         =   "DOD:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   106
+      Left            =   7440
+      TabIndex        =   45
+      Top             =   840
+      Width           =   495
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Initial:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   1
+      Left            =   5880
+      TabIndex        =   39
+      Top             =   120
+      Width           =   495
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Nickname:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   2
+      Left            =   4080
+      TabIndex        =   40
+      Top             =   120
+      Width           =   1695
+   End
+   Begin VB.Label lbl 
+      Caption         =   "LY Fee:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   14
+      Left            =   11640
+      TabIndex        =   60
+      Top             =   6000
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Operation notes:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   125
+      Left            =   1440
+      TabIndex        =   65
+      Top             =   6120
+      Width           =   6495
+   End
+   Begin VB.Label lbl 
+      Caption         =   "First name:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   0
+      Left            =   1440
+      TabIndex        =   38
+      Top             =   120
+      Width           =   2535
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Last name:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   3
+      Left            =   6480
+      TabIndex        =   41
+      Top             =   120
+      Width           =   3615
+   End
+   Begin VB.Label lbl 
+      Caption         =   "St result:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   22
+      Left            =   10320
+      TabIndex        =   68
+      Top             =   5280
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Fed result:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   21
+      Left            =   10320
+      TabIndex        =   67
+      Top             =   3840
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "AGI:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   20
+      Left            =   10320
+      TabIndex        =   66
+      Top             =   3120
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "$ Owed:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   19
+      Left            =   10320
+      TabIndex        =   64
+      Top             =   6720
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Prep fee:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   18
+      Left            =   10320
+      TabIndex        =   63
+      Top             =   6000
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Minutes:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   16
+      Left            =   10320
+      TabIndex        =   62
+      Top             =   1920
+      Width           =   855
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Completed on:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   15
+      Left            =   10320
+      TabIndex        =   61
+      Top             =   1200
+      Width           =   1815
+   End
+   Begin VB.Label lbl 
+      Caption         =   "LY Min:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   13
+      Left            =   11280
+      TabIndex        =   59
+      Top             =   1920
+      Width           =   855
+   End
+   Begin VB.Label lbl 
+      Caption         =   "# Slots:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   12
+      Left            =   3240
+      TabIndex        =   58
+      Top             =   4440
+      Width           =   735
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Notes:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   6
+      Left            =   1440
+      TabIndex        =   57
+      Top             =   5160
+      Width           =   6495
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Email address:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   5
+      Left            =   1440
+      TabIndex        =   43
+      Top             =   840
+      Width           =   3855
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Home phone"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   8
+      Left            =   8040
+      TabIndex        =   55
+      Top             =   3240
+      Width           =   2055
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Address:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   4
+      Left            =   1440
+      TabIndex        =   54
+      Top             =   3240
+      Width           =   6495
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Spouse"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   9
+      Left            =   120
+      TabIndex        =   50
+      Top             =   1680
+      Width           =   1215
+   End
+   Begin VB.Label lbl 
+      Caption         =   "Taxpayer"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Index           =   27
+      Left            =   120
+      TabIndex        =   42
+      Top             =   120
+      Width           =   1215
+   End
+   Begin VB.Line Line4 
+      X1              =   680
+      X2              =   680
+      Y1              =   8
+      Y2              =   488
+   End
+   Begin VB.Line Line2 
+      X1              =   16
+      X2              =   672
+      Y1              =   104
+      Y2              =   104
+   End
+   Begin VB.Line Line3 
+      X1              =   16
+      X2              =   672
+      Y1              =   208
+      Y2              =   208
    End
    Begin VB.Label lblChangeTabOrder 
       AutoSize        =   -1  'True
@@ -2498,9 +2469,9 @@ Begin VB.Form frmClientEditPost
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   150
-      Left            =   12720
-      TabIndex        =   105
-      Top             =   7920
+      Left            =   11880
+      TabIndex        =   99
+      Top             =   8040
       Width           =   975
    End
 End
@@ -2608,25 +2579,17 @@ Else
 End If
 
 If ShowFormMode = fPost Then
-    pctPostSpecificArea.Move 8, 8
-    pctPostSpecificArea.Visible = True
-
-    pctMainEditArea.Move pctPostSpecificArea.Left + pctPostSpecificArea.Width - 1, 8, txtField(fResultState2).Left + txtField(fResultState2).Width + 8
-
+    chkIncPtnrTrustEstate.Visible = True
+    optInType(0).Visible = True
+    optInType(1).Visible = True
+    optInType(2).Visible = True
+    optInType(3).Visible = True
+    chkEFile.Visible = True
     txtField(fResultState2).Visible = True
     lbl(fResultState2).Visible = True
-    chkEFile.Visible = True
-
-    txtField(fOperationNotes).Visible = False
-    lbl(fOperationNotes).Visible = False
-
     pctFlags.Visible = False
     pctFutureFlags.Visible = True
-Else
-    pctMainEditArea.Move 8, 8, txtField(fMoneyOwed).Left + txtField(fMoneyOwed).Width + 8
 End If
-ResizeFormByInnerScaleDimensions Me, pctMainEditArea.Left + pctMainEditArea.Width
-lblChangeTabOrder.Move Me.ScaleWidth - lblChangeTabOrder.Width - 1, Me.ScaleHeight - lblChangeTabOrder.Height - 1
 
 With tempclient.c
     If ShowFormMode = fNew Then
@@ -3026,12 +2989,6 @@ End Sub
 'EHT=Standard
 Private Sub chkEFile_Click()
 On Error GoTo ERR_HANDLER
-
-If chkEFile.Value Then
-    chkEFile.BackColor = &HC0FFC0
-Else
-    chkEFile.BackColor = vbButtonFace
-End If
 
 If Not DontChangeFlags Then SetFutureFlagIndicator (chkEFile.Value = vbChecked), EFiled
 'If DontChangeFocus = 0 Then SetFocusWithoutErr txtField(fResultAGI)
