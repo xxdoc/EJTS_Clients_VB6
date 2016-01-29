@@ -740,7 +740,7 @@ If Not ActiveDBInstance.IsWriteable Then
     Exit Sub
 End If
 
-Dim a&, t$
+Dim a&, b&, t$
 
 'If DEBUGMODE Then
 '    a = Val(InputBox("Enter number (1296,1304,1127):"))
@@ -787,7 +787,7 @@ Case "dateofdeath"
     Clipboard.Clear
     Clipboard.SetText t$
 
-Case "t"
+Case "ranges"
     Dim fh As CMNMOD_CFileHandler
     Dim l$()
     Dim cindex&
@@ -846,6 +846,22 @@ Case "fixnamecase"
         End With
     Next a
     SetChangedFlagAndIndication
+
+Case "removexcell"
+    For a = 0 To ActiveDBInstance.Clients_Count - 1
+        With ActiveDBInstance.Clients(a)
+            If LCase$(Right$(.c.Person1.Phone, 5)) = "xcell" Then
+                .c.Person1.Phone = Left$(.c.Person1.Phone, Len(.c.Person1.Phone) - 5)
+                b = b + 1
+            End If
+            If LCase$(Right$(.c.Person2.Phone, 5)) = "xcell" Then
+                .c.Person2.Phone = Left$(.c.Person2.Phone, Len(.c.Person2.Phone) - 5)
+                b = b + 1
+            End If
+        End With
+    Next a
+    SetChangedFlagAndIndication
+    MsgBox b & " total xCELL extensions removed."
 
 Case ""
 Case Else
