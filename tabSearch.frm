@@ -1490,7 +1490,7 @@ r:
 
                 Else    'String, with no quotes
                     .ValueType = tString
-                    If (Left$(v$, 1) = """") And (Right$(v$, 1) = """") Then
+                    If (Len(v$) >= 2) And (Left$(v$, 1) = """") And (Right$(v$, 1) = """") Then
                         .Value_String = Mid$(v$, 2, Len(v$) - 2)
                     Else
                         .Value_String = v$
