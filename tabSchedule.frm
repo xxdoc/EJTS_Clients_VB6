@@ -478,6 +478,13 @@ With ActiveDBInstance.Appointments(ClickedApptIndex)
     Next a
     t$ = FormatApptTime(.ApptDate, .ApptActualTime)
     t2$ = DB_FormatApptClientList(ActiveDBInstance, ActiveDBInstance.Appointments(ClickedApptIndex)) & ": " & t$
+    If .ApptDate <= CLng(Date) Then
+        If MsgBox("You are attempting to change an appointment on or prior to today. Please mark it as Didn't Happen instead of actually deleting it." & vbCrLf & vbCrLf & _
+                  "Click Retry to ignore this warning and continue anyway.", _
+                  vbCritical Or vbRetryCancel) <> vbRetry Then
+            Exit Sub
+        End If
+    End If
     If MsgBox("Are you sure you want to cancel the following appointment?" & vbCrLf & _
               "Time: " & t$ & vbCrLf & _
               "Clients: " & c$, _
