@@ -928,7 +928,7 @@ If ClickedTimeslot >= 0 Then
                         ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData = True
                     Next b
                 End If
-                If n Or ((ClickedDate - Date) > DB_GetSetting(ActiveDBInstance, "Reminder call if appt scheduled more than")) Then a.Flags = ReminderCall
+                If n Or ((ClickedDate - CLng(Date)) > DB_GetSetting(ActiveDBInstance, "Reminder call if appt scheduled more than")) Then a.Flags = ReminderCall
                 aindex = DB_AddAppointment(ActiveDBInstance, a)
 
                 DB_SlotsFill ActiveDBInstance, .ApptDate, .ApptTimeSlot, .NumSlots, aindex
@@ -970,6 +970,7 @@ If ClickedTimeslot >= 0 Then
                     AddOpNote ActiveDBInstance.Clients(cindex).c.OpNotes, "Resch appt to: " & t$
                     ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData = True
                 Next b
+                If ((ClickedDate - CLng(Date)) > DB_GetSetting(ActiveDBInstance, "Reminder call if appt scheduled more than")) Then a.Flags = ReminderCall
             End With
 
             'Handle old appt
