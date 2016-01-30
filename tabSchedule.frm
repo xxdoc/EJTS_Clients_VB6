@@ -976,7 +976,7 @@ If ClickedTimeslot >= 0 Then
             With ActiveDBInstance.Appointments(ClickedApptIndex)
                 If moveexistingappt = Style_Copy Or moveexistingappt = Style_CopyForcedWithCtrl Then
                     'Mark that the original appointment didn't happen
-                    .Flags = .Flags Or DidntHappen
+                    If .ClientID_Count > 0 Then .Flags = .Flags Or DidntHappen
                 Else
                     'Remove the old appointment
                     DB_SlotsClear ActiveDBInstance, .ApptDate, .ApptTimeSlot, .NumSlots
