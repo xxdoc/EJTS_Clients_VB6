@@ -469,27 +469,35 @@ On Error GoTo ERR_HANDLER
 
 If Not menApptCancelDelete.Enabled Then Exit Sub
 
-Dim a&, t$, t2$, c$, cindex&
+Dim a&, t$, c$, cindex&
 With ActiveDBInstance.Appointments(ClickedApptIndex)
-    For a = 0 To .ClientID_Count - 1
-        cindex = DB_FindClientIndex(ActiveDBInstance, .ClientIDs(a))
-        If Len(c$) > 0 Then c$ = c$ & vbCrLf & "             "
-        c$ = c$ & FormatClientName(fSchedulePct, ActiveDBInstance.Clients(cindex).c)
-    Next a
+    'Format the time
     t$ = FormatApptTime(.ApptDate, .ApptActualTime)
-    t2$ = DB_FormatApptClientList(ActiveDBInstance, ActiveDBInstance.Appointments(ClickedApptIndex)) & ": " & t$
-    If .ApptDate <= CLng(Date) Then
-        If MsgBox("You are attempting to change an appointment on or prior to today. Please mark it as Didn't Happen instead of actually deleting it." & vbCrLf & vbCrLf & _
-                  "Click Retry to ignore this warning and continue anyway.", _
-                  vbCritical Or vbRetryCancel) <> vbRetry Then
+    If .ClientID_Count = 0 Then
+        If MsgBox("Are you sure you want to cancel '" & .Notes & "'?", _
+                  vbQuestion Or vbYesNo) <> vbYes Then
             Exit Sub
         End If
-    End If
-    If MsgBox("Are you sure you want to cancel the following appointment?" & vbCrLf & _
-              "Time: " & t$ & vbCrLf & _
-              "Clients: " & c$, _
-              vbQuestion Or vbYesNo) <> vbYes Then
-        Exit Sub
+    Else
+        'Build list of clients
+        For a = 0 To .ClientID_Count - 1
+            cindex = DB_FindClientIndex(ActiveDBInstance, .ClientIDs(a))
+            If Len(c$) > 0 Then c$ = c$ & vbCrLf & "             "
+            c$ = c$ & FormatClientName(fSchedulePct, ActiveDBInstance.Clients(cindex).c)
+        Next a
+        If .ApptDate <= CLng(Date) Then
+            If MsgBox("You are attempting to change an appointment on or prior to today. Please mark it as Didn't Happen instead of actually deleting it." & vbCrLf & vbCrLf & _
+                      "Click Retry to ignore this warning and continue anyway.", _
+                      vbCritical Or vbRetryCancel) <> vbRetry Then
+                Exit Sub
+            End If
+        End If
+        If MsgBox("Are you sure you want to cancel the following appointment?" & vbCrLf & _
+                  "Time: " & t$ & vbCrLf & _
+                  "Clients: " & c$, _
+                  vbQuestion Or vbYesNo) <> vbYes Then
+            Exit Sub
+        End If
     End If
     For a = 0 To .ClientID_Count - 1
         cindex = DB_FindClientIndex(ActiveDBInstance, .ClientIDs(a))
@@ -927,8 +935,12 @@ If ClickedTimeslot >= 0 Then
                         AddOpNote ActiveDBInstance.Clients(cindex).c.OpNotes, "Scheduled appt: " & t$
                         ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData = True
                     Next b
+                    If n Then
+                        .Flags = ReminderCall
+                    ElseIf ((ClickedDate - CLng(Date)) > DB_GetSetting(ActiveDBInstance, "Reminder call if appt scheduled more than")) Then
+                        .Flags = ReminderCall
+                    End If
                 End If
-                If n Or ((ClickedDate - CLng(Date)) > DB_GetSetting(ActiveDBInstance, "Reminder call if appt scheduled more than")) Then a.Flags = ReminderCall
                 aindex = DB_AddAppointment(ActiveDBInstance, a)
 
                 DB_SlotsFill ActiveDBInstance, .ApptDate, .ApptTimeSlot, .NumSlots, aindex
@@ -970,7 +982,9 @@ If ClickedTimeslot >= 0 Then
                     AddOpNote ActiveDBInstance.Clients(cindex).c.OpNotes, "Resch appt to: " & t$
                     ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData = True
                 Next b
-                If ((ClickedDate - CLng(Date)) > DB_GetSetting(ActiveDBInstance, "Reminder call if appt scheduled more than")) Then a.Flags = ReminderCall
+                If .ClientID_Count > 0 Then
+                    If ((ClickedDate - CLng(Date)) > DB_GetSetting(ActiveDBInstance, "Reminder call if appt scheduled more than")) Then a.Flags = ReminderCall
+                End If
             End With
 
             'Handle old appt
