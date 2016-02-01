@@ -1133,18 +1133,9 @@ If CalculateLiveData(ld) Then
     Set fh = OpenFile(filetosaveto$, mBinary_Output)
         Put #fh.FileNum, , ld
     fh.CloseFile: Set fh = Nothing
+
+    SaveLiveDataToSnapshotFile = True
 End If
-
-''Reload the active data view and select the new entry
-'PopulateComboWithSnapshotList SlotIndex, filetosaveto$
-''Reload the other one without changing the selection
-'If SlotIndex = 0 Then
-'    PopulateComboWithSnapshotList 1
-'Else
-'    PopulateComboWithSnapshotList 0
-'End If
-
-SaveLiveDataToSnapshotFile = True
 
 CLEANUP: INCLEANUP = True
     If Not fh Is Nothing Then fh.CloseFile: Set fh = Nothing
