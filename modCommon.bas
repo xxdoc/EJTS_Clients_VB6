@@ -497,14 +497,14 @@ End Sub
 Function FieldFromString(s$, m As FieldFormatMode) As Variant
 On Error GoTo ERR_HANDLER
 
-Dim v$, a&, n$, c$, nv#, e$, cy&, d$(), dv&(2)
+Dim v$, a&, n$, c$, e$, cy&, d$(), dv&(2)
 v$ = Trim$(s$)
 
 Select Case m
 'Long
 Case mNumber, mNumber_NoNegativeNumber, _
      mDollar
-    FieldFromString = Val(Replace$(Replace$(v$, "$", ""), ",", ""))
+    FieldFromString = CLng(Replace$(Replace$(v$, "$", ""), ",", ""))
     If m = mNumber_NoNegativeNumber Then
         If FieldFromString < 0 Then FieldFromString = 0
     End If
@@ -514,7 +514,7 @@ Case mNumberOrNULL, mNumberOrNULL_NoNegativeNumber, _
     If Len(v$) = 0 Then
         FieldFromString = NullLong
     Else
-        FieldFromString = Val(Replace$(Replace$(v$, "$", ""), ",", ""))
+        FieldFromString = CLng(Replace$(Replace$(v$, "$", ""), ",", ""))
         If (m = mNumberOrNULL_NoNegativeNumber) Or (m = mDollarOrNULL_NoNegativeNumber) Or (m = mDollarOrNULL_ZeroForcedToNullLong_NoNegativeNumber) Then
             If FieldFromString < 0 Then FieldFromString = 0
         End If
@@ -526,7 +526,7 @@ Case mNumberOrNULL, mNumberOrNULL_NoNegativeNumber, _
 'Date stored in a Long
 Case mDateAsLong, mDateAsLongOrNULL
     cy = Year(Date)
-    If IsNumeric(v$) Then
+    If IsNumeric(v$) Then   'Intentional use of IsNumeric(), since we're only checking that all characters are digits
         Select Case Len(v$)
         Case 4, 6, 8:                               'MMDD or MMDDYY or MMDDYYYY
             dv(0) = Mid$(v$, 1, 2)                  'Month
@@ -537,7 +537,7 @@ Case mDateAsLong, mDateAsLongOrNULL
                 dv(2) = cy                          'Assume current year
             End If
         End Select
-    ElseIf IsNumeric(Replace$(v$, "/", "")) Then
+    ElseIf IsNumeric(Replace$(v$, "/", "")) Then    'Intentional use of IsNumeric(), since we're only checking that all characters are digits
         d$ = Split(v$, "/")
         If UBound(d$) >= 1 Then                     'M/D or M/D/Y
             dv(0) = d$(0)
@@ -559,7 +559,7 @@ Case mDateAsLong, mDateAsLongOrNULL
                 dv(2) = ((cy \ 100) * 100) + dv(2)
             End If
         End If
-        FieldFromString = DateSerial(dv(2), dv(0), dv(1))
+        FieldFromString = CLng(DateSerial(dv(2), dv(0), dv(1)))
     ElseIf m = mDateAsLong Then
         FieldFromString = 0
     Else
@@ -579,7 +579,7 @@ Case mYearOrNULL
     If Len(v$) = 0 Then
         FieldFromString = NullLong
     Else
-        FieldFromString = Val(Replace$(Replace$(v$, "$", ""), ",", ""))
+        FieldFromString = CLng(Replace$(Replace$(v$, "$", ""), ",", ""))
     End If
 
 'String
@@ -615,7 +615,7 @@ Case mPhone
         c$ = Mid$(v$, a, 1)
         If LCase$(c$) = "x" Then
             Exit For
-        ElseIf IsNumeric(c$) Then
+        ElseIf IsNumeric(c$) Then   'Intentional use of IsNumeric(), to verify it's a digit character
             n$ = n$ & c$
             If Len(n$) >= 10 Then Exit For     'Allow only up to 10 digits
         End If
@@ -626,8 +626,7 @@ Case mPhone
     Else
         If a > 0 Then e$ = "x" & UCase$(Mid$(v$, a + 1))
         If Len(n$) = 7 Then n$ = DB_GetSetting(ActiveDBInstance, "GLOBAL_LocalAreaCode") & n$
-        nv = Val(n$)
-        FieldFromString = Format$(nv, "0000000000") & e$
+        FieldFromString = Format$(Val(n$), "0000000000") & e$   'Intentional use of Val(), since the number might be larger than what a Long can hold
     End If
 
 Case Else
@@ -718,7 +717,7 @@ End Sub
 'EHT=None
 Sub FieldToTextbox(txt As TextBox, v As Variant, Optional enablefield As Boolean = -100)
 'Converts database format to display format
-txt.Text = FieldToString(v, Val(txt.Tag))
+txt.Text = FieldToString(v, CLng(txt.Tag))
 If enablefield <> -100 Then EnableTextbox txt, enablefield
 End Sub
 
@@ -1047,14 +1046,14 @@ Function IsLetterKey(KeyCode As Integer) As Boolean
 IsLetterKey = ((KeyCode >= 65) And (KeyCode <= 90))
 End Function
 
-'EHT=None
-Function IsNumberOrBlank(ByVal t$) As Boolean
-If t$ = "" Then
-    IsNumberOrBlank = True
-Else
-    t$ = Replace$(Replace$(t$, "$", ""), ",", "")
-    IsNumberOrBlank = IsNumeric(t$)
-End If
+'EHT=Silent
+Function ConvertToLong(t$, ByRef l&) As Boolean
+On Error GoTo SILENT_EXIT
+
+l = CLng(Replace$(Replace$(t$, "$", ""), ",", ""))
+ConvertToLong = True
+
+SILENT_EXIT:
 End Function
 
 'EHT=None
@@ -1090,7 +1089,7 @@ Sub LostFocusFormat(txt As TextBox)
 On Error Resume Next
 
 Dim m As FieldFormatMode
-m = Val(txt.Tag)
+m = CLng(txt.Tag)
 txt.Text = FieldToString(FieldFromString(txt.Text, m), m)
 End Sub
 

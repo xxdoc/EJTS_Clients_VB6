@@ -462,7 +462,7 @@ Else
                 tttse(e).sName = "Prep fee threshold - receive organizer"
             ElseIf tttse(e).sName Like "Statistics-Bell*" Then
                 Dim f&
-                f = Val(Mid$(tttse(e).sName, 29))
+                f = CLng(Mid$(tttse(e).sName, 29))
                 tttse(e).sName = "Bell curve for statistics tab, range " & ((f \ 2) + 1) & Choose((f Mod 2) + 1, " from", " to")
             Else
                 Err.Raise 1, , "Unknown setting '" & tttse(e).sName & "'"
@@ -635,7 +635,7 @@ End Function
 Sub DB_SetSetting(LocalDBInstance As EJTSClientsDB, ByVal n$, v As Variant, Optional CreateAsTypeIfNone As enumSettingType, Optional DontCallSetChangedFlag As Boolean)
 On Error GoTo ERR_HANDLER
 
-Dim a&, nl$, g As Boolean, s As Setting, found As Boolean
+Dim a&, b&, nl$, g As Boolean, s As Setting, found As Boolean
 nl$ = LCase$(Trim$(n$))
 g = Left$(nl$, 7) = "global_"
 If g Then
@@ -675,7 +675,11 @@ Case sLng:
         If Trim$(LCase$(v)) = "null" Then
             s.sValue = NullLong
         Else
-            s.sValue = CLng(Val(Trim$(Replace$(Replace$(v, "$", ""), ",", ""))))
+            If ConvertToLong(Trim$(Replace$(Replace$(v, "$", ""), ",", "")), b) Then
+                s.sValue = b
+            Else
+                s.sValue = 0
+            End If
         End If
     Else
         s.sValue = CLng(v)

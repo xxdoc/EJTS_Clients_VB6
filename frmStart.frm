@@ -373,8 +373,7 @@ lstDataFiles.Clear
 f$ = Dir$(DataFilesPath & "EJTSClients????.dat")
 Do Until f$ = ""
     If Len(f$) = 19 Then
-        Y = Val(Mid$(f$, 12, 4))
-        If Y > 0 Then
+        If ConvertToLong(Mid$(f$, 12, 4), Y) Then
             lstDataFiles.AddItem Mid$(f$, 14, 2) & vbTab & f$ & vbTab & FileDateTime(DataFilesPath & f$)
             lstDataFiles.ItemData(lstDataFiles.NewIndex) = Y
             If Y = FileToOpen_Year Then

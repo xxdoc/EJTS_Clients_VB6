@@ -1159,21 +1159,24 @@ On Error GoTo ERR_HANDLER
 
 'If this is a new month, and the user forgot to create a snapshot, create one automatically
 
-Dim MostRecentSnapshot$, CurDBCalendarYear%, MostRecentSnapshotMonth%
+Dim MostRecentSnapshot$, CurDBCalendarYear&, MostRecentSnapshotMonth&
 Dim CurMonth%, CurYear%
 Dim lc%, a%, b$, f$, m$
 
 'Get current database's calendar year (calendar year is the year in the filename *plus one*)
-CurDBCalendarYear = Val(Mid(ActiveDBInstance.FullPath_DB, Len(ActiveDBInstance.FullPath_DB) - 7, 4)) + 1
-If CurDBCalendarYear = 0 Then Err.Raise 1, , "Unable to determine current database year."
+If Not ConvertToLong(Mid(ActiveDBInstance.FullPath_DB, Len(ActiveDBInstance.FullPath_DB) - 7, 4), CurDBCalendarYear) Then
+    Err.Raise 1, , "Unable to determine current database year."
+End If
+CurDBCalendarYear = CurDBCalendarYear + 1
 
 'Find the most recent snapshot whose name begins with the 4-digit code of the current database
 lc = cboSnapshots(0).ListCount
 For a = 0 To lc - 1
     MostRecentSnapshot$ = cboSnapshots(0).List(a)
     If MostRecentSnapshot$ Like (Format(CurDBCalendarYear, "0000") & "-?? *(auto)") Then
-        MostRecentSnapshotMonth = Val(Mid$(MostRecentSnapshot$, 6, 2))
-        If MostRecentSnapshotMonth >= 1 And MostRecentSnapshotMonth <= 12 Then Exit For
+        If ConvertToLong(Mid$(MostRecentSnapshot$, 6, 2), MostRecentSnapshotMonth) Then
+            If MostRecentSnapshotMonth >= 1 And MostRecentSnapshotMonth <= 12 Then Exit For
+        End If
     End If
 Next a
 

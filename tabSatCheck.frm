@@ -794,12 +794,11 @@ End Sub
 Function ReadInputTextbox(i&) As Long
 On Error GoTo ERR_HANDLER
 
-Dim t$
-t$ = txtField(i).Text
-If IsNumeric(t$) Then
-    ReadInputTextbox = CLng(t$)
+Dim l&
+If ConvertToLong(txtField(i).Text, l) Then
+    ReadInputTextbox = l
 Else
-    ReadInputTextbox = -1
+    ReadInputTextbox = NullLong
 End If
 
 Exit Function

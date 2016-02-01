@@ -1484,9 +1484,8 @@ r:
                     .ValueType = tLong
                     .Value_Long = CLng(CDate(v$))
 
-                ElseIf IsNumeric(v$) Then
+                ElseIf ConvertToLong(v$, .Value_Long) Then
                     .ValueType = tLong
-                    .Value_Long = CLng(v$)
 
                 Else    'String, with no quotes
                     .ValueType = tString

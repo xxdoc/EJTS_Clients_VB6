@@ -720,12 +720,6 @@ End If
 
 Dim a&, t$
 
-'If DEBUGMODE Then
-'    a = Val(InputBox("Enter number (1296,1304,1127):"))
-'    If a > 0 Then tabSearch.lstResults_KeyDown vbKeyReturn, CInt(a)
-'    Exit Sub
-'End If
-
 Select Case LCase$(InputBox("Enter debug code:"))
 Case "copyfees"
     lstSort.Clear
@@ -773,28 +767,36 @@ Case "t"
     Do Until fh.EndOfFile
         t$ = fh.ReadLine
         l$ = Split(t$, vbTab)
-        a = Val(l$(0))
-        cindex = DB_FindClientIndex(ActiveDBInstance, a)
-        If cindex >= 0 Then
-            With ActiveDBInstance.Clients(cindex).c
-                a = Val(l$(1))
-                If a = 9900 Then a = NullLong
-                If .OldestYearFiled = 9900 Then .OldestYearFiled = NullLong
-                If .OldestYearFiled <> NullLong Then
-                    If .OldestYearFiled <> a Then Stop
-                End If
-                .OldestYearFiled = a
+        If ConvertToLong(l$(0), a) Then
+            cindex = DB_FindClientIndex(ActiveDBInstance, a)
+            If cindex >= 0 Then
+                With ActiveDBInstance.Clients(cindex).c
+                    If ConvertToLong(l$(1), a) Then
+                        If a = 9900 Then a = NullLong
+                    Else
+                        a = NullLong
+                    End If
+                    If .OldestYearFiled = 9900 Then .OldestYearFiled = NullLong
+                    If .OldestYearFiled <> NullLong Then
+                        If .OldestYearFiled <> a Then Stop
+                    End If
+                    .OldestYearFiled = a
 
-                a = Val(l$(2))
-                If a = 9900 Then a = NullLong
-                If .NewestYearFiled = 9900 Then .NewestYearFiled = NullLong
-                If .NewestYearFiled <> NullLong Then
-                    If .NewestYearFiled <> a Then Stop
-                End If
-                .NewestYearFiled = a
-            End With
-        Else
-            Stop
+                    If ConvertToLong(l$(2), a) Then
+                        If a = 9900 Then a = NullLong
+                    Else
+                        a = NullLong
+                    End If
+                    If a = 9900 Then a = NullLong
+                    If .NewestYearFiled = 9900 Then .NewestYearFiled = NullLong
+                    If .NewestYearFiled <> NullLong Then
+                        If .NewestYearFiled <> a Then Stop
+                    End If
+                    .NewestYearFiled = a
+                End With
+            Else
+                Stop
+            End If
         End If
     Loop
     fh.CloseFile

@@ -636,12 +636,19 @@ SetFocusWithoutErr lstClients
 
 Dim newID&, NewIndex&, a&, b&, f As Boolean, t$
 
-t$ = InputBox("Enter client ID#")
+TryAgain:
+t$ = InputBox("Enter client ID#", , t$)
 If t$ = "" Then Exit Sub
-newID = Val(t$)
+If Not ConvertToLong(t$, newID) Then
+    ShowErrorMsg "You must enter a numeric value"
+    GoTo TryAgain
+End If
 
 NewIndex = DB_FindClientIndex(ActiveDBInstance, newID)
-If NewIndex < 0 Then Exit Sub
+If NewIndex < 0 Then
+    ShowErrorMsg "Cannot find client ID#" & newID
+    GoTo TryAgain
+End If
 With ActiveDBInstance.Clients(NewIndex).c
     'Add to listbox
     lstClients.AddItem FormatClientName(fSearchResults, ActiveDBInstance.Clients(NewIndex).c)

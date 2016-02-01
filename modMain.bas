@@ -138,8 +138,8 @@ For a = 0 To UBound(c$)
         FileToOpen_OpenReadOnly = True
     ElseIf LCase$(c$(a)) = "auto" Then
         FileToOpen_Year = Year(Date) - 1
-    ElseIf IsNumeric(c$(a)) Then
-        FileToOpen_Year = Val(c$(a))
+    Else
+        ConvertToLong c$(a), FileToOpen_Year        'If it fails, FileToOpen_Year will remain unchanged
     End If
 Next a
 

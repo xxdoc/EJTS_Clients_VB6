@@ -743,20 +743,20 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstSection_TabToNextControl", Err
 End Sub
 
 'EHT=Standard
-Private Sub txtPaperSize_Change()
+Private Sub txtPaperSize_LostFocus()
 On Error GoTo ERR_HANDLER
 
 If Not txtPaperSize.Enabled Then Exit Sub
 If Not SkipChangeEvents Then
     Dim p&
-    p = Val(txtPaperSize.Text)
+    ConvertToLong txtPaperSize.Text, p
     DB_SetSetting ActiveDBInstance, "_MailingList-PaperSize", p, sLng
     txtPaperSize.Text = p
     frmMain.SetChangedFlagAndIndication
 End If
 
 Exit Sub
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtPaperSize_Change", Err
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtPaperSize_LostFocus", Err
 End Sub
 
 'EHT=ResumeNext
@@ -1173,4 +1173,3 @@ lblClientCount.Caption = "Total:" & vbCrLf & ActiveDBInstance.Clients_Count
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UpdateTotals", Err
 End Sub
-

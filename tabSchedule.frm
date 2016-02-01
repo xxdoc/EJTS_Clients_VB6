@@ -604,7 +604,7 @@ If Not menApptCLItem(Index).Enabled Then Exit Sub
 
 Dim t$, cID&, cindex&
 t$ = menApptCLItem(Index).Tag
-If Len(t$) > 1 Then cID = Val(Mid$(t$, 2))
+If Len(t$) > 1 Then cID = CLng(Mid$(t$, 2))
 Select Case Mid$(t$, 1, 1)
 Case "e"    'Edit
     Dim frme As frmClientEditPost
