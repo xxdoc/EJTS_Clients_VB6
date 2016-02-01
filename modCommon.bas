@@ -708,6 +708,280 @@ Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "FieldToString", Err
 End Function
 
+'EHT=Silent
+Function ConvertStringToValue(ByVal inputstr$, m As FieldFormatMode, ByRef output As Variant) As Boolean
+On Error GoTo SILENT_EXIT
+
+'This function will never cause an actual error, but rather return True if successful in converting the string to a valid value, False otherwise
+
+Dim a&, b&, n$, c$, e$, cy&, d$(), dv&(2)
+Dim outputlong&
+
+Select Case m
+Case mNumber, mNumber_NoNegativeNumber, mNumberOrNULL, mNumberOrNULL_NoNegativeNumber, _
+     mDollar, mDollarOrNULL, mDollarOrNULL_NoNegativeNumber, mDollarOrNULL_ZeroForcedToNullLong, mDollarOrNULL_ZeroForcedToNullLong_NoNegativeNumber
+    'Remove $ and , so we get to the raw numbers
+    'Add a space before the - and + so each number will be split properly
+    inputstr$ = Trim$(Replace$(Replace$(Replace$(Replace$(inputstr$, _
+                    "$", ""), _
+                    ",", ""), _
+                    "-", " -"), _
+                    "+", " +"))
+
+    'It's blank, what do we do?!
+    If Len(inputstr$) = 0 Then
+        Select Case m
+        Case mNumber, mDollar, mNumber_NoNegativeNumber
+            'NULL is not allowed, blank must produce an error
+            GoTo SILENT_EXIT
+        Case mNumberOrNULL, mNumberOrNULL_NoNegativeNumber, _
+             mDollarOrNULL, mDollarOrNULL_NoNegativeNumber, mDollarOrNULL_ZeroForcedToNullLong, mDollarOrNULL_ZeroForcedToNullLong_NoNegativeNumber
+            'If NULL is allowed, then blank becomes a NULL
+            output = NullLong
+            GoTo SUCCESS
+        End Select
+    End If
+
+    'Assume everything can be space-separated
+    d$ = Split(inputstr$, " ")
+    For a = 0 To UBound(d$)
+        b = CLng(d$(a))
+        outputlong = outputlong + b
+    Next a
+
+    If outputlong < 0 Then
+        If (m = mNumberOrNULL_NoNegativeNumber) Or (m = mDollarOrNULL_NoNegativeNumber) Or (m = mDollarOrNULL_ZeroForcedToNullLong_NoNegativeNumber) Then
+            'Negative numbers are not allowed
+            GoTo SILENT_EXIT
+        End If
+    ElseIf outputlong = 0 Then
+        If (m = mDollarOrNULL_ZeroForcedToNullLong) Or (m = mDollarOrNULL_ZeroForcedToNullLong_NoNegativeNumber) Then
+            'A zero becomes NULL
+            If outputlong = 0 Then outputlong = NullLong
+        End If
+    End If
+
+    'Done
+    output = outputlong
+
+Case mDateAsLong, mDateAsLongOrNULL
+    inputstr$ = Trim$(inputstr$)
+    cy = Year(Date)     '4-digit year
+
+    'Parse out the Year, Month, and Day
+    If Len(inputstr$) = 0 Then
+        If m = mDateAsLongOrNULL Then
+            output = NullLong
+            GoTo SUCCESS
+        Else
+            GoTo SILENT_EXIT
+        End If
+    ElseIf IsNumeric(inputstr$) Then
+        Select Case Len(inputstr$)
+        Case 4, 6, 8:                                               'MMDD or MMDDYY or MMDDYYYY
+            dv(0) = Mid$(inputstr$, 1, 2)                           'Month
+            dv(1) = Mid$(inputstr$, 3, 2)                           'Day
+            If Len(inputstr$) > 4 Then
+                dv(2) = Mid$(inputstr$, 5, Len(inputstr$) - 4)      'Year
+            Else
+                dv(2) = cy                                          'Assume current year
+            End If
+        End Select
+    ElseIf IsNumeric(Replace$(inputstr$, "/", "")) Then
+        d$ = Split(inputstr$, "/")
+        If UBound(d$) >= 1 Then                                     'M/D or M/D/Y
+            dv(0) = d$(0)
+            dv(1) = d$(1)
+            If UBound(d$) >= 2 Then
+                dv(2) = d$(2)                                       'M/D/Y
+            Else
+                dv(2) = cy                                          'M/D, assume current year
+            End If
+        End If
+    Else
+        GoTo SILENT_EXIT
+    End If
+
+    'Bounds check, since IsNumeric may let a negative value through
+    If dv(0) < 1 Or dv(0) > 12 Then GoTo SILENT_EXIT
+    If dv(1) < 1 Or dv(1) > 31 Then GoTo SILENT_EXIT
+    If dv(2) < 0 Or dv(2) > 9999 Then GoTo SILENT_EXIT
+
+    'Get the correct century, if user specified
+    If dv(2) < 100 Then
+        If dv(2) > (cy Mod 100) Then
+            'If user typed a 2-digit year that is after the current year, assume he meant the 1900s
+            dv(2) = ((cy \ 100) * 100) - 100 + dv(2)
+        Else
+            'Otherwise put in the current century, plus the 2 digits the user specified
+            dv(2) = ((cy \ 100) * 100) + dv(2)
+        End If
+    End If
+
+    'Done
+    output = CLng(DateSerial(dv(2), dv(0), dv(1)))
+
+Case mYearOrNULL
+    inputstr$ = Trim$(inputstr$)
+    If Len(inputstr$) > 0 Then
+        output = CLng(inputstr$)
+    Else
+        output = NullLong
+    End If
+
+Case mString
+    output = Trim$(FormatTextForDB$(inputstr$))
+
+Case mStringUC
+    output = UCase$(Trim$(FormatTextForDB$(inputstr$)))
+
+Case mStringLC
+    output = LCase$(Trim$(FormatTextForDB$(inputstr$)))
+
+Case mStringMultiline
+    output = Trim$(inputstr$)
+
+Case mStringCommaSeparatedStateList
+    inputstr$ = UCase$(Trim$(inputstr$))    'No need for FormatTextForDB, since we're doing some pretty strict parsing
+
+    'Cut out each letter
+    For a = 1 To Len(inputstr$)
+        c$ = Mid$(inputstr$, a, 1)
+        b = Asc(c$)
+        If (b >= &H41&) And (b <= &H5A&) Then                                   'Uppercase A-Z
+            'Add to the buffer
+            n$ = n$ & c$
+        ElseIf (b = &H2C&) Or (b = &H2F&) Or (b = &H20&) Then                   ', / or space
+            'Allowed, but filtered out
+        Else
+            'Invalid character
+            GoTo SILENT_EXIT
+        End If
+    Next a
+
+    'Must be divisible by 2
+    If Len(n$) Mod 2 <> 0 Then GoTo SILENT_EXIT
+
+    If Len(n$) = 0 Then
+        'No states listed
+        output = n$
+    Else
+        'Join them with commas
+        inputstr$ = ""
+        For a = 1 To Len(n$) Step 2
+            inputstr$ = inputstr$ & Mid$(n$, a, 2) & ","
+        Next a
+        output = Left$(inputstr$, Len(inputstr$) - 1)
+    End If
+
+Case mPhone
+    inputstr$ = Trim$(inputstr$)
+    For a = 1 To Len(inputstr$)
+        c$ = Mid$(inputstr$, a, 1)
+        b = Asc(c$)
+        If (b = &H58&) Or (b = &H78&) Then                                      'X or x
+            'Found it, so everything after this point is an extension, and does not need to be numeric
+            Exit For
+        ElseIf (b >= &H30&) And (b <= &H39&) Then                               'Digits 0-9
+            'Add to the buffer
+            n$ = n$ & c$
+            If Len(n$) >= 10 Then Exit For 'Allow only up to 10 digits
+        ElseIf (b = &H28&) Or (b = &H29&) Or (b = &H2D&) Or (b = &H20&) Then    '( ) - or space
+            'Allowed, but filtered out
+        Else
+            'Invalid character
+            GoTo SILENT_EXIT
+        End If
+    Next a
+    a = InStr(a, LCase$(inputstr$), "x")
+    If (n$ = "") And (a = 0) Then
+        output = ""
+    Else
+        If a > 0 Then e$ = "x" & UCase$(Mid$(inputstr$, a + 1))
+        If Len(n$) = 7 Then n$ = DB_GetSetting(ActiveDBInstance, "GLOBAL_LocalAreaCode") & n$
+        output = Format$(Val(n$), "0000000000") & e$   'Intentional use of Val(), since the number might be larger than what a Long can hold
+    End If
+
+Case mTime
+    inputstr$ = Trim$(inputstr$)
+    If IsDate(inputstr$) Then
+        output = TimeValue(inputstr$)
+    Else
+        output = 0
+    End If
+
+End Select
+
+SUCCESS:
+ConvertStringToValue = True
+
+SILENT_EXIT:
+End Function
+
+'EHT=Custom
+Function ConvertValueToString(inputvar As Variant, m As FieldFormatMode) As String
+On Error GoTo ERR_HANDLER
+
+'This function will never cause an actual error, but rather return "[ERR]" if an error occured when converting the value to a string
+
+Dim t$, a&
+
+Select Case m
+'Output is a Long type
+Case mNumber, mNumber_NoNegativeNumber
+    ConvertValueToString = Format$(inputvar, "#,##0")
+Case mNumberOrNULL, mNumberOrNULL_NoNegativeNumber
+    If inputvar <> NullLong Then ConvertValueToString = Format$(inputvar, "#,##0")
+Case mDollar
+    ConvertValueToString = Format$(inputvar, "$#,##0")
+Case mDollarOrNULL, mDollarOrNULL_NoNegativeNumber, mDollarOrNULL_ZeroForcedToNullLong, mDollarOrNULL_ZeroForcedToNullLong_NoNegativeNumber
+    If inputvar <> NullLong Then ConvertValueToString = Format$(inputvar, "$#,##0")
+Case mDateAsLong
+    ConvertValueToString = Format$(inputvar, "m/dd/yyyy")
+Case mDateAsLongOrNULL
+    If inputvar <> NullLong Then ConvertValueToString = Format$(inputvar, "m/dd/yyyy")
+Case mYearOrNULL
+    If inputvar <> NullLong Then ConvertValueToString = Format$(inputvar, "0000")
+
+'Output is a String type
+Case mString, mStringMultiline, mStringCommaSeparatedStateList
+    ConvertValueToString = inputvar
+Case mStringUC
+    ConvertValueToString = UCase$(inputvar)
+Case mStringLC
+    ConvertValueToString = LCase$(inputvar)
+Case mPhone, mPhoneHideLocalAreaCode
+    t$ = CStr(inputvar)
+    If t$ <> "" Then
+        a = InStr(LCase$(t$), "x")
+        If a = 0 Then a = Len(t$) + 1
+        If a = 11 Then
+            If m = mPhoneHideLocalAreaCode Then
+                If Mid$(t$, 1, 3) <> DB_GetSetting(ActiveDBInstance, "GLOBAL_LocalAreaCode") Then
+                    ConvertValueToString = "(" & Mid$(t$, 1, 3) & ") "
+                End If
+            Else
+                ConvertValueToString = "(" & Mid$(t$, 1, 3) & ") "
+            End If
+            ConvertValueToString = ConvertValueToString & Mid$(t$, 4, 3) & "-" & Mid$(t$, 7)
+        Else
+            ConvertValueToString = Mid$(t$, 1, 3) & "-" & Mid$(t$, 4)
+        End If
+    End If
+
+'Output is a Date type
+Case mTime
+    ConvertValueToString = Format$(inputvar, "h:mm AM/PM")
+
+Case Else
+    GoTo ERR_HANDLER
+End Select
+
+Exit Function
+ERR_HANDLER:
+    ConvertValueToString = "[ERR]"
+End Function
+
 'EHT=None
 Sub FieldFromTextbox(txt As TextBox, ByRef v As Variant)
 'Converts display format to database format
@@ -722,7 +996,7 @@ If enablefield <> -100 Then EnableTextbox txt, enablefield
 End Sub
 
 'EHT=None
-Sub FieldFromCheckbox(chk As CheckBox, ByRef v As Variant)
+Sub FieldFromCheckbox(chk As CheckBox, ByRef v As Boolean)
 'Converts the checkbox's status to a Boolean for the database
 v = (chk.Value = vbChecked)
 End Sub
@@ -757,6 +1031,57 @@ Else
 End If
 If enablefield <> -100 Then EnableTextbox cbo, enablefield
 End Sub
+
+'EHT=Custom
+Function ValidateTextbox(txt As TextBox, ByRef v As Variant) As Boolean
+On Error GoTo ERR_HANDLER
+
+Dim m As FieldFormatMode
+m = CLng(txt.Tag)
+If ConvertStringToValue(txt.Text, m, v) Then
+    txt.Text = ConvertValueToString(v, m)
+    txt.BackColor = vbWindowBackground
+    ValidateTextbox = True
+    Exit Function
+End If
+
+ERR_HANDLER:
+txt.BackColor = &HC0E0FF
+End Function
+
+'EHT=Custom
+Function ValidateCheckbox(chk As CheckBox, ByRef v As Boolean) As Boolean
+On Error GoTo ERR_HANDLER
+
+Dim c As Integer
+c = chk.Value
+If (c = vbChecked) Or (c = vbUnchecked) Then
+    v = (c = vbChecked)
+    chk.BackColor = vbButtonFace
+    ValidateCheckbox = True
+    Exit Function
+End If
+
+ERR_HANDLER:
+chk.BackColor = &HC0E0FF
+End Function
+
+'EHT=Custom
+Function ValidateCombobox(cbo As ComboBox, ByRef v As Long) As Boolean
+On Error GoTo ERR_HANDLER
+
+Dim i As Integer
+i = cbo.ListIndex
+If i >= 0 Then
+    v = i
+    cbo.BackColor = vbWindowBackground
+    ValidateCombobox = True
+    Exit Function
+End If
+
+ERR_HANDLER:
+cbo.BackColor = &HC0E0FF
+End Function
 
 'EHT=None
 Function Flag_IsSet(Flags As Long, Flag As Long) As Boolean

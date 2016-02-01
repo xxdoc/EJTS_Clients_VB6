@@ -81,8 +81,10 @@ End Function
 'Form
 '#################################################################################
 
-'EHT=None
-Public Sub PopulateForm(frm As frmClientEditPost, offset As Long, enablefields As Boolean)
+'EHT=Standard
+Public Function PopulateToForm(frm As frmClientEditPost, offset As Long, enablefields As Boolean) As Boolean
+On Error GoTo ERR_HANDLER
+
 Dim en As Boolean
 en = (offset = 0) And enablefields
 FieldToCombobox frm.cboField(fncInboxType + offset), m.InboxType, en
@@ -98,4 +100,41 @@ FieldToTextbox frm.txtField(fncStateList + offset), m.StateList, en
 FieldToTextbox frm.txtField(fncFee + offset), m.Fee, en
 FieldToTextbox frm.txtField(fncFeeOwed + offset), m.FeeOwed, en
 FieldToCheckbox frm.chkField(fncReleasedBeforePayment + offset), m.ReleasedBeforePayment, en
-End Sub
+
+PopulateToForm = True
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateToForm", Err
+End Function
+
+'EHT=Standard
+Public Function PopulateFromForm(frm As frmClientEditPost, offset As Long) As Boolean
+On Error GoTo ERR_HANDLER
+
+Dim temp As typeCoreData_TaxReturn
+
+If Not ValidateCombobox(frm.cboField(fncInboxType + offset), temp.InboxType) Then GoTo VALIDATION_ERROR
+If Not ValidateCombobox(frm.cboField(fncStatus + offset), temp.Status) Then GoTo VALIDATION_ERROR
+If Not ValidateCheckbox(frm.chkField(fncFiledExtension + offset), temp.FiledExtension) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncCompletionDate + offset), temp.CompletionDate) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncMinutesToComplete + offset), temp.MinutesToComplete) Then GoTo VALIDATION_ERROR
+If Not ValidateCheckbox(frm.chkField(fncEFiled + offset), temp.EFiled) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncResultAGI + offset), temp.Results_AGI) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncResultFederal + offset), temp.Results_Fed) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncResultState + offset), temp.Results_State) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncStateList + offset), temp.StateList) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncFee + offset), temp.Fee) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncFeeOwed + offset), temp.FeeOwed) Then GoTo VALIDATION_ERROR
+If Not ValidateCheckbox(frm.chkField(fncReleasedBeforePayment + offset), temp.ReleasedBeforePayment) Then GoTo VALIDATION_ERROR
+
+'If we've gotten this far without errors, then save the data for real
+m = temp
+PopulateFromForm = True
+
+Exit Function
+VALIDATION_ERROR:
+    ShowErrorMsg "Validation error. Please correct the hilighted fields before continuing."
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateFromForm", Err
+End Function

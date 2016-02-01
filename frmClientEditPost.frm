@@ -974,6 +974,24 @@ Begin VB.Form frmClientEditPost
          Width           =   735
       End
    End
+   Begin VB.Label lblSwitchPersons 
+      AutoSize        =   -1  'True
+      Caption         =   "ст"
+      BeginProperty Font 
+         Name            =   "Wingdings"
+         Size            =   14.25
+         Charset         =   2
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   315
+      Left            =   8760
+      TabIndex        =   110
+      Top             =   1920
+      Width           =   510
+   End
    Begin VB.Label lblNoTaxReturn 
       Caption         =   "There is no tax return entered for this year."
       BeginProperty Font 
@@ -1293,7 +1311,7 @@ Begin VB.Form frmClientEditPost
       Left            =   120
       TabIndex        =   43
       Top             =   3720
-      Width           =   9135
+      Width           =   2535
    End
    Begin VB.Label lbl 
       Caption         =   "Phone ('SP WORK'):"
@@ -1635,7 +1653,7 @@ Begin VB.Form frmClientEditPost
       Left            =   120
       TabIndex        =   37
       Top             =   1920
-      Width           =   9135
+      Width           =   2535
    End
    Begin VB.Label lbl 
       Caption         =   "Taxpayer"
@@ -1653,7 +1671,7 @@ Begin VB.Form frmClientEditPost
       Left            =   120
       TabIndex        =   29
       Top             =   120
-      Width           =   9135
+      Width           =   2535
    End
    Begin VB.Line Line4 
       X1              =   624
@@ -2137,6 +2155,16 @@ Case vbKeyReturn
     Else
         TabToNextControl Me, True, (Shift = vbShiftMask)
     End If
+Case 65     'A
+    If Shift = vbCtrlMask Then
+        If TypeName(Me.ActiveControl) = "TextBox" Then
+            'Select contents
+            With Me.ActiveControl
+                .SelStart = 0
+                .SelLength = Len(.Text)
+            End With
+        End If
+    End If
 End Select
 
 Exit Sub
@@ -2158,7 +2186,7 @@ End Sub
 
 
 '#################################################################################
-'GotFocus / LostFocus
+'Field handling: GotFocus/LostFocus/Click
 '#################################################################################
 
 'EHT=ResumeNext
@@ -2189,14 +2217,67 @@ End Sub
 Private Sub txtField_LostFocus(Index As Integer)
 On Error Resume Next
 
+Dim v As Variant, n$(1)
+
 ClearControlHilight Me
+If Not ValidateTextbox(txtField(Index), v) Then Exit Sub
 
 Select Case Index
+Case fncPerson_Last, fncPerson_Last + frmClientEditPost_PersonOffset
+    n$(0) = LCase$(txtField(fncPerson_Last).Text)
+    n$(1) = LCase$(txtField(fncPerson_Last + frmClientEditPost_PersonOffset).Text)
+    'If same last names, second one should be greyed out
+    If Len(n$(1)) > 0 And (n$(1) = n$(0)) Then
+        'Same = Grey
+        txtField(fncPerson_Last + frmClientEditPost_PersonOffset).ForeColor = &HC0C0C0
+    Else
+        'Different = Black
+        txtField(fncPerson_Last + frmClientEditPost_PersonOffset).ForeColor = vbWindowText
+    End If
+
 Case fncPerson_DateOfBirth, fncPerson_DateOfDeath, fncPerson_DateOfBirth + frmClientEditPost_PersonOffset, fncPerson_DateOfDeath + frmClientEditPost_PersonOffset
     UpdateDOBandDODtext
-End Select
 
-LostFocusFormat txtField(Index)
+Case fncResultAGI, fncResultFederal, fncResultState
+    With txtField(Index)
+        If v = NullLong Then
+            'Blank = Black
+            .ForeColor = vbWindowText
+        Else
+            If v < 0 Then
+                'Negative = Red
+                .ForeColor = &HC0&
+            ElseIf v > 0 Then
+                'Positive = Green
+                .ForeColor = &H8000&    'Green
+            Else
+                'Zero = Black
+                .ForeColor = vbWindowText
+            End If
+        End If
+    End With
+End Select
+End Sub
+
+'EHT=ResumeNext
+Private Sub chkField_Click(Index As Integer)
+On Error Resume Next
+
+ValidateCheckbox chkField(Index), False
+
+With chkField(Index)
+    If .style = vbButtonGraphical Then
+        If .Value = vbChecked Then
+            .Caption = "yes"
+            .FontBold = True
+        ElseIf .Value = vbUnchecked Then
+            .Caption = "no"
+            .FontBold = False
+        ElseIf .Value = vbGrayed Then
+            .Caption = ""
+        End If
+    End If
+End With
 End Sub
 
 'EHT=ResumeNext
@@ -2211,6 +2292,13 @@ Private Sub chkField_LostFocus(Index As Integer)
 On Error Resume Next
 
 ClearControlHilight Me
+End Sub
+
+'EHT=ResumeNext
+Private Sub cboField_Click(Index As Integer)
+On Error Resume Next
+
+ValidateCombobox cboField(Index), 0
 End Sub
 
 'EHT=ResumeNext
@@ -2260,60 +2348,34 @@ End Sub
 
 
 '#################################################################################
-'Special handling of certain controls
+'Switching of person #1 and person #2
 '#################################################################################
 
 'EHT=Standard
-Private Sub chkField_Click(Index As Integer)
+Private Sub lblSwitchPersons_Click()
 On Error GoTo ERR_HANDLER
 
-With chkField(Index)
-    If .style = vbButtonGraphical Then
-        If .Value = vbChecked Then
-            .Caption = "yes"
-            .FontBold = True
-        ElseIf .Value = vbUnchecked Then
-            .Caption = "no"
-            .FontBold = False
-        ElseIf .Value = vbGrayed Then
-            .Caption = ""
-        End If
-    End If
-End With
+SwitchTextboxValues fncPerson_First, fncPerson_First + frmClientEditPost_PersonOffset
+SwitchTextboxValues fncPerson_Nickname, fncPerson_Nickname + frmClientEditPost_PersonOffset
+SwitchTextboxValues fncPerson_Middle, fncPerson_Middle + frmClientEditPost_PersonOffset
+SwitchTextboxValues fncPerson_Last, fncPerson_Last + frmClientEditPost_PersonOffset
+SwitchTextboxValues fncPerson_Email, fncPerson_Email + frmClientEditPost_PersonOffset
+SwitchTextboxValues fncPerson_DateOfBirth, fncPerson_DateOfBirth + frmClientEditPost_PersonOffset
+SwitchTextboxValues fncPerson_DateOfDeath, fncPerson_DateOfDeath + frmClientEditPost_PersonOffset
+SwitchTextboxValues fncPerson_Phone, fncPerson_Phone + frmClientEditPost_PersonOffset
+
+UpdateDOBandDODtext
 
 Exit Sub
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "chkField_Click", Err
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lblSwitchPersons_Click", Err
 End Sub
 
-'EHT=Standard
-Private Sub txtField_Change(Index As Integer)
-On Error GoTo ERR_HANDLER
-
-Select Case Index
-Case fncResultAGI, fncResultFederal
-    Dim n&
-    With txtField(Index)
-        FieldFromTextbox txtField(Index), n
-        If n = NullLong Then
-            'Blank = Black
-            .ForeColor = vbWindowText
-        Else
-            If n < 0 Then
-                'Negative = Red
-                .ForeColor = &HC0&
-            ElseIf n > 0 Then
-                'Positive = Green
-                .ForeColor = &H8000&    'Green
-            Else
-                'Zero = Black
-                .ForeColor = vbWindowText
-            End If
-        End If
-    End With
-End Select
-
-Exit Sub
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "txtField_Change", Err
+'EHT=None
+Private Sub SwitchTextboxValues(txt1 As Integer, txt2 As Integer)
+Dim v$
+v$ = txtField(txt1).Text
+txtField(txt1).Text = txtField(txt2).Text
+txtField(txt2).Text = v$
 End Sub
 
 
