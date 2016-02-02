@@ -327,13 +327,8 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SetDefaultFocus", Err
 End Sub
 
-'EHT=Standard
+'EHT=None
 Private Function ITab_SaveSettingsToDBBeforeClose() As Boolean
-On Error GoTo ERR_HANDLER
-
-
-Exit Function
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SaveSettingsToDBBeforeClose", Err
 End Function
 
 'EHT=Standard

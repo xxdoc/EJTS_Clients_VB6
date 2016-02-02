@@ -437,13 +437,8 @@ If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had alre
 FormLoadedAlready = True
 End Sub
 
-'EHT=Standard
+'EHT=None
 Private Function ITab_CreateGDIObjects() As Boolean
-On Error GoTo ERR_HANDLER
-
-
-Exit Function
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_CreateGDIObjects", Err
 End Function
 
 'EHT=Standard
@@ -519,22 +514,12 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SetDefaultFocus", Err
 End Sub
 
-'EHT=Standard
+'EHT=None
 Private Function ITab_SaveSettingsToDBBeforeClose() As Boolean
-On Error GoTo ERR_HANDLER
-
-
-Exit Function
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_SaveSettingsToDBBeforeClose", Err
 End Function
 
-'EHT=Standard
+'EHT=None
 Private Function ITab_DestroyGDIObjects() As Boolean
-On Error GoTo ERR_HANDLER
-
-
-Exit Function
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ITab_DestroyGDIObjects", Err
 End Function
 
 'EHT=ResumeNext
