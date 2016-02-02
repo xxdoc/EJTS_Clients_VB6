@@ -1539,10 +1539,10 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "MouseMoveCalc", Err
 End Sub
 
 'EHT=Standard
-Sub SetShapeStyle(style As ScheduleShapeStyle)
+Sub SetShapeStyle(Style As ScheduleShapeStyle)
 On Error GoTo ERR_HANDLER
 
-Select Case style
+Select Case Style
 Case Style_Normal
     shpApptSelection.BorderColor = vbBlue
     lblApptSelection.Caption = ""
@@ -1565,7 +1565,7 @@ Case Style_ShowAppt
     shpApptSelection.BorderColor = vbRed
     lblApptSelection.Caption = ""
 End Select
-LastShapeStyle = style
+LastShapeStyle = Style
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SetShapeStyle", Err
@@ -1583,7 +1583,7 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "HideShape", Err
 End Sub
 
 'EHT=Standard
-Sub MoveShapeAndSetStyle(DayIndex&, TimeSlot&, NumSlots&, style As ScheduleShapeStyle)
+Sub MoveShapeAndSetStyle(DayIndex&, TimeSlot&, NumSlots&, Style As ScheduleShapeStyle)
 On Error GoTo ERR_HANDLER
 
 'Calculates the dimensions necessary to maintain the inner dimensions of the appointment rectangle
@@ -1602,7 +1602,7 @@ lblApptSelection.Move ScheduleDayPositions(DayIndex).Left + DayApptsOffsetX + 1,
          (DayApptSlotHeight * NumSlots) - 1
 lblApptSelection.Visible = True
 
-SetShapeStyle style
+SetShapeStyle Style
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "MoveShapeAndSetStyle", Err

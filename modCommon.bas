@@ -281,7 +281,7 @@ Public Type CREATESTRUCT
     cx As Long
     Y As Long
     X As Long
-    style As Long
+    Style As Long
     lpszName As Long
     lpszClass As Long
     ExStyle As Long
