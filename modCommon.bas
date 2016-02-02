@@ -447,8 +447,14 @@ Public Enum ScheduleShapeStyle
     Style_ShowAppt
 End Enum
 
-Public Const frmClientEditPost_PersonOffset = 100
-Public Const frmClientEditPost_TaxReturnOffset = 100
+Public Type typeChooserConfig
+    Container As PictureBox
+    ContainerIndex As Long
+    Selections() As Label
+End Type
+
+Public Const frmClientEditPost_PersonOffset = 20
+Public Const frmClientEditPost_TaxReturnOffset = 20
 
 Public Const NullLong = &H80000000      '-2147483648
 
@@ -483,13 +489,51 @@ If fBold Then fw = FW_BOLD Else fw = FW_NORMAL
 CreateFont2 = CreateFont(-(fSize * GetDeviceCaps(fHDC, LOGPIXELSY)) / 72, 0, 0, 0, fw, fItalic, fUnderline, fStrikeout, 0, 0, 0, 0, 0, fName$)
 End Function
 
+'Since control arrays can return control objects that don't actually refer to a control, we attempt to access a property to
+'prove the control's existence. If we're successful, the control is real.
+'EHT=Silent
+Function IsRealControl(ctl As Control) As Boolean
+On Error GoTo SILENT_EXIT
+
+If Not ctl Is Nothing Then
+    Dim e As Boolean
+    e = ctl.Enabled
+    IsRealControl = True
+End If
+
+SILENT_EXIT:
+End Function
+
 'EHT=None
-Sub EnableTextbox(txt As Control, e As Boolean)
-txt.Enabled = e
+Sub EnableControl(ctl As Control, e As Boolean)
+ctl.Enabled = e
 If e Then
-    txt.BackColor = vbWindowBackground
+    ctl.BackColor = vbWindowBackground
 Else
-    txt.BackColor = vbButtonFace
+    ctl.BackColor = vbButtonFace
+End If
+End Sub
+
+'EHT=None
+Sub MakeControlLookInvalid(ctl As Control, invalid As Boolean)
+Dim b&
+Const invalidclr = &HC0E0FF
+b = ctl.BackColor
+If invalid Then
+    If (b <> invalidclr) And (b <> invalidclr - 1) Then
+        'If we're going to change the BackColor, we need to save what it was, because we cannot use
+        '  the control's Enabled property to figure it out (Enabled will be False if a modal form is
+        '  on the screen, even if the control actually is enabled). So we'll slightly modify the color
+        '  by subtracting 1 (True=-1) if the BackColor was white previously. Sneaky, huh?
+        ctl.BackColor = invalidclr + (ctl.BackColor = vbWindowBackground)
+    End If
+Else
+    If b = (invalidclr - 1) Then
+        ctl.BackColor = vbWindowBackground
+    ElseIf b = invalidclr Then
+        ctl.BackColor = vbButtonFace
+    'Else we probably weren't the last ones to modify BackColor, so just leave it alone
+    End If
 End If
 End Sub
 
@@ -992,7 +1036,20 @@ End Sub
 Sub FieldToTextbox(txt As TextBox, v As Variant, Optional enablefield As Boolean = -100)
 'Converts database format to display format
 txt.Text = FieldToString(v, CLng(txt.Tag))
-If enablefield <> -100 Then EnableTextbox txt, enablefield
+If enablefield <> -100 Then EnableControl txt, enablefield
+End Sub
+
+'EHT=None
+Sub CheckboxClick(chk As CheckBox)
+If chk.Value = vbChecked Then
+    chk.Caption = "YES"
+    chk.FontBold = True
+ElseIf chk.Value = vbUnchecked Then
+    chk.Caption = "no"
+    chk.FontBold = False
+ElseIf chk.Value = vbGrayed Then
+    chk.Caption = ""
+End If
 End Sub
 
 'EHT=None
@@ -1029,7 +1086,66 @@ If (v < 0) Or (v >= cbo.ListCount) Then
 Else
     cbo.ListIndex = v
 End If
-If enablefield <> -100 Then EnableTextbox cbo, enablefield
+If enablefield <> -100 Then EnableControl cbo, enablefield
+End Sub
+
+'Selects the item in the slider, by label control index. If none found, blank all the choices out
+'EHT=None
+Sub ChooserClick(config As typeChooserConfig, clickedlabel As Label)
+Dim a&, t$
+For a = 0 To UBound(config.Selections)
+    If clickedlabel = config.Selections(a) Then
+        clickedlabel.BackStyle = 1
+        t$ = a
+    Else
+        config.Selections(a).BackStyle = 0
+    End If
+Next a
+config.Container.Tag = t$   'Blank string means null
+End Sub
+
+'Moves the slider up (False) or down (True)
+'EHT=None
+Sub ChooserMove(config As typeChooserConfig, increase As Boolean)
+Dim a&, v&
+If ConvertToLong(config.Container.Tag, v) Then
+    'Find new value
+    If increase Then
+        v = v + 1
+        If v > UBound(config.Selections) Then Exit Sub
+    Else
+        v = v - 1
+        If v < 0 Then Exit Sub
+    End If
+Else
+    'There wasn't an old value, so just select the first item
+    v = 0
+End If
+'Make the selection
+For a = 0 To UBound(config.Selections)
+    If a = v Then
+        config.Selections(a).BackStyle = 1
+    Else
+        config.Selections(a).BackStyle = 0
+    End If
+Next a
+config.Container.Tag = v
+End Sub
+
+'Selects the item in the slider, by value. If none found, blank all the choices out
+'EHT=None
+Sub FieldToChooser(config As typeChooserConfig, v As Long, Optional enablefield As Boolean = -100)
+Dim a&, t$
+For a = 0 To UBound(config.Selections)
+    If a = v Then
+        config.Selections(a).BackStyle = 1
+        t$ = a
+    Else
+        config.Selections(a).BackStyle = 0
+    End If
+Next a
+config.Container.Tag = t$   'Blank string means null
+If enablefield <> -100 Then EnableControl config.Container, enablefield
 End Sub
 
 'EHT=Custom
@@ -1040,13 +1156,13 @@ Dim m As FieldFormatMode
 m = CLng(txt.Tag)
 If ConvertStringToValue(txt.Text, m, v) Then
     txt.Text = ConvertValueToString(v, m)
-    txt.BackColor = vbWindowBackground
+    MakeControlLookInvalid txt, False
     ValidateTextbox = True
     Exit Function
 End If
 
 ERR_HANDLER:
-txt.BackColor = &HC0E0FF
+MakeControlLookInvalid txt, True
 End Function
 
 'EHT=Custom
@@ -1057,30 +1173,44 @@ Dim c As Integer
 c = chk.Value
 If (c = vbChecked) Or (c = vbUnchecked) Then
     v = (c = vbChecked)
-    chk.BackColor = vbButtonFace
+    MakeControlLookInvalid chk, False
     ValidateCheckbox = True
     Exit Function
 End If
 
 ERR_HANDLER:
-chk.BackColor = &HC0E0FF
+MakeControlLookInvalid chk, True
 End Function
 
 'EHT=Custom
 Function ValidateCombobox(cbo As ComboBox, ByRef v As Long) As Boolean
 On Error GoTo ERR_HANDLER
 
-Dim i As Integer
-i = cbo.ListIndex
-If i >= 0 Then
-    v = i
-    cbo.BackColor = vbWindowBackground
+v = cbo.ListIndex
+If v >= 0 Then
+    MakeControlLookInvalid cbo, False
     ValidateCombobox = True
     Exit Function
 End If
 
 ERR_HANDLER:
-cbo.BackColor = &HC0E0FF
+MakeControlLookInvalid cbo, True
+End Function
+
+'EHT=Custom
+Function ValidateChooser(config As typeChooserConfig, ByRef v As Long) As Boolean
+On Error GoTo ERR_HANDLER
+
+If ConvertToLong(config.Container.Tag, v) Then
+    If (v >= 0) And (v <= UBound(config.Selections)) Then
+        MakeControlLookInvalid config.Container, False
+        ValidateChooser = True
+        Exit Function
+    End If
+End If
+
+ERR_HANDLER:
+MakeControlLookInvalid config.Container, True
 End Function
 
 'EHT=None
@@ -1515,33 +1645,41 @@ End Function
 Sub HilightControl(frm As Form, ctrl As Object)
 On Error Resume Next
 
-Dim shp As Shape
-Set shp = frm.Controls("hilight")
-If Not shp Is Nothing Then
-    If Not shp.Container Is ctrl.Container Then
-        frm.Controls.Remove "hilight"
-        Set shp = Nothing
+Dim shp As Shape, n$, a&, s!
+For a = 1 To 3
+    n$ = "hilight" & a
+    Set shp = Nothing           'Set it to Nothing
+    Set shp = frm.Controls(n$)  'Will error if control doesn't exist
+    If Not shp Is Nothing Then  'Check if it's still Nothing
+        If Not shp.Container Is ctrl.Container Then
+            frm.Controls.Remove n$
+            Set shp = Nothing   'Remove it since it's in the wrong container; we'll recreate it below
+        End If
     End If
-End If
-If shp Is Nothing Then
-    Set shp = frm.Controls.Add("VB.Shape", "hilight", ctrl.Container)
-    shp.BorderColor = &HC0&
-    shp.BorderWidth = 2
-    shp.ZOrder 0
-End If
-shp.Move ctrl.Left - 1, ctrl.Top - 1, ctrl.Width + 3, ctrl.Height + 3
-shp.Visible = True
+    If shp Is Nothing Then
+        'Create
+        Set shp = frm.Controls.Add("VB.Shape", n$, ctrl.Container)
+        shp.BorderColor = Choose(a, RGB(118, 46, 46), RGB(211, 48, 48), RGB(206, 159, 159))
+        shp.BorderWidth = 1
+        shp.ZOrder 0
+    End If
+    'Position and show the shape
+    shp.Move ctrl.Left - a, ctrl.Top - a, ctrl.Width + (a * 2), ctrl.Height + (a * 2)
+    shp.Visible = True
+Next a
 End Sub
 
 'EHT=ResumeNext
 Sub ClearControlHilight(frm As Form)
 On Error Resume Next
 
-Dim shp As Shape
-Set shp = frm.Controls("hilight")
-If Not shp Is Nothing Then
-    shp.Visible = False
-End If
+Dim shp As Shape, a&
+For a = 1 To 3
+    Set shp = frm.Controls("hilight" & a)
+    If Not shp Is Nothing Then
+        shp.Visible = False
+    End If
+Next a
 End Sub
 
 'EHT=ResumeNext

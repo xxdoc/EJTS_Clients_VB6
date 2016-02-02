@@ -87,19 +87,19 @@ On Error GoTo ERR_HANDLER
 
 Dim en As Boolean
 en = (offset = 0) And enablefields
-FieldToCombobox frm.cboField(fncInboxType + offset), m.InboxType, en
-FieldToCombobox frm.cboField(fncStatus + offset), m.Status, en
-FieldToCheckbox frm.chkField(fncFiledExtension + offset), m.FiledExtension, en
-FieldToTextbox frm.txtField(fncCompletionDate + offset), m.CompletionDate, en
-FieldToTextbox frm.txtField(fncMinutesToComplete + offset), m.MinutesToComplete, en
-FieldToCheckbox frm.chkField(fncEFiled + offset), m.EFiled, en
-FieldToTextbox frm.txtField(fncResultAGI + offset), m.Results_AGI, en
-FieldToTextbox frm.txtField(fncResultFederal + offset), m.Results_Fed, en
-FieldToTextbox frm.txtField(fncResultState + offset), m.Results_State, en
-FieldToTextbox frm.txtField(fncStateList + offset), m.StateList, en
-FieldToTextbox frm.txtField(fncFee + offset), m.Fee, en
-FieldToTextbox frm.txtField(fncFeeOwed + offset), m.FeeOwed, en
-FieldToCheckbox frm.chkField(fncReleasedBeforePayment + offset), m.ReleasedBeforePayment, en
+FieldToChooser frm.ChooserConfig(fncTaxReturn_InboxType + offset), m.InboxType, en
+FieldToChooser frm.ChooserConfig(fncTaxReturn_Status + offset), m.Status, en
+FieldToCheckbox frm.chkField(fncTaxReturn_FiledExtension + offset), m.FiledExtension, en
+FieldToTextbox frm.txtField(fncTaxReturn_CompletionDate + offset), m.CompletionDate, en
+FieldToTextbox frm.txtField(fncTaxReturn_MinutesToComplete + offset), m.MinutesToComplete, en
+FieldToCheckbox frm.chkField(fncTaxReturn_EFiled + offset), m.EFiled, en
+FieldToTextbox frm.txtField(fncTaxReturn_ResultAGI + offset), m.Results_AGI, en
+FieldToTextbox frm.txtField(fncTaxReturn_ResultFederal + offset), m.Results_Fed, en
+FieldToTextbox frm.txtField(fncTaxReturn_ResultStatesCombined + offset), m.Results_State, en
+FieldToTextbox frm.txtField(fncTaxReturn_StateList + offset), m.StateList, en
+FieldToTextbox frm.txtField(fncTaxReturn_FeeTotal + offset), m.Fee, en
+FieldToTextbox frm.txtField(fncTaxReturn_FeeOwed + offset), m.FeeOwed, en
+FieldToCheckbox frm.chkField(fncTaxReturn_ReleasedBeforePayment + offset), m.ReleasedBeforePayment, en
 
 PopulateToForm = True
 
@@ -113,19 +113,19 @@ On Error GoTo ERR_HANDLER
 
 Dim temp As typeCoreData_TaxReturn
 
-If Not ValidateCombobox(frm.cboField(fncInboxType + offset), temp.InboxType) Then GoTo VALIDATION_ERROR
-If Not ValidateCombobox(frm.cboField(fncStatus + offset), temp.Status) Then GoTo VALIDATION_ERROR
-If Not ValidateCheckbox(frm.chkField(fncFiledExtension + offset), temp.FiledExtension) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncCompletionDate + offset), temp.CompletionDate) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncMinutesToComplete + offset), temp.MinutesToComplete) Then GoTo VALIDATION_ERROR
-If Not ValidateCheckbox(frm.chkField(fncEFiled + offset), temp.EFiled) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncResultAGI + offset), temp.Results_AGI) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncResultFederal + offset), temp.Results_Fed) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncResultState + offset), temp.Results_State) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncStateList + offset), temp.StateList) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncFee + offset), temp.Fee) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncFeeOwed + offset), temp.FeeOwed) Then GoTo VALIDATION_ERROR
-If Not ValidateCheckbox(frm.chkField(fncReleasedBeforePayment + offset), temp.ReleasedBeforePayment) Then GoTo VALIDATION_ERROR
+If Not ValidateChooser(frm.ChooserConfig(fncTaxReturn_InboxType + offset), temp.InboxType) Then GoTo VALIDATION_ERROR
+If Not ValidateChooser(frm.ChooserConfig(fncTaxReturn_Status + offset), temp.Status) Then GoTo VALIDATION_ERROR
+If Not ValidateCheckbox(frm.chkField(fncTaxReturn_FiledExtension + offset), temp.FiledExtension) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncTaxReturn_CompletionDate + offset), temp.CompletionDate) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncTaxReturn_MinutesToComplete + offset), temp.MinutesToComplete) Then GoTo VALIDATION_ERROR
+If Not ValidateCheckbox(frm.chkField(fncTaxReturn_EFiled + offset), temp.EFiled) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncTaxReturn_ResultAGI + offset), temp.Results_AGI) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncTaxReturn_ResultFederal + offset), temp.Results_Fed) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncTaxReturn_ResultStatesCombined + offset), temp.Results_State) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncTaxReturn_StateList + offset), temp.StateList) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncTaxReturn_FeeTotal + offset), temp.Fee) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncTaxReturn_FeeOwed + offset), temp.FeeOwed) Then GoTo VALIDATION_ERROR
+If Not ValidateCheckbox(frm.chkField(fncTaxReturn_ReleasedBeforePayment + offset), temp.ReleasedBeforePayment) Then GoTo VALIDATION_ERROR
 
 'If we've gotten this far without errors, then save the data for real
 m = temp

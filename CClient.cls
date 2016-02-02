@@ -164,13 +164,13 @@ For a = 0 To m.PersonCount - 1
 Next a
 
 'Common
-FieldToTextbox frm.txtField(fncMailingAddress_Street), m.MailingAddress_Street, en
-FieldToTextbox frm.txtField(fncMailingAddress_City), m.MailingAddress_City, en
-FieldToTextbox frm.txtField(fncMailingAddress_State), m.MailingAddress_State, en
-FieldToTextbox frm.txtField(fncMailingAddress_ZipCode), m.MailingAddress_ZipCode, en
+FieldToTextbox frm.txtField(fncMailingAddressStreet), m.MailingAddress_Street, en
+FieldToTextbox frm.txtField(fncMailingAddressCity), m.MailingAddress_City, en
+FieldToTextbox frm.txtField(fncMailingAddressState), m.MailingAddress_State, en
+FieldToTextbox frm.txtField(fncMailingAddressZipCode), m.MailingAddress_ZipCode, en
 FieldToTextbox frm.txtField(fncNumApptSlots), m.NumApptSlots, en
 FieldToCheckbox frm.chkField(fncReminderCallAlways), m.ReminderCallAlways, en
-FieldToCombobox frm.cboField(fncMailingListMode), m.MailingListMode, en
+FieldToChooser frm.ChooserConfig(fncMailingListMode), m.MailingListMode, en
 FieldToCheckbox frm.chkField(fncIPTE), m.IPTE, en
 FieldToTextbox frm.txtField(fncHomePhone), m.HomePhone, en
 FieldToTextbox frm.txtField(fncNotes), m.Notes, en
@@ -272,13 +272,13 @@ For a = 0 To temp.PersonCount - 1
 Next a
 
 'Common
-If Not ValidateTextbox(frm.txtField(fncMailingAddress_Street), temp.MailingAddress_Street) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncMailingAddress_City), temp.MailingAddress_City) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncMailingAddress_State), temp.MailingAddress_State) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncMailingAddress_ZipCode), temp.MailingAddress_ZipCode) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncMailingAddressStreet), temp.MailingAddress_Street) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncMailingAddressCity), temp.MailingAddress_City) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncMailingAddressState), temp.MailingAddress_State) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncMailingAddressZipCode), temp.MailingAddress_ZipCode) Then GoTo VALIDATION_ERROR
 If Not ValidateTextbox(frm.txtField(fncNumApptSlots), temp.NumApptSlots) Then GoTo VALIDATION_ERROR
 If Not ValidateCheckbox(frm.chkField(fncReminderCallAlways), temp.ReminderCallAlways) Then GoTo VALIDATION_ERROR
-If Not ValidateCombobox(frm.cboField(fncMailingListMode), temp.MailingListMode) Then GoTo VALIDATION_ERROR
+If Not ValidateChooser(frm.ChooserConfig(fncMailingListMode), temp.MailingListMode) Then GoTo VALIDATION_ERROR
 If Not ValidateCheckbox(frm.chkField(fncIPTE), temp.IPTE) Then GoTo VALIDATION_ERROR
 If Not ValidateTextbox(frm.txtField(fncHomePhone), temp.HomePhone) Then GoTo VALIDATION_ERROR
 If Not ValidateTextbox(frm.txtField(fncNotes), temp.Notes) Then GoTo VALIDATION_ERROR
