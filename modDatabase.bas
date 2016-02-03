@@ -1,38 +1,50 @@
 Attribute VB_Name = "modDatabase"
 Option Explicit
 
+'#################################################################################
+'Current database structures
+'#################################################################################
+
 'Client
+Public Enum enumWhichPhoneIsBest
+    bcHomePhone                         'Default
+    bcPerson1CellPhone
+    bcPerson2CellPhone
+End Enum
 Public Enum enumMailingListMode
-    mlmAuto                         'Default
+    mlmAuto                             'Default
     mlmNoOrganizer
     mlmEmailOrganizer
     mlmHardCopyOrganizer
 End Enum
 Public Type typePersonData
-    Last As String
-    Middle As String                'May be blank
-    First As String
-    Nickname As String              'May be blank
-    Phone As String                 'May be blank
-    Email As String                 'May be blank
-    DateOfBirth As Long             'May be NullLong
-    DateOfDeath As Long             'May be NullLong
+    First As String                     'May be blank if Last has data
+    Nickname As String                  'May be blank
+    Middle As String                    'May be blank
+    Last As String                      'May be blank if First has data
+    CellPhone As String                 'May be blank
+    Email As String                     'May be blank
+    DateOfBirth As Long                 'May be NullLong
+    DateOfDeath As Long                 'May be NullLong
 End Type
 Public Type typeCoreData_Client
-    MailingListMode As Long         'enumMailingListMode
-    MailingAddress_Street As String
-    MailingAddress_City As String
-    MailingAddress_State As String  'Two-letter abbreviation
-    MailingAddress_ZipCode As String
-    HomePhone As String             'May be blank
-    NumApptSlots As Long            'Must be at least 1
+    Unused As Boolean                   'True means this data is just for record keeping, but is no longer an active client, possibly due to being replaced with a new record
+    IPTE As Boolean                     'True means it's an Inc/Ptnr/Trust/Estate
+    PersonCount As Long                 'Must be at least 1
+    Persons() As typePersonData         'At least one person is required
+    MailingAddress_Street As String     'May be blank only if City,State,Zip are also blank
+    MailingAddress_City As String       'May be blank only if Street,State,Zip are also blank
+    MailingAddress_State As String      'May be blank only if Street,City,Zip are also blank; two-letter abbreviation
+    MailingAddress_ZipCode As String    'May be blank only if Street,City,State are also blank
+    HomePhone As String                 'May be blank
+    WhichPhoneIsBest As Long            'enumWhichPhoneIsBest
+    NumApptSlots As Long                'Must be at least 1
     ReminderCallAlways As Boolean
-    IPTE As Boolean                 'True means it's an Inc/Ptnr/Trust/Estate
-    Notes As String                 'May be blank
-    OldestYearFiled As Long         'May be NullLong
-    NewestYearFiled As Long         'May be NullLong
-    PersonCount As Long             'Must be at least 1
-    Persons() As typePersonData     'At least one person is required
+    OldestYearFiled As Long             'May be NullLong
+    NewestYearFiled As Long             'May be NullLong
+    MailingListMode As Long             'enumMailingListMode
+    Notes1 As String                    'May be blank
+    Notes2 As String                    'May be blank
 End Type
 
 'ApptCliLink
@@ -71,8 +83,8 @@ Public Enum enumInboxType
     itMailedIn
 End Enum
 Public Type typeCoreData_TaxReturn
-    Status As Long
     InboxType As Long
+    Status As Long
     FiledExtension As Boolean
     EFiled As Boolean               'Default=True
     CompletionDate As Long          'May be NullLong
@@ -114,3 +126,13 @@ Public Type typeCoreData_ExtraCharge
     Fee As Long
     FeeOwed As Long
 End Type
+
+
+
+
+
+'#################################################################################
+'Old database structures, for migration purposes
+'#################################################################################
+
+

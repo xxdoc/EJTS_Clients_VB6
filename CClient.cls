@@ -155,26 +155,29 @@ For a = 0 To m.PersonCount - 1
         FieldToTextbox frm.txtField(fncPerson_Nickname + offset), .Nickname, en
         FieldToTextbox frm.txtField(fncPerson_Middle + offset), .Middle, en
         FieldToTextbox frm.txtField(fncPerson_Last + offset), .Last, en
+        FieldToTextbox frm.txtField(fncPerson_CellPhone + offset), .CellPhone, en
         FieldToTextbox frm.txtField(fncPerson_Email + offset), .Email, en
         FieldToTextbox frm.txtField(fncPerson_DateOfBirth + offset), .DateOfBirth, en
         FieldToTextbox frm.txtField(fncPerson_DateOfDeath + offset), .DateOfDeath, en
-        FieldToTextbox frm.txtField(fncPerson_Phone + offset), .Phone, en
     End With
 Next a
 
 'Common
-FieldToTextbox frm.txtField(fncMailingAddressStreet), m.MailingAddress_Street, en
-FieldToTextbox frm.txtField(fncMailingAddressCity), m.MailingAddress_City, en
-FieldToTextbox frm.txtField(fncMailingAddressState), m.MailingAddress_State, en
-FieldToTextbox frm.txtField(fncMailingAddressZipCode), m.MailingAddress_ZipCode, en
+FieldToCheckbox frm.chkField(fncUnused), m.Unused, en
+FieldToCheckbox frm.chkField(fncIPTE), m.IPTE, en
+FieldToTextbox frm.txtField(fncMailingAddress_Street), m.MailingAddress_Street, en
+FieldToTextbox frm.txtField(fncMailingAddress_City), m.MailingAddress_City, en
+FieldToTextbox frm.txtField(fncMailingAddress_State), m.MailingAddress_State, en
+FieldToTextbox frm.txtField(fncMailingAddress_ZipCode), m.MailingAddress_ZipCode, en
+FieldToTextbox frm.txtField(fncHomePhone), m.HomePhone, en
+FieldToCheckboxGroup frm.chkgroupField, fncWhichPhoneIsBest, frm.PhoneNumberCount, m.WhichPhoneIsBest, en
 FieldToTextbox frm.txtField(fncNumApptSlots), m.NumApptSlots, en
 FieldToCheckbox frm.chkField(fncReminderCallAlways), m.ReminderCallAlways, en
-FieldToChooser frm.ChooserConfig(fncMailingListMode), m.MailingListMode, en
-FieldToCheckbox frm.chkField(fncIPTE), m.IPTE, en
-FieldToTextbox frm.txtField(fncHomePhone), m.HomePhone, en
-FieldToTextbox frm.txtField(fncNotes), m.Notes, en
 FieldToTextbox frm.txtField(fncOldestYearFiled), m.OldestYearFiled, en
 FieldToTextbox frm.txtField(fncNewestYearFiled), m.NewestYearFiled, en
+FieldToChooser frm.ChooserConfig(fncMailingListMode), m.MailingListMode, en
+FieldToTextbox frm.txtField(fncNotes1), m.Notes1, en
+FieldToTextbox frm.txtField(fncNotes2), m.Notes2, en
 
 PopulateToForm_Client = True
 
@@ -199,8 +202,8 @@ frm.lblNoTaxReturn(TRColumn).Visible = Not found
 If found Then
     'Found it, so populate the data
     If Not tr.PopulateToForm(frm, TRColumn * frm.TaxReturnOffset, en) Then Exit Function
-    'Lookup the appointment for each year (except the current year)
-    If TRColumn > 0 Then FieldToTextbox frm.txtField(fncTaxReturn_AppointmentDate + (TRColumn * frm.TaxReturnOffset)), "TBD", False
+    'Lookup the appointment for each year
+    FieldToTextbox frm.txtField(fncTaxReturn_AppointmentDate + (TRColumn * frm.TaxReturnOffset)), "TBD", False
 Else
     'Not found, so hide the frame and show a message instead
     With frm.lblNoTaxReturn(TRColumn)
@@ -237,12 +240,12 @@ For a = 0 To 1
         If Not ValidateTextbox(frm.txtField(fncPerson_Nickname + offset), .Nickname) Then GoTo VALIDATION_ERROR
         If Not ValidateTextbox(frm.txtField(fncPerson_Middle + offset), .Middle) Then GoTo VALIDATION_ERROR
         If Not ValidateTextbox(frm.txtField(fncPerson_Last + offset), .Last) Then GoTo VALIDATION_ERROR
+        If Not ValidateTextbox(frm.txtField(fncPerson_CellPhone + offset), .CellPhone) Then GoTo VALIDATION_ERROR
         If Not ValidateTextbox(frm.txtField(fncPerson_Email + offset), .Email) Then GoTo VALIDATION_ERROR
         If Not ValidateTextbox(frm.txtField(fncPerson_DateOfBirth + offset), .DateOfBirth) Then GoTo VALIDATION_ERROR
         If Not ValidateTextbox(frm.txtField(fncPerson_DateOfDeath + offset), .DateOfDeath) Then GoTo VALIDATION_ERROR
-        If Not ValidateTextbox(frm.txtField(fncPerson_Phone + offset), .Phone) Then GoTo VALIDATION_ERROR
         hasname(a) = Len(.First) > 0 Or Len(.Last) > 0
-        hasotherdata(a) = Len(.Nickname) > 0 Or Len(.Middle) > 0 Or Len(.Email) > 0 Or Len(.Phone) > 0 Or .DateOfBirth <> NullLong Or .DateOfDeath <> NullLong
+        hasotherdata(a) = Len(.Nickname) > 0 Or Len(.Middle) > 0 Or Len(.Email) > 0 Or Len(.CellPhone) > 0 Or .DateOfBirth <> NullLong Or .DateOfDeath <> NullLong
         hasanydata(a) = hasname(a) Or hasotherdata(a)
 
         'Make sure names are filled out if there is other data filled out
@@ -289,18 +292,21 @@ For a = 0 To temp.PersonCount - 1
 Next a
 
 'Common
-If Not ValidateTextbox(frm.txtField(fncMailingAddressStreet), temp.MailingAddress_Street) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncMailingAddressCity), temp.MailingAddress_City) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncMailingAddressState), temp.MailingAddress_State) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncMailingAddressZipCode), temp.MailingAddress_ZipCode) Then GoTo VALIDATION_ERROR
+If Not ValidateCheckbox(frm.chkField(fncUnused), temp.Unused) Then GoTo VALIDATION_ERROR
+If Not ValidateCheckbox(frm.chkField(fncIPTE), temp.IPTE) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncMailingAddress_Street), temp.MailingAddress_Street) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncMailingAddress_City), temp.MailingAddress_City) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncMailingAddress_State), temp.MailingAddress_State) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncMailingAddress_ZipCode), temp.MailingAddress_ZipCode) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncHomePhone), temp.HomePhone) Then GoTo VALIDATION_ERROR
+If Not ValidateCheckboxGroup(frm.chkgroupField, fncWhichPhoneIsBest, frm.PhoneNumberCount, temp.WhichPhoneIsBest) Then GoTo VALIDATION_ERROR
 If Not ValidateTextbox(frm.txtField(fncNumApptSlots), temp.NumApptSlots) Then GoTo VALIDATION_ERROR
 If Not ValidateCheckbox(frm.chkField(fncReminderCallAlways), temp.ReminderCallAlways) Then GoTo VALIDATION_ERROR
-If Not ValidateChooser(frm.ChooserConfig(fncMailingListMode), temp.MailingListMode) Then GoTo VALIDATION_ERROR
-If Not ValidateCheckbox(frm.chkField(fncIPTE), temp.IPTE) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncHomePhone), temp.HomePhone) Then GoTo VALIDATION_ERROR
-If Not ValidateTextbox(frm.txtField(fncNotes), temp.Notes) Then GoTo VALIDATION_ERROR
 If Not ValidateTextbox(frm.txtField(fncOldestYearFiled), temp.OldestYearFiled) Then GoTo VALIDATION_ERROR
 If Not ValidateTextbox(frm.txtField(fncNewestYearFiled), temp.NewestYearFiled) Then GoTo VALIDATION_ERROR
+If Not ValidateChooser(frm.ChooserConfig(fncMailingListMode), temp.MailingListMode) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncNotes1), temp.Notes1) Then GoTo VALIDATION_ERROR
+If Not ValidateTextbox(frm.txtField(fncNotes2), temp.Notes2) Then GoTo VALIDATION_ERROR
 
 'Tax return (only save current year)
 offset = 0

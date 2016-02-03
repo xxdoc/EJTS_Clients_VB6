@@ -1029,23 +1029,36 @@ Sub FieldFromTextbox(txt As TextBox, ByRef v As Variant)
 v = FieldFromString(txt.Text, CLng(txt.Tag))
 End Sub
 
+'Converts database format to display format
 'EHT=None
 Sub FieldToTextbox(txt As TextBox, v As Variant, Optional enablefield As Boolean = -100)
-'Converts database format to display format
 txt.Text = FieldToString(v, CLng(txt.Tag))
 If enablefield <> -100 Then EnableControl txt, enablefield
 End Sub
 
 'EHT=None
 Sub CheckboxClick(chk As CheckBox)
+Dim t$, c$(), updatecaption As Boolean
+t$ = chk.Tag
+If Len(t$) = 0 Then
+    ReDim c$(1)
+    c$(0) = "YES"
+    c$(1) = " no "
+    updatecaption = True
+ElseIf t$ <> "-" Then   'Use a Tag of "-" to indicate that the caption should be left as-is
+    c$ = Split(t$, "|")
+    updatecaption = True
+End If
 If chk.Value = vbChecked Then
-    chk.Caption = "YES"
+    If updatecaption Then chk.Caption = c$(0)
     chk.FontBold = True
 ElseIf chk.Value = vbUnchecked Then
-    chk.Caption = " no "
+    If updatecaption Then chk.Caption = c$(1)
     chk.FontBold = False
 ElseIf chk.Value = vbGrayed Then
-    chk.Caption = ""
+    If updatecaption Then
+        If UBound(c$) > 1 Then chk.Caption = c$(2)
+    End If
 End If
 End Sub
 
@@ -1055,15 +1068,36 @@ Sub FieldFromCheckbox(chk As CheckBox, ByRef v As Boolean)
 v = (chk.Value = vbChecked)
 End Sub
 
+'Accepts either a Boolean or a number (converts to Boolean) and updates the checkbox's status accordingly
 'EHT=None
 Sub FieldToCheckbox(chk As CheckBox, v As Variant, Optional enablefield As Boolean = -100)
-'Converts the given value to a Boolean, then updates the checkbox's status accordingly
 If VarType(v) = vbBoolean Then
     chk.Value = (Not v) + 1
 Else
-    chk.Value = v
+    chk.Value = (Not (v = 1)) + 1
 End If
 If enablefield <> -100 Then chk.Enabled = enablefield
+End Sub
+
+'Selects the checkbox that corresponds to the field value; if there isn't one, grey all checkboxes
+'EHT=None
+Sub FieldToCheckboxGroup(chkgroup As Object, startindex As Long, ctlcount As Long, v As Long, Optional enablefield As Boolean = -100)
+
+Dim i As Long
+If (v >= 0) And (v < ctlcount) Then
+    For i = startindex To startindex + ctlcount - 1
+        chkgroup(i).Value = (Not ((i - startindex) = v)) + 1
+    Next i
+Else
+    For i = startindex To startindex + ctlcount - 1
+        chkgroup(i).Value = 2
+    Next i
+End If
+If enablefield <> -100 Then
+    For i = startindex To startindex + ctlcount - 1
+        chkgroup(i).Enabled = enablefield
+    Next i
+End If
 End Sub
 
 'EHT=None
@@ -1075,9 +1109,9 @@ If i < 0 Then Err.Raise 1, , "Combobox does not have any item selected"
 v = i
 End Sub
 
+'Selects the item in the combobox that matches the given value. If none found, blank out the combobox
 'EHT=None
 Sub FieldToCombobox(cbo As ComboBox, v As Long, Optional enablefield As Boolean = -100)
-'Selects the item in the combobox that matches the given value. If none found, blank out the combobox
 If (v < 0) Or (v >= cbo.ListCount) Then
     cbo.ListIndex = -1
 Else
@@ -1145,23 +1179,28 @@ config.Container.Tag = t$   'Blank string means null
 If enablefield <> -100 Then EnableControl config.Container, enablefield
 End Sub
 
+'Validates the field's contents, and returns True if successful; ByRef argument 'v' will only be changed if successful
 'EHT=Custom
-Function ValidateTextbox(txt As TextBox, ByRef v As Variant) As Boolean
+Function ValidateTextbox(txt As TextBox, ByRef v As Variant, Optional active As Boolean = True) As Boolean
 On Error GoTo ERR_HANDLER
 
-Dim m As FieldFormatMode
+Dim m As FieldFormatMode, vi As Variant
 m = CLng(txt.Tag)
-If ConvertStringToValue(txt.Text, m, v) Then
-    txt.Text = ConvertValueToString(v, m)
-    MakeControlLookInvalid txt, False
+If ConvertStringToValue(txt.Text, m, vi) Then
+    If active Then
+        txt.Text = ConvertValueToString(vi, m)
+        MakeControlLookInvalid txt, False
+    End If
     ValidateTextbox = True
+    v = vi  'Now that everything else has succeeded, we may change 'v'
     Exit Function
 End If
 
 ERR_HANDLER:
-MakeControlLookInvalid txt, True
+If active Then MakeControlLookInvalid txt, True
 End Function
 
+'Validates the field's contents, and returns True if successful; ByRef argument 'v' will only be changed if successful
 'EHT=Custom
 Function ValidateCheckbox(chk As CheckBox, ByRef v As Boolean) As Boolean
 On Error GoTo ERR_HANDLER
@@ -1169,9 +1208,9 @@ On Error GoTo ERR_HANDLER
 Dim c As Integer
 c = chk.Value
 If (c = vbChecked) Or (c = vbUnchecked) Then
-    v = (c = vbChecked)
     MakeControlLookInvalid chk, False
     ValidateCheckbox = True
+    v = (c = vbChecked) 'Now that everything else has succeeded, we may change 'v'
     Exit Function
 End If
 
@@ -1179,14 +1218,53 @@ ERR_HANDLER:
 MakeControlLookInvalid chk, True
 End Function
 
+'Validates the field's contents, and returns True if successful; ByRef argument 'v' will only be changed if successful
+'EHT=Custom
+Function ValidateCheckboxGroup(chkgroup As Object, startindex As Long, ctlcount As Long, ByRef v As Long) As Boolean
+On Error GoTo ERR_HANDLER
+
+Dim i As Integer, c As Integer, vi As Long
+
+'Find the checkbox in the group that is checked
+vi = NullLong
+For i = startindex To startindex + ctlcount - 1
+    c = chkgroup(i).Value
+    If c = vbChecked Then
+        vi = i - startindex
+    ElseIf c <> vbUnchecked Then
+        GoTo ERR_HANDLER
+    End If
+Next i
+
+If vi <> NullLong Then
+    'Found one
+    For i = startindex To startindex + ctlcount - 1
+        MakeControlLookInvalid chkgroup(i), False
+    Next i
+    ValidateCheckboxGroup = True
+    v = vi  'Now that everything else has succeeded, we may change 'v'
+    Exit Function
+End If
+
+ERR_HANDLER:
+'None were found, so mark all checkboxes in the group as invalid
+For i = startindex To startindex + ctlcount - 1
+    MakeControlLookInvalid chkgroup(i), True
+Next i
+End Function
+
+'Validates the field's contents, and returns True if successful; ByRef argument 'v' will only be changed if successful
 'EHT=Custom
 Function ValidateCombobox(cbo As ComboBox, ByRef v As Long) As Boolean
 On Error GoTo ERR_HANDLER
 
-v = cbo.ListIndex
-If v >= 0 Then
+Dim vi As Integer
+
+vi = cbo.ListIndex
+If vi >= 0 Then
     MakeControlLookInvalid cbo, False
     ValidateCombobox = True
+    v = vi  'Now that everything else has succeeded, we may change 'v'
     Exit Function
 End If
 
@@ -1194,14 +1272,18 @@ ERR_HANDLER:
 MakeControlLookInvalid cbo, True
 End Function
 
+'Validates the field's contents, and returns True if successful; ByRef argument 'v' will only be changed if successful
 'EHT=Custom
 Function ValidateChooser(config As typeChooserConfig, ByRef v As Long) As Boolean
 On Error GoTo ERR_HANDLER
 
-If ConvertToLong(config.Container.Tag, v) Then
-    If (v >= 0) And (v <= UBound(config.Selections)) Then
+Dim vi As Long
+
+If ConvertToLong(config.Container.Tag, vi) Then
+    If (vi >= 0) And (vi <= UBound(config.Selections)) Then
         MakeControlLookInvalid config.Container, False
         ValidateChooser = True
+        v = vi  'Now that everything else has succeeded, we may change 'v'
         Exit Function
     End If
 End If
