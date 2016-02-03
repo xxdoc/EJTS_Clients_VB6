@@ -177,7 +177,9 @@ tabordersplit$ = Split(t$, SEP1)
 'Populate the lists
 lstControls(0).Clear
 For a = 0 To UBound(tabordersplit$)
-    lstControls(0).AddItem tabordersplit$(a)
+    If Not FindControlFromString(tabordersplit$(a)) Is Nothing Then
+        lstControls(0).AddItem tabordersplit$(a)
+    End If
 Next a
 lstControls(1).Clear
 For Each c In ParentForm.Controls
@@ -284,24 +286,18 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_Click", Err
 End Sub
 
-'EHT=Standard
+'EHT=Silent
 Private Sub lstControls_Click(Index As Integer)
-On Error GoTo ERR_HANDLER
+On Error GoTo SILENT_EXIT
 
-If lstControls(Index).ListIndex >= 0 Then
-    Dim ctrl As Control, c$, cs$()
-    c$ = lstControls(Index).List(lstControls(Index).ListIndex)
-    cs$ = Split(c$, SEP2)
-    If UBound(cs$) > 0 Then
-        Set ctrl = ParentForm.Controls(cs$(0))(CInt(cs$(1)))
-    Else
-        Set ctrl = ParentForm.Controls(cs$(0))
-    End If
-    HilightControl ParentForm, ctrl
+Dim i&, ctrl As Control
+i = lstControls(Index).ListIndex
+If i >= 0 Then
+    Set ctrl = FindControlFromString(lstControls(Index).List(i))
+    If Not ctrl Is Nothing Then HilightControl ParentForm, ctrl
 End If
 
-Exit Sub
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstControls_Click", Err
+SILENT_EXIT:
 End Sub
 
 'EHT=Standard
@@ -366,6 +362,24 @@ ClearControlHilight ParentForm
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lstControls_LostFocus", Err
 End Sub
+
+'EHT=Silent
+Function FindControlFromString(str$) As Control
+On Error GoTo SILENT_EXIT
+
+Dim c As Control, i%, cs$()
+cs$ = Split(str$, SEP2)
+If UBound(cs$) > 0 Then
+    'Control array
+    Set c = ParentForm.Controls(cs$(0))(CInt(cs$(1)))
+    If IsRealControl(c) Then Set FindControlFromString = c
+Else
+    'Single control
+    Set FindControlFromString = ParentForm.Controls(cs$(0))
+End If
+
+SILENT_EXIT:
+End Function
 
 'EHT=Silent
 Function GetControlIndexWithoutError(ctrl As Control) As Integer
