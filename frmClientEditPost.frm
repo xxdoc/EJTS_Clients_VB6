@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form frmClientEditPost 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Edit/Post Client"
-   ClientHeight    =   9255
+   ClientHeight    =   9135
    ClientLeft      =   45
    ClientTop       =   435
-   ClientWidth     =   14535
+   ClientWidth     =   16095
    BeginProperty Font 
       Name            =   "Arial"
       Size            =   9.75
@@ -20,11 +20,326 @@ Begin VB.Form frmClientEditPost
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   617
+   ScaleHeight     =   609
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   969
+   ScaleWidth      =   1073
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
+   Begin VB.PictureBox pctTaxReturn 
+      BorderStyle     =   0  'None
+      Height          =   7815
+      Index           =   2
+      Left            =   14520
+      ScaleHeight     =   521
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   97
+      TabIndex        =   131
+      Top             =   480
+      Width           =   1455
+      Begin VB.CheckBox chkField 
+         Height          =   255
+         Index           =   102
+         Left            =   360
+         TabIndex        =   152
+         Top             =   4800
+         Value           =   2  'Grayed
+         Width           =   735
+      End
+      Begin VB.CheckBox chkField 
+         Height          =   255
+         Index           =   95
+         Left            =   360
+         TabIndex        =   151
+         Top             =   7080
+         Value           =   2  'Grayed
+         Width           =   735
+      End
+      Begin VB.CheckBox chkField 
+         Height          =   255
+         Index           =   92
+         Left            =   360
+         TabIndex        =   150
+         Top             =   7440
+         Value           =   2  'Grayed
+         Width           =   735
+      End
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Index           =   94
+         Left            =   120
+         TabIndex        =   149
+         Tag             =   "12"
+         Top             =   3360
+         Width           =   1215
+      End
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Index           =   93
+         Left            =   120
+         TabIndex        =   148
+         Tag             =   "31"
+         Top             =   2880
+         Width           =   1215
+      End
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Index           =   99
+         Left            =   120
+         TabIndex        =   147
+         Tag             =   "54"
+         Top             =   6600
+         Width           =   1215
+      End
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Index           =   100
+         Left            =   120
+         TabIndex        =   146
+         Tag             =   "23"
+         Top             =   3840
+         Width           =   1215
+      End
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Index           =   101
+         Left            =   120
+         TabIndex        =   145
+         Tag             =   "23"
+         Top             =   4320
+         Width           =   1215
+      End
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Index           =   96
+         Left            =   120
+         TabIndex        =   144
+         Tag             =   "21"
+         Top             =   5160
+         Width           =   1215
+      End
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Index           =   98
+         Left            =   120
+         TabIndex        =   143
+         Tag             =   "21"
+         Top             =   6120
+         Width           =   1215
+      End
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Index           =   97
+         Left            =   120
+         TabIndex        =   142
+         Tag             =   "21"
+         Top             =   5640
+         Width           =   1215
+      End
+      Begin VB.PictureBox chsField 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   885
+         Index           =   90
+         Left            =   120
+         ScaleHeight     =   57
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   79
+         TabIndex        =   138
+         Top             =   120
+         Width           =   1215
+         Begin VB.Label lblChooserChoice 
+            Alignment       =   2  'Center
+            BackColor       =   &H00A5A5A5&
+            Caption         =   "Appointment"
+            Height          =   285
+            Index           =   18
+            Left            =   0
+            TabIndex        =   141
+            Top             =   0
+            Width           =   1185
+         End
+         Begin VB.Label lblChooserChoice 
+            Alignment       =   2  'Center
+            BackColor       =   &H00A5A5A5&
+            Caption         =   "Dropped off"
+            Height          =   285
+            Index           =   19
+            Left            =   0
+            TabIndex        =   140
+            Top             =   285
+            Width           =   1185
+         End
+         Begin VB.Label lblChooserChoice 
+            Alignment       =   2  'Center
+            BackColor       =   &H00A5A5A5&
+            Caption         =   "Mailed in"
+            Height          =   285
+            Index           =   20
+            Left            =   0
+            TabIndex        =   139
+            Top             =   570
+            Width           =   1185
+         End
+      End
+      Begin VB.PictureBox chsField 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   1170
+         Index           =   91
+         Left            =   120
+         ScaleHeight     =   76
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   79
+         TabIndex        =   133
+         Top             =   1080
+         Width           =   1215
+         Begin VB.Label lblChooserChoice 
+            Alignment       =   2  'Center
+            BackColor       =   &H00A5A5A5&
+            Caption         =   "NNTF"
+            Height          =   285
+            Index           =   24
+            Left            =   0
+            TabIndex        =   137
+            Top             =   855
+            Width           =   1185
+         End
+         Begin VB.Label lblChooserChoice 
+            Alignment       =   2  'Center
+            BackColor       =   &H00A5A5A5&
+            Caption         =   "Complete"
+            Height          =   285
+            Index           =   23
+            Left            =   0
+            TabIndex        =   136
+            Top             =   570
+            Width           =   1185
+         End
+         Begin VB.Label lblChooserChoice 
+            Alignment       =   2  'Center
+            BackColor       =   &H00A5A5A5&
+            Caption         =   "Incomplete"
+            Height          =   285
+            Index           =   22
+            Left            =   0
+            TabIndex        =   135
+            Top             =   285
+            Width           =   1185
+         End
+         Begin VB.Label lblChooserChoice 
+            Alignment       =   2  'Center
+            BackColor       =   &H00A5A5A5&
+            Caption         =   "Not started"
+            Height          =   285
+            Index           =   21
+            Left            =   0
+            TabIndex        =   134
+            Top             =   0
+            Width           =   1185
+         End
+      End
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   360
+         Index           =   103
+         Left            =   120
+         TabIndex        =   132
+         Tag             =   "31"
+         Top             =   2400
+         Width           =   1215
+      End
+   End
    Begin VB.PictureBox chsField 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -85,15 +400,34 @@ Begin VB.Form frmClientEditPost
    End
    Begin VB.PictureBox pctTaxReturn 
       BorderStyle     =   0  'None
-      Height          =   7695
-      Index           =   20
+      Height          =   7815
+      Index           =   1
       Left            =   12960
-      ScaleHeight     =   513
+      ScaleHeight     =   521
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   97
       TabIndex        =   89
       Top             =   480
       Width           =   1455
+      Begin VB.TextBox txtField 
+         Appearance      =   0  'Flat
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   360
+         Index           =   83
+         Left            =   120
+         TabIndex        =   130
+         Tag             =   "31"
+         Top             =   2400
+         Width           =   1215
+      End
       Begin VB.PictureBox chsField 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
@@ -112,7 +446,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00A5A5A5&
             Caption         =   "Not started"
             Height          =   285
-            Index           =   20
+            Index           =   14
             Left            =   0
             TabIndex        =   128
             Top             =   0
@@ -123,7 +457,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00A5A5A5&
             Caption         =   "Incomplete"
             Height          =   285
-            Index           =   21
+            Index           =   15
             Left            =   0
             TabIndex        =   127
             Top             =   285
@@ -134,7 +468,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00A5A5A5&
             Caption         =   "Complete"
             Height          =   285
-            Index           =   22
+            Index           =   16
             Left            =   0
             TabIndex        =   126
             Top             =   570
@@ -145,7 +479,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00A5A5A5&
             Caption         =   "NNTF"
             Height          =   285
-            Index           =   23
+            Index           =   17
             Left            =   0
             TabIndex        =   125
             Top             =   855
@@ -170,7 +504,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00A5A5A5&
             Caption         =   "Mailed in"
             Height          =   285
-            Index           =   17
+            Index           =   13
             Left            =   0
             TabIndex        =   113
             Top             =   570
@@ -181,7 +515,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00A5A5A5&
             Caption         =   "Dropped off"
             Height          =   285
-            Index           =   16
+            Index           =   12
             Left            =   0
             TabIndex        =   112
             Top             =   285
@@ -192,7 +526,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00A5A5A5&
             Caption         =   "Appointment"
             Height          =   285
-            Index           =   15
+            Index           =   11
             Left            =   0
             TabIndex        =   111
             Top             =   0
@@ -215,7 +549,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   100
          Tag             =   "21"
-         Top             =   4800
+         Top             =   5640
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -234,7 +568,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   99
          Tag             =   "21"
-         Top             =   5280
+         Top             =   6120
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -253,7 +587,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   98
          Tag             =   "21"
-         Top             =   4320
+         Top             =   5160
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -272,7 +606,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   97
          Tag             =   "23"
-         Top             =   6720
+         Top             =   4320
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -291,7 +625,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   96
          Tag             =   "23"
-         Top             =   6240
+         Top             =   3840
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -310,7 +644,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   95
          Tag             =   "54"
-         Top             =   5760
+         Top             =   6600
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -356,7 +690,7 @@ Begin VB.Form frmClientEditPost
          Index           =   72
          Left            =   360
          TabIndex        =   92
-         Top             =   2400
+         Top             =   7440
          Value           =   2  'Grayed
          Width           =   735
       End
@@ -365,7 +699,7 @@ Begin VB.Form frmClientEditPost
          Index           =   75
          Left            =   360
          TabIndex        =   91
-         Top             =   3840
+         Top             =   7080
          Value           =   2  'Grayed
          Width           =   735
       End
@@ -374,29 +708,29 @@ Begin VB.Form frmClientEditPost
          Index           =   82
          Left            =   360
          TabIndex        =   90
-         Top             =   7200
+         Top             =   4800
          Value           =   2  'Grayed
          Width           =   735
       End
    End
    Begin VB.PictureBox pctAppointmentHistory 
       BorderStyle     =   0  'None
-      Height          =   2175
+      Height          =   2055
       Left            =   120
-      ScaleHeight     =   2175
+      ScaleHeight     =   2055
       ScaleWidth      =   2655
       TabIndex        =   73
       Top             =   6960
       Width           =   2655
    End
    Begin VB.CheckBox chkField 
-      Height          =   360
+      Height          =   255
       Index           =   37
-      Left            =   3240
+      Left            =   8400
       TabIndex        =   66
-      Top             =   6240
+      Top             =   120
       Value           =   2  'Grayed
-      Width           =   1815
+      Width           =   855
    End
    Begin VB.CheckBox chkField 
       Height          =   360
@@ -677,14 +1011,14 @@ Begin VB.Form frmClientEditPost
    End
    Begin VB.TextBox txtField 
       Appearance      =   0  'Flat
-      Height          =   735
+      Height          =   975
       Index           =   40
       Left            =   2880
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   18
       Tag             =   "50"
-      Top             =   7320
+      Top             =   7080
       Width           =   6375
    End
    Begin VB.TextBox txtField 
@@ -884,7 +1218,7 @@ Begin VB.Form frmClientEditPost
       Height          =   615
       Left            =   7200
       TabIndex        =   24
-      Top             =   8400
+      Top             =   8280
       Width           =   1575
    End
    Begin VB.CommandButton btnSavePost 
@@ -901,15 +1235,15 @@ Begin VB.Form frmClientEditPost
       Height          =   855
       Left            =   3720
       TabIndex        =   23
-      Top             =   8280
+      Top             =   8160
       Width           =   3135
    End
    Begin VB.PictureBox pctTaxReturn 
       BorderStyle     =   0  'None
-      Height          =   7695
+      Height          =   7815
       Index           =   0
       Left            =   11400
-      ScaleHeight     =   513
+      ScaleHeight     =   521
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   97
       TabIndex        =   77
@@ -933,7 +1267,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H000080FF&
             Caption         =   "NNTF"
             Height          =   285
-            Index           =   13
+            Index           =   10
             Left            =   0
             TabIndex        =   123
             Top             =   855
@@ -944,7 +1278,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H0000C000&
             Caption         =   "Complete"
             Height          =   285
-            Index           =   12
+            Index           =   9
             Left            =   0
             TabIndex        =   122
             Top             =   570
@@ -955,7 +1289,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H0007C9E4&
             Caption         =   "Incomplete"
             Height          =   285
-            Index           =   11
+            Index           =   8
             Left            =   0
             TabIndex        =   121
             Top             =   285
@@ -963,10 +1297,10 @@ Begin VB.Form frmClientEditPost
          End
          Begin VB.Label lblChooserChoice 
             Alignment       =   2  'Center
-            BackColor       =   &H00C0C0C0&
+            BackColor       =   &H00FFC98C&
             Caption         =   "Not started"
             Height          =   285
-            Index           =   10
+            Index           =   7
             Left            =   0
             TabIndex        =   120
             Top             =   0
@@ -991,7 +1325,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00FFC98C&
             Caption         =   "Appointment"
             Height          =   285
-            Index           =   5
+            Index           =   4
             Left            =   0
             TabIndex        =   109
             Top             =   0
@@ -1002,7 +1336,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00FFC98C&
             Caption         =   "Dropped off"
             Height          =   285
-            Index           =   6
+            Index           =   5
             Left            =   0
             TabIndex        =   108
             Top             =   285
@@ -1013,7 +1347,7 @@ Begin VB.Form frmClientEditPost
             BackColor       =   &H00FFC98C&
             Caption         =   "Mailed in"
             Height          =   285
-            Index           =   7
+            Index           =   6
             Left            =   0
             TabIndex        =   107
             Top             =   570
@@ -1074,7 +1408,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   86
          Tag             =   "54"
-         Top             =   5760
+         Top             =   6600
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -1093,7 +1427,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   85
          Tag             =   "23"
-         Top             =   6240
+         Top             =   3840
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -1112,7 +1446,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   84
          Tag             =   "23"
-         Top             =   6720
+         Top             =   4320
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -1131,7 +1465,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   83
          Tag             =   "21"
-         Top             =   4320
+         Top             =   5160
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -1150,7 +1484,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   82
          Tag             =   "21"
-         Top             =   5280
+         Top             =   6120
          Width           =   1215
       End
       Begin VB.TextBox txtField 
@@ -1169,7 +1503,7 @@ Begin VB.Form frmClientEditPost
          Left            =   120
          TabIndex        =   81
          Tag             =   "21"
-         Top             =   4800
+         Top             =   5640
          Width           =   1215
       End
       Begin VB.CheckBox chkField 
@@ -1177,7 +1511,7 @@ Begin VB.Form frmClientEditPost
          Index           =   52
          Left            =   360
          TabIndex        =   80
-         Top             =   2400
+         Top             =   7440
          Value           =   2  'Grayed
          Width           =   735
       End
@@ -1186,7 +1520,7 @@ Begin VB.Form frmClientEditPost
          Index           =   55
          Left            =   360
          TabIndex        =   79
-         Top             =   3840
+         Top             =   7080
          Value           =   2  'Grayed
          Width           =   735
       End
@@ -1195,10 +1529,115 @@ Begin VB.Form frmClientEditPost
          Index           =   62
          Left            =   360
          TabIndex        =   78
-         Top             =   7200
+         Top             =   4800
          Value           =   2  'Grayed
          Width           =   735
       End
+   End
+   Begin VB.Image imgTRDivider 
+      Height          =   7785
+      Left            =   12855
+      Picture         =   "frmClientEditPost.frx":000C
+      Top             =   480
+      Visible         =   0   'False
+      Width           =   105
+   End
+   Begin VB.Label lblShiftTRView 
+      Alignment       =   2  'Center
+      Caption         =   "»"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   24
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Index           =   1
+      Left            =   14520
+      TabIndex        =   156
+      ToolTipText     =   "Shift the view to see older tax returns"
+      Top             =   8280
+      Width           =   1455
+   End
+   Begin VB.Label lblShiftTRView 
+      Alignment       =   2  'Center
+      Caption         =   "«"
+      Enabled         =   0   'False
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   24
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Index           =   0
+      Left            =   12960
+      TabIndex        =   155
+      ToolTipText     =   "Shift the view to see more recent tax returns"
+      Top             =   8280
+      Width           =   1455
+   End
+   Begin VB.Label lblTaxYear 
+      Alignment       =   2  'Center
+      Caption         =   "0000"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   12
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   285
+      Index           =   2
+      Left            =   14520
+      TabIndex        =   154
+      Top             =   120
+      Width           =   1455
+   End
+   Begin VB.Label lblNoTaxReturn 
+      Enabled         =   0   'False
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Index           =   2
+      Left            =   14520
+      TabIndex        =   153
+      Top             =   600
+      Visible         =   0   'False
+      Width           =   1455
+   End
+   Begin VB.Label lblAppointmentDate 
+      Alignment       =   1  'Right Justify
+      Caption         =   "Appointment date:"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   9
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   9480
+      TabIndex        =   129
+      Top             =   2880
+      Width           =   1815
    End
    Begin VB.Label lblSwitchPersons 
       AutoSize        =   -1  'True
@@ -1219,7 +1658,7 @@ Begin VB.Form frmClientEditPost
       Width           =   510
    End
    Begin VB.Label lblNoTaxReturn 
-      Caption         =   "There is no tax return entered for this year."
+      Enabled         =   0   'False
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   9
@@ -1229,15 +1668,16 @@ Begin VB.Form frmClientEditPost
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   1215
-      Index           =   100
+      Height          =   255
+      Index           =   1
       Left            =   12960
       TabIndex        =   104
-      Top             =   480
-      Width           =   1215
+      Top             =   600
+      Visible         =   0   'False
+      Width           =   1455
    End
    Begin VB.Label lblNoTaxReturn 
-      Caption         =   "There is no tax return entered for this year."
+      Enabled         =   0   'False
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   9
@@ -1247,12 +1687,13 @@ Begin VB.Form frmClientEditPost
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   1215
+      Height          =   255
       Index           =   0
       Left            =   11400
       TabIndex        =   103
-      Top             =   480
-      Width           =   1215
+      Top             =   600
+      Visible         =   0   'False
+      Width           =   1455
    End
    Begin VB.Label lblTaxYear 
       Alignment       =   2  'Center
@@ -1267,7 +1708,7 @@ Begin VB.Form frmClientEditPost
          Strikethrough   =   0   'False
       EndProperty
       Height          =   285
-      Index           =   20
+      Index           =   1
       Left            =   12960
       TabIndex        =   102
       Top             =   120
@@ -1385,9 +1826,9 @@ Begin VB.Form frmClientEditPost
       EndProperty
       Height          =   255
       Index           =   37
-      Left            =   3240
+      Left            =   6600
       TabIndex        =   71
-      Top             =   6000
+      Top             =   120
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -1804,8 +2245,8 @@ Begin VB.Form frmClientEditPost
       Index           =   40
       Left            =   2880
       TabIndex        =   44
-      Top             =   7080
-      Width           =   6375
+      Top             =   6840
+      Width           =   3615
    End
    Begin VB.Label lblField 
       Caption         =   "Email:"
@@ -1917,9 +2358,9 @@ Begin VB.Form frmClientEditPost
       EndProperty
       ForeColor       =   &H00808080&
       Height          =   150
-      Left            =   13440
+      Left            =   9840
       TabIndex        =   55
-      Top             =   9000
+      Top             =   8880
       Width           =   975
    End
    Begin VB.Label lblField 
@@ -1938,7 +2379,7 @@ Begin VB.Form frmClientEditPost
       Index           =   52
       Left            =   9480
       TabIndex        =   69
-      Top             =   2880
+      Top             =   7920
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -1957,7 +2398,7 @@ Begin VB.Form frmClientEditPost
       Index           =   55
       Left            =   9480
       TabIndex        =   68
-      Top             =   4320
+      Top             =   7560
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -1976,7 +2417,7 @@ Begin VB.Form frmClientEditPost
       Index           =   62
       Left            =   9480
       TabIndex        =   67
-      Top             =   7680
+      Top             =   5280
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -2019,7 +2460,7 @@ Begin VB.Form frmClientEditPost
    End
    Begin VB.Label lblField 
       Alignment       =   1  'Right Justify
-      Caption         =   "State(s):"
+      Caption         =   "State return(s):"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   9
@@ -2033,7 +2474,7 @@ Begin VB.Form frmClientEditPost
       Index           =   59
       Left            =   9480
       TabIndex        =   53
-      Top             =   6240
+      Top             =   7080
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -2052,7 +2493,7 @@ Begin VB.Form frmClientEditPost
       Index           =   58
       Left            =   9480
       TabIndex        =   52
-      Top             =   5760
+      Top             =   6600
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -2071,7 +2512,7 @@ Begin VB.Form frmClientEditPost
       Index           =   57
       Left            =   9480
       TabIndex        =   51
-      Top             =   5280
+      Top             =   6120
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -2090,7 +2531,7 @@ Begin VB.Form frmClientEditPost
       Index           =   56
       Left            =   9480
       TabIndex        =   50
-      Top             =   4800
+      Top             =   5640
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -2109,7 +2550,7 @@ Begin VB.Form frmClientEditPost
       Index           =   61
       Left            =   9480
       TabIndex        =   49
-      Top             =   7200
+      Top             =   4800
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -2128,7 +2569,7 @@ Begin VB.Form frmClientEditPost
       Index           =   60
       Left            =   9480
       TabIndex        =   48
-      Top             =   6720
+      Top             =   4320
       Width           =   1815
    End
    Begin VB.Label lblField 
@@ -2152,7 +2593,7 @@ Begin VB.Form frmClientEditPost
    End
    Begin VB.Label lblField 
       Alignment       =   1  'Right Justify
-      Caption         =   "Date completed:"
+      Caption         =   "Completion date:"
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   9
@@ -2230,13 +2671,17 @@ Public Enum enumClientTaxReturnFieldNum
     fncTaxReturn_FeeTotal
     fncTaxReturn_FeeOwed
     fncTaxReturn_ReleasedBeforePayment
+    fncTaxReturn_AppointmentDate
 
     'TaxReturn #2
     '(Same as above, but begins at 70)
 End Enum
 
-Private mChooserConfig(4) As typeChooserConfig
+Public PersonOffset As Long, TaxReturnOffset As Long
+Public NumberOfTaxReturnsVisible As Long
+Public TaxReturnViewOffset As Long
 
+Private mChooserConfig() As typeChooserConfig
 Private ShowFormMode As enumShowFormMode
 Private PreviouslyMarkedIncomplete As Boolean
 Private This As CClient
@@ -2250,54 +2695,54 @@ Private DataChanged As Boolean
 'Load / Show / Save / Unload
 '#################################################################################
 
-'EHT=None
+'EHT=Standard
 Private Sub Form_Load()
+On Error GoTo ERR_HANDLER
+
 If FormLoadedAlready Then Err.Raise 1, , "Attempted to load a form that had already been loaded."
 FormLoadedAlready = True
 
+'Since we cannot have a public constant, we'll simply initialize a public variable instead
+PersonOffset = 20
+TaxReturnOffset = 20
+NumberOfTaxReturnsVisible = 3
+TaxReturnViewOffset = 0
+
+'Initialize the config data for the slider controls
+Dim a&, b&, cci&
+ReDim mChooserConfig(2 * NumberOfTaxReturnsVisible)
 With mChooserConfig(0)
     Set .Container = chsField(fncMailingListMode)
     .ContainerIndex = .Container.Index
     ReDim .Selections(3)
-    Set .Selections(0) = lblChooserChoice(0)
-    Set .Selections(1) = lblChooserChoice(1)
-    Set .Selections(2) = lblChooserChoice(2)
-    Set .Selections(3) = lblChooserChoice(3)
+    For b = 0 To 3
+        Set .Selections(b) = lblChooserChoice(cci)
+        cci = cci + 1
+    Next b
 End With
-With mChooserConfig(1)
-    Set .Container = chsField(fncTaxReturn_InboxType)
-    .ContainerIndex = .Container.Index
-    ReDim .Selections(2)
-    Set .Selections(0) = lblChooserChoice(5)
-    Set .Selections(1) = lblChooserChoice(6)
-    Set .Selections(2) = lblChooserChoice(7)
-End With
-With mChooserConfig(2)
-    Set .Container = chsField(fncTaxReturn_Status)
-    .ContainerIndex = .Container.Index
-    ReDim .Selections(3)
-    Set .Selections(0) = lblChooserChoice(10)
-    Set .Selections(1) = lblChooserChoice(11)
-    Set .Selections(2) = lblChooserChoice(12)
-    Set .Selections(3) = lblChooserChoice(13)
-End With
-With mChooserConfig(3)
-    Set .Container = chsField(fncTaxReturn_InboxType + frmClientEditPost_TaxReturnOffset)
-    .ContainerIndex = .Container.Index
-    ReDim .Selections(2)
-    Set .Selections(0) = lblChooserChoice(15)
-    Set .Selections(1) = lblChooserChoice(16)
-    Set .Selections(2) = lblChooserChoice(17)
-End With
-With mChooserConfig(4)
-    Set .Container = chsField(fncTaxReturn_Status + frmClientEditPost_TaxReturnOffset)
-    .ContainerIndex = .Container.Index
-    ReDim .Selections(3)
-    Set .Selections(0) = lblChooserChoice(20)
-    Set .Selections(1) = lblChooserChoice(21)
-    Set .Selections(2) = lblChooserChoice(22)
-    Set .Selections(3) = lblChooserChoice(23)
-End With
+For a = 0 To NumberOfTaxReturnsVisible - 1
+    With mChooserConfig(1 + (a * 2))
+        Set .Container = chsField(fncTaxReturn_InboxType + (a * TaxReturnOffset))
+        .ContainerIndex = .Container.Index
+        ReDim .Selections(2)
+        For b = 0 To 2
+            Set .Selections(b) = lblChooserChoice(cci)
+            cci = cci + 1
+        Next b
+    End With
+    With mChooserConfig(2 + (a * 2))
+        Set .Container = chsField(fncTaxReturn_Status + (a * TaxReturnOffset))
+        .ContainerIndex = .Container.Index
+        ReDim .Selections(3)
+        For b = 0 To 3
+            Set .Selections(b) = lblChooserChoice(cci)
+            cci = cci + 1
+        Next b
+    End With
+Next a
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Load", Err
 End Sub
 
 'EHT=None
@@ -2323,6 +2768,8 @@ On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 'vNewClientInputString      only valid in fNew mode; initializes the new CClient with the specified data
 'Return value               True if the CClient was changed in any way or if new client; False if Cancel button was used to close the form
 
+Dim a As Long, y As Long
+
 'Copy some parameters to global for later access
 ShowFormMode = vShowFormMode
 If ShowFormMode = fNew Then
@@ -2341,10 +2788,22 @@ btnSavePost.Caption = IIf(ShowFormMode = fPost, "&Post", "Save")
 btnSavePost.Enabled = Not vReadOnly
 
 'Populate the form with real data
-If Not This.PopulateToForm(Me) Then
+If Not This.PopulateToForm_Client(Me) Then
     'An error occured, and the user was already notified, so just quit
     HASERROR = True: GoTo CLEANUP
 End If
+For a = 0 To NumberOfTaxReturnsVisible - 1
+    'The leftmost position will always be current year, but the rest will be shifted by TaxReturnViewOffset
+    If a = 0 Then
+        y = FileToOpen_Year - a
+    Else
+        y = FileToOpen_Year - a - TaxReturnViewOffset
+    End If
+    If Not This.PopulateToForm_TaxReturn(Me, (a = 0), y, a) Then
+        'An error occured, and the user was already notified, so just quit
+        HASERROR = True: GoTo CLEANUP
+    End If
+Next a
 DataChanged = False
 
 'Set the tab order of controls
@@ -2503,20 +2962,20 @@ Private Sub txtField_Change(Index As Integer)
 On Error Resume Next
 
 Select Case Index
-Case fncPerson_Last, fncPerson_Last + frmClientEditPost_PersonOffset
+Case fncPerson_Last, fncPerson_Last + PersonOffset
     Dim n$(1)
     n$(0) = LCase$(txtField(fncPerson_Last).Text)
-    n$(1) = LCase$(txtField(fncPerson_Last + frmClientEditPost_PersonOffset).Text)
+    n$(1) = LCase$(txtField(fncPerson_Last + PersonOffset).Text)
     'If same last names, second one should be greyed out
     If Len(n$(1)) > 0 And (n$(1) = n$(0)) Then
         'Same = Grey
-        txtField(fncPerson_Last + frmClientEditPost_PersonOffset).ForeColor = &HC0C0C0
+        txtField(fncPerson_Last + PersonOffset).ForeColor = &HC0C0C0
     Else
         'Different = Black
-        txtField(fncPerson_Last + frmClientEditPost_PersonOffset).ForeColor = vbWindowText
+        txtField(fncPerson_Last + PersonOffset).ForeColor = vbWindowText
     End If
 
-Case fncPerson_DateOfBirth, fncPerson_DateOfDeath, fncPerson_DateOfBirth + frmClientEditPost_PersonOffset, fncPerson_DateOfDeath + frmClientEditPost_PersonOffset
+Case fncPerson_DateOfBirth, fncPerson_DateOfDeath, fncPerson_DateOfBirth + PersonOffset, fncPerson_DateOfDeath + PersonOffset
     UpdateDOBandDODtext
 
 Case fncTaxReturn_ResultAGI, fncTaxReturn_ResultFederal, fncTaxReturn_ResultStatesCombined
@@ -2669,14 +3128,14 @@ End Sub
 Private Sub lblSwitchPersons_Click()
 On Error GoTo ERR_HANDLER
 
-SwitchTextboxValues fncPerson_First, fncPerson_First + frmClientEditPost_PersonOffset
-SwitchTextboxValues fncPerson_Nickname, fncPerson_Nickname + frmClientEditPost_PersonOffset
-SwitchTextboxValues fncPerson_Middle, fncPerson_Middle + frmClientEditPost_PersonOffset
-SwitchTextboxValues fncPerson_Last, fncPerson_Last + frmClientEditPost_PersonOffset
-SwitchTextboxValues fncPerson_Email, fncPerson_Email + frmClientEditPost_PersonOffset
-SwitchTextboxValues fncPerson_DateOfBirth, fncPerson_DateOfBirth + frmClientEditPost_PersonOffset
-SwitchTextboxValues fncPerson_DateOfDeath, fncPerson_DateOfDeath + frmClientEditPost_PersonOffset
-SwitchTextboxValues fncPerson_Phone, fncPerson_Phone + frmClientEditPost_PersonOffset
+SwitchTextboxValues fncPerson_First, fncPerson_First + PersonOffset
+SwitchTextboxValues fncPerson_Nickname, fncPerson_Nickname + PersonOffset
+SwitchTextboxValues fncPerson_Middle, fncPerson_Middle + PersonOffset
+SwitchTextboxValues fncPerson_Last, fncPerson_Last + PersonOffset
+SwitchTextboxValues fncPerson_Email, fncPerson_Email + PersonOffset
+SwitchTextboxValues fncPerson_DateOfBirth, fncPerson_DateOfBirth + PersonOffset
+SwitchTextboxValues fncPerson_DateOfDeath, fncPerson_DateOfDeath + PersonOffset
+SwitchTextboxValues fncPerson_Phone, fncPerson_Phone + PersonOffset
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "lblSwitchPersons_Click", Err
@@ -2695,6 +3154,34 @@ End Sub
 
 
 '#################################################################################
+'Shifting of the tax return view to past years
+'#################################################################################
+
+'EHT=ResumeNext
+Private Sub lblShiftTRView_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, y As Single)
+On Error Resume Next
+
+Dim a As Long
+
+If Index = 0 Then
+    TaxReturnViewOffset = TaxReturnViewOffset - 1
+    If TaxReturnViewOffset < 0 Then TaxReturnViewOffset = 0
+Else
+    TaxReturnViewOffset = TaxReturnViewOffset + 1
+End If
+lblShiftTRView(0).Enabled = (TaxReturnViewOffset > 0)
+imgTRDivider.Visible = (TaxReturnViewOffset > 0)
+
+For a = 1 To NumberOfTaxReturnsVisible - 1
+    This.PopulateToForm_TaxReturn Me, False, FileToOpen_Year - a - TaxReturnViewOffset, a
+Next a
+End Sub
+
+
+
+
+
+'#################################################################################
 'Calculations for DOB and DOD
 '#################################################################################
 
@@ -2704,8 +3191,8 @@ On Error GoTo ERR_HANDLER
 
 Dim a&, DOB&, DOD&
 For a = 0 To 1
-    FieldFromTextbox txtField(fncPerson_DateOfBirth + (a * frmClientEditPost_PersonOffset)), DOB
-    FieldFromTextbox txtField(fncPerson_DateOfDeath + (a * frmClientEditPost_PersonOffset)), DOD
+    FieldFromTextbox txtField(fncPerson_DateOfBirth + (a * PersonOffset)), DOB
+    FieldFromTextbox txtField(fncPerson_DateOfDeath + (a * PersonOffset)), DOD
     If DOD <> NullLong Then
         If DOB = NullLong Then
             lblDODCalc(a).Caption = "Died " & CalculateAge(DOD, Date) & "yr ago"

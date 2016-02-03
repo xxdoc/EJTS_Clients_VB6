@@ -453,9 +453,6 @@ Public Type typeChooserConfig
     Selections() As Label
 End Type
 
-Public Const frmClientEditPost_PersonOffset = 20
-Public Const frmClientEditPost_TaxReturnOffset = 20
-
 Public Const NullLong = &H80000000      '-2147483648
 
 Private MouseNullZoneRef As POINTAPI
@@ -1045,7 +1042,7 @@ If chk.Value = vbChecked Then
     chk.Caption = "YES"
     chk.FontBold = True
 ElseIf chk.Value = vbUnchecked Then
-    chk.Caption = "no"
+    chk.Caption = " no "
     chk.FontBold = False
 ElseIf chk.Value = vbGrayed Then
     chk.Caption = ""

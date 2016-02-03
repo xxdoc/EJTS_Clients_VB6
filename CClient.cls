@@ -140,17 +140,16 @@ End Property
 '#################################################################################
 
 'EHT=Standard
-Public Function PopulateToForm(frm As frmClientEditPost) As Boolean
+Public Function PopulateToForm_Client(frm As frmClientEditPost) As Boolean
 On Error GoTo ERR_HANDLER
 
-Dim a As Long, offset As Long, tr As CTaxReturn
+Dim a As Long, offset As Long, en As Boolean
 
-Dim en As Boolean
 en = True
 
 'Persons
 For a = 0 To m.PersonCount - 1
-    offset = a * frmClientEditPost_PersonOffset
+    offset = a * frm.PersonOffset
     With m.Persons(a)
         FieldToTextbox frm.txtField(fncPerson_First + offset), .First, en
         FieldToTextbox frm.txtField(fncPerson_Nickname + offset), .Nickname, en
@@ -177,26 +176,44 @@ FieldToTextbox frm.txtField(fncNotes), m.Notes, en
 FieldToTextbox frm.txtField(fncOldestYearFiled), m.OldestYearFiled, en
 FieldToTextbox frm.txtField(fncNewestYearFiled), m.NewestYearFiled, en
 
-'TaxReturns
-offset = 0
-For a = FileToOpen_Year To FileToOpen_Year - 1 Step -1
-    frm.lblTaxYear(offset).Caption = a
-    Set tr = mDatabase.TaxReturn(ID, a)
-    If tr Is Nothing Then
-        frm.lblTaxYear(offset).Enabled = False
-        frm.pctTaxReturn(offset).Visible = False
-    Else
-        If Not tr.PopulateToForm(frm, offset, en) Then Exit Function
-        frm.lblTaxYear(offset).Enabled = True
-        frm.pctTaxReturn(offset).Visible = True
-    End If
-    offset = offset + frmClientEditPost_TaxReturnOffset
-Next a
-
-PopulateToForm = True
+PopulateToForm_Client = True
 
 Exit Function
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateToForm", Err
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateToForm_Client", Err
+End Function
+
+'EHT=Standard
+Public Function PopulateToForm_TaxReturn(frm As frmClientEditPost, en As Boolean, TaxReturnYear As Long, TRColumn As Long) As Boolean
+On Error GoTo ERR_HANDLER
+
+Dim tr As CTaxReturn, pct As PictureBox, found As Boolean
+
+Set pct = frm.pctTaxReturn(TRColumn)
+
+'Attempt to find the tax return
+Set tr = mDatabase.TaxReturn(ID, TaxReturnYear)
+found = Not tr Is Nothing
+frm.lblTaxYear(TRColumn).Caption = TaxReturnYear
+frm.lblTaxYear(TRColumn).Enabled = found
+frm.lblNoTaxReturn(TRColumn).Visible = Not found
+If found Then
+    'Found it, so populate the data
+    If Not tr.PopulateToForm(frm, TRColumn * frm.TaxReturnOffset, en) Then Exit Function
+    'Lookup the appointment for each year (except the current year)
+    If TRColumn > 0 Then FieldToTextbox frm.txtField(fncTaxReturn_AppointmentDate + (TRColumn * frm.TaxReturnOffset)), "TBD", False
+Else
+    'Not found, so hide the frame and show a message instead
+    With frm.lblNoTaxReturn(TRColumn)
+        .Caption = "There is no tax return entered for this year."
+        .Move pct.Left + 8, pct.Top + 8, pct.Width - 16, pct.Height - 16
+    End With
+End If
+pct.Visible = found
+
+PopulateToForm_TaxReturn = True
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "PopulateToForm_TaxReturn", Err
 End Function
 
 'EHT=Standard
@@ -213,7 +230,7 @@ Dim pd(1) As typePersonData, hasname(1) As Boolean, hasotherdata(1) As Boolean, 
 'Load the person data initially into local variables
 For a = 0 To 1
     With pd(a)
-        offset = a * frmClientEditPost_PersonOffset
+        offset = a * frm.PersonOffset
 
         'Retrieve values from textboxes
         If Not ValidateTextbox(frm.txtField(fncPerson_First + offset), .First) Then GoTo VALIDATION_ERROR
@@ -287,13 +304,13 @@ If Not ValidateTextbox(frm.txtField(fncNewestYearFiled), temp.NewestYearFiled) T
 
 'Tax return (only save current year)
 offset = 0
-For a = FileToOpen_Year To FileToOpen_Year
-    If frm.pctTaxReturn(offset).Visible Then
-        Set tr = mDatabase.TaxReturn(ID, a)
+For a = 0 To 0
+    If frm.pctTaxReturn(a).Visible Then
+        Set tr = mDatabase.TaxReturn(ID, FileToOpen_Year - a)
         If tr Is Nothing Then Set tr = New CTaxReturn
         If Not tr.PopulateFromForm(frm, offset) Then Exit Function
     End If
-    offset = offset + frmClientEditPost_TaxReturnOffset
+    offset = offset + frm.TaxReturnOffset
 Next a
 
 'If we've gotten this far without errors, then save the data for real
