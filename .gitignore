@@ -11,3 +11,5 @@ ErrorHandler.dll
 *.dca
 *.db
 *.db.bak*
+*.exe
+*.cfg
