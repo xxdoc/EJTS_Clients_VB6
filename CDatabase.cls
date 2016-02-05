@@ -305,6 +305,7 @@ End Sub
 Public Function Client(vClientID As Long) As CClient
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long
+If vClientID < 0 Then Exit Function
 For a = mClientCount - 1 To 0 Step -1
     If mClients(a).ID = vClientID Then
         Set Client = mClients(a)
@@ -319,6 +320,7 @@ End Function
 Public Function Appointment(vAppointmentID As Long) As CAppointment
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, o As CAppointment
+If vAppointmentID < 0 Then Exit Function
 For a = mAppointmentCount - 1 To 0 Step -1
     If mAppointments(a).ID = vAppointmentID Then
         Set Appointment = mAppointments(a)
@@ -331,6 +333,7 @@ End Function
 Public Function TaxReturn(vClientID As Long, vTaxYear As Long) As CTaxReturn
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, t As CTaxReturn
+If vClientID < 0 Or vTaxYear < 0 Then Exit Function
 For a = mTaxReturnCount - 1 To 0 Step -1
     Set t = mTaxReturns(a)
     If t.ClientID = vClientID And t.TaxYear = vTaxYear Then
@@ -352,6 +355,7 @@ End Function
 Public Function ApptCliLinksByClient(vClientID As Long) As CApptCliLink()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, c As Long, l() As CApptCliLink
+If vClientID < 0 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     If mApptCliLinks(a).ClientID = vClientID Then
         ReDim Preserve l(c)
@@ -366,6 +370,7 @@ End Function
 Public Function ApptCliLinksByAppointment(vAppointmentID As Long) As CApptCliLink()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, c As Long, l() As CApptCliLink
+If vAppointmentID < 0 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     If mApptCliLinks(a).AppointmentID = vAppointmentID Then
         ReDim Preserve l(c)
@@ -380,6 +385,7 @@ End Function
 Public Function TaxReturnsByClient(vClientID As Long) As CTaxReturn()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, c As Long, l() As CTaxReturn
+If vClientID < 0 Then Exit Function
 For a = mTaxReturnCount - 1 To 0 Step -1
     If mTaxReturns(a).ClientID = vClientID Then
         ReDim Preserve l(c)
@@ -402,6 +408,7 @@ End Function
 Public Function AppointmentsByClient(vClientID As Long) As CAppointment()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, c As Long, l() As CAppointment
+If vClientID < 0 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     With mApptCliLinks(a)
         If .ClientID = vClientID Then
@@ -418,6 +425,7 @@ End Function
 Public Function ClientsByAppointment(vAppointmentID As Long) As CClient()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, c As Long, l() As CClient
+If vAppointmentID < 0 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     With mApptCliLinks(a)
         If .AppointmentID = vAppointmentID Then
