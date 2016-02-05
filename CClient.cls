@@ -15,7 +15,7 @@ Option Explicit
 Private Const MOD_NAME = "CClient"
 
 'Back reference to database
-Private mDatabase As CDatabase
+Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public ID As Long
@@ -33,7 +33,7 @@ Private m As typeCoreData_Client
 
 'EHT=None
 Public Sub Init(vDB As CDatabase, vID As Long)
-Set mDatabase = vDB
+Set AttachedDatabase = vDB
 'Primary key...
 ID = vID
 'Defaults...
@@ -54,7 +54,7 @@ End Sub
 
 'EHT=None
 Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set mDatabase = vDB
+Set AttachedDatabase = vDB
 If schemaversion >= 1 Then
     ID = fh.ReadLong        'PK
     Get #fh.FileNum, , m    'Attr
@@ -77,17 +77,17 @@ End Sub
 
 'EHT=None
 Public Function Appointments() As CAppointment()
-Appointments = mDatabase.AppointmentsByClient(ID)
+Appointments = AttachedDatabase.AppointmentsByClient(ID)
 End Function
 
 'EHT=None
 Public Function ApptCliLinks() As CApptCliLink()
-ApptCliLinks = mDatabase.ApptCliLinksByClient(ID)
+ApptCliLinks = AttachedDatabase.ApptCliLinksByClient(ID)
 End Function
 
 'EHT=None
 Public Function TaxReturns() As CTaxReturn()
-TaxReturns = mDatabase.TaxReturnsByClient(ID)
+TaxReturns = AttachedDatabase.TaxReturnsByClient(ID)
 End Function
 
 
@@ -194,7 +194,7 @@ Dim tr As CTaxReturn, pct As PictureBox, found As Boolean
 Set pct = frm.pctTaxReturn(TRColumn)
 
 'Attempt to find the tax return
-Set tr = mDatabase.TaxReturn(ID, TaxReturnYear)
+Set tr = AttachedDatabase.TaxReturn(ID, TaxReturnYear)
 found = Not tr Is Nothing
 frm.lblTaxYear(TRColumn).Caption = TaxReturnYear
 frm.lblTaxYear(TRColumn).Enabled = found
@@ -312,7 +312,7 @@ If Not ValidateTextbox(frm.txtField(fncNotes2), temp.Notes2) Then GoTo VALIDATIO
 offset = 0
 For a = 0 To 0
     If frm.pctTaxReturn(a).Visible Then
-        Set tr = mDatabase.TaxReturn(ID, FileToOpen_Year - a)
+        Set tr = AttachedDatabase.TaxReturn(ID, FileToOpen_Year - a)
         If tr Is Nothing Then Set tr = New CTaxReturn
         If Not tr.PopulateFromForm(frm, offset) Then Exit Function
     End If

@@ -15,7 +15,7 @@ Option Explicit
 Private Const MOD_NAME = "CTaxReturn"
 
 'Back reference to database
-Private mDatabase As CDatabase
+Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public ClientID As Long, TaxYear As Long
@@ -33,7 +33,7 @@ Private m As typeCoreData_TaxReturn
 
 'EHT=None
 Public Sub Init(vDB As CDatabase, vClientID As Long, vTaxYear As Long)
-Set mDatabase = vDB
+Set AttachedDatabase = vDB
 'Primary key...
 TaxYear = vTaxYear: ClientID = vClientID
 'Defaults...
@@ -47,7 +47,7 @@ End Sub
 
 'EHT=None
 Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set mDatabase = vDB
+Set AttachedDatabase = vDB
 If schemaversion >= 1 Then
     ClientID = fh.ReadLong: TaxYear = fh.ReadLong   'PK
     Get #fh.FileNum, , m                            'Attr
@@ -70,7 +70,7 @@ End Sub
 
 'EHT=None
 Public Function Client() As CClient
-Set Client = mDatabase.Client(ClientID)
+Set Client = AttachedDatabase.Client(ClientID)
 End Function
 
 

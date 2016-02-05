@@ -15,7 +15,7 @@ Option Explicit
 Private Const MOD_NAME = "CApptCliLink"
 
 'Back reference to database
-Private mDatabase As CDatabase
+Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public ClientID As Long, AppointmentID As Long
@@ -33,7 +33,7 @@ Private m As typeCoreData_ApptCliLink
 
 'EHT=None
 Public Sub Init(vDB As CDatabase, vClientID As Long, vAppointmentID As Long)
-Set mDatabase = vDB
+Set AttachedDatabase = vDB
 'Primary key...
 ClientID = vClientID: AppointmentID = vAppointmentID
 'Defaults...
@@ -42,7 +42,7 @@ End Sub
 
 'EHT=None
 Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set mDatabase = vDB
+Set AttachedDatabase = vDB
 If schemaversion >= 1 Then
     ClientID = fh.ReadLong: AppointmentID = fh.ReadLong     'PK
     Get #fh.FileNum, , m                                    'Attr
@@ -65,12 +65,12 @@ End Sub
 
 'EHT=None
 Public Function Client() As CClient
-Set Client = mDatabase.Client(ClientID)
+Set Client = AttachedDatabase.Client(ClientID)
 End Function
 
 'EHT=None
 Public Function Appointment() As CAppointment
-Set Appointment = mDatabase.Appointment(AppointmentID)
+Set Appointment = AttachedDatabase.Appointment(AppointmentID)
 End Function
 
 

@@ -15,7 +15,7 @@ Option Explicit
 Private Const MOD_NAME = "CAppointment"
 
 'Back reference to database
-Private mDatabase As CDatabase
+Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public ID As Long
@@ -33,7 +33,7 @@ Private m As typeCoreData_Appointment
 
 'EHT=None
 Public Sub Init(vDB As CDatabase, vID As Long)
-Set mDatabase = vDB
+Set AttachedDatabase = vDB
 'Primary key...
 ID = vID
 End Sub
@@ -47,7 +47,7 @@ End Sub
 
 'EHT=None
 Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set mDatabase = vDB
+Set AttachedDatabase = vDB
 If schemaversion >= 1 Then
     ID = fh.ReadLong        'PK
     Get #fh.FileNum, , m    'Attr
@@ -70,7 +70,7 @@ End Sub
 
 'EHT=None
 Public Function Clients() As CClient()
-Clients = mDatabase.ClientsByAppointment(ID)
+Clients = AttachedDatabase.ClientsByAppointment(ID)
 End Function
 
 
