@@ -572,14 +572,16 @@ On Error GoTo ERR_HANDLER
 
 If Not menClientEdit.Enabled Then Exit Sub
 
-Dim frm As frmClientEditPost, cID&
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
-cID = lstResults.SelectedClientID
-If cID = LB_ERR Then Exit Sub    'Separator item
-Set frm = New frmClientEditPost
-If frm.Form_Show(cID, fEdit) Then   'This will mark changed if necessary
-    frmMain.DayTotal_Update
-    lstResults.Repaint
+
+Dim c As CClient
+Set c = frmMain.NEWDATABASE.Client(lstResults.SelectedClientID)
+If Not c Is Nothing Then
+    Dim frm As New frmClientEditPost
+    If frm.Form_Show(fEdit, c) Then     'This will mark changed if necessary
+        frmMain.DayTotal_Update
+        lstResults.Repaint
+    End If
 End If
 
 Exit Sub
@@ -592,17 +594,16 @@ On Error GoTo ERR_HANDLER
 
 If Not menClientPost.Enabled Then Exit Sub
 
-Dim frm As frmClientEditPost, cID&, cindex&
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
-cID = lstResults.SelectedClientID
-If cID = LB_ERR Then Exit Sub    'Separator item
-cindex = DB_FindClientIndex(ActiveDBInstance, cID)
-If cindex < 0 Then Exit Sub
-If Flag_IsSet(ActiveDBInstance.Clients(cindex).c.Flags, CompletedReturn) Then Exit Sub
-Set frm = New frmClientEditPost
-If frm.Form_Show(cID, fPost) Then    'This will mark changed if necessary
-    frmMain.DayTotal_Update
-    lstResults.Repaint
+
+Dim c As CClient
+Set c = frmMain.NEWDATABASE.Client(lstResults.SelectedClientID)
+If Not c Is Nothing Then
+    Dim frm As New frmClientEditPost
+    If frm.Form_Show(fPost, c) Then     'This will mark changed if necessary
+        frmMain.DayTotal_Update
+        lstResults.Repaint
+    End If
 End If
 
 Exit Sub

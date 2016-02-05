@@ -630,15 +630,16 @@ End Sub
 Private Sub lstSection_DblClick(Index As Integer)
 On Error GoTo ERR_HANDLER
 
-Dim frm As frmClientEditPost, cID&
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
 
-cID = lstSection(Index).SelectedClientID
-If cID = LB_ERR Then Exit Sub    'Separator item
-Set frm = New frmClientEditPost
-If frm.Form_Show(cID, fEdit) Then   'This will mark changed if necessary
-    frmMain.DayTotal_Update
-    lstSection(Index).Repaint
+Dim c As CClient
+Set c = frmMain.NEWDATABASE.Client(lstSection(Index).SelectedClientID)
+If Not c Is Nothing Then
+    Dim frm As New frmClientEditPost
+    If frm.Form_Show(fEdit, c) Then   'This will mark changed if necessary
+        frmMain.DayTotal_Update
+        lstSection(Index).Repaint
+    End If
 End If
 
 Exit Sub

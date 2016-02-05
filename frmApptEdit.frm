@@ -799,13 +799,14 @@ End Sub
 Private Sub lstClients_DblClick()
 On Error GoTo ERR_HANDLER
 
-Dim frm As frmClientEditPost, i&, cID&
-
+Dim i&, c As CClient
 i = lstClients.ListIndex
 If i >= 0 Then
-    cID = lstClients.ItemData(i)
-    Set frm = New frmClientEditPost
-    frm.Form_Show cID, fEdit, Me   'This will mark changed if necessary
+    Set c = frmMain.NEWDATABASE.Client(lstClients.ItemData(i))
+    If Not c Is Nothing Then
+        Dim frm As New frmClientEditPost
+        frm.Form_Show fEdit, c, , Me     'This will mark changed if necessary
+    End If
 End If
 
 Exit Sub

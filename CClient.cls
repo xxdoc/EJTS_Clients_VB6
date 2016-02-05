@@ -131,6 +131,24 @@ Public Property Get First(personnum As Long) As String
 First = m.Persons(personnum).First
 End Property
 
+'EHT=None
+Public Sub FillInNewClientData(t As String)
+Dim s() As String
+s = Split(t, ",")
+If UBound(s) >= 0 Then
+    If m.PersonCount = 0 Then
+        m.PersonCount = 1
+        ReDim m.Persons(m.PersonCount - 1)
+        m.Persons(0).DateOfBirth = NullLong
+        m.Persons(0).DateOfDeath = NullLong
+    End If
+    m.Persons(0).Last = Trim$(s(0))
+    If UBound(s) > 0 Then
+        m.Persons(0).First = Trim$(s(1))
+    End If
+End If
+End Sub
+
 
 
 
@@ -191,14 +209,14 @@ On Error GoTo ERR_HANDLER
 
 Dim tr As CTaxReturn, pct As PictureBox, found As Boolean
 
-Set pct = frm.pctTaxReturn(TRColumn)
-
 'Attempt to find the tax return
 Set tr = AttachedDatabase.TaxReturn(ID, TaxReturnYear)
 found = Not tr Is Nothing
+
 frm.lblTaxYear(TRColumn).Caption = TaxReturnYear
 frm.lblTaxYear(TRColumn).Enabled = found
 frm.lblNoTaxReturn(TRColumn).Visible = Not found
+Set pct = frm.pctTaxReturn(TRColumn)
 If found Then
     'Found it, so populate the data
     If Not tr.PopulateToForm(frm, TRColumn * frm.TaxReturnOffset, en) Then Exit Function

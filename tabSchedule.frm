@@ -597,25 +597,31 @@ On Error GoTo ERR_HANDLER
 
 If Not menApptCLItem(Index).Enabled Then Exit Sub
 
-Dim t$, cID&, cindex&
+Dim t$, c As CClient, frm As frmClientEditPost
+
 t$ = menApptCLItem(Index).Tag
-If Len(t$) > 1 Then cID = CLng(Mid$(t$, 2))
+If Len(t$) <= 1 Then Exit Sub
+
+Set c = frmMain.NEWDATABASE.Client(Mid$(t$, 2))
+If c Is Nothing Then Exit Sub
+
 Select Case Mid$(t$, 1, 1)
 Case "e"    'Edit
-    Dim frme As frmClientEditPost
-    Set frme = New frmClientEditPost
-    If frme.Form_Show(cID, fEdit) Then  'This will mark changed if necessary
+    Set frm = New frmClientEditPost
+    If frm.Form_Show(fEdit, c) Then     'This will mark changed if necessary
         frmMain.DayTotal_Update
         DrawSchedule
     End If
 Case "p"    'Post
-    Dim frmp As frmClientEditPost
-    Set frmp = New frmClientEditPost
-    If frmp.Form_Show(cID, fPost) Then      'This will mark changed if necessary
+    Set frm = New frmClientEditPost
+    If frm.Form_Show(fPost, c) Then     'This will mark changed if necessary
         frmMain.DayTotal_Update
         DrawSchedule
     End If
 Case "i"    'Mark incomplete
+    #If True Then
+    ShowErrorMsg "Not implemented yet."
+    #Else
     cindex = DB_FindClientIndex(ActiveDBInstance, cID)
     With ActiveDBInstance.Clients(cindex).c
         If Flag_IsSet(.Flags, PartiallyComplete) Then
@@ -630,6 +636,7 @@ Case "i"    'Mark incomplete
         ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData = True
     End With
     frmMain.SetChangedFlagAndIndication
+    #End If
 End Select
 
 Exit Sub

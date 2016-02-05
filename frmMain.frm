@@ -938,12 +938,15 @@ On Error GoTo ERR_HANDLER
 
 If Not btnNewClient.Enabled Then Exit Sub
 
-Dim frm As frmClientEditPost, nID&
+Dim c As New CClient, frm As New frmClientEditPost
+
+c.FillInNewClientData tabSearch.txtSearch.Text
+
 SetFocusWithoutErr pctInitialFocus
-Set frm = New frmClientEditPost
-'Give it anything that has been typed, in case it is useful
-If frm.Form_Show(nID, fNew, , tabSearch.txtSearch.Text) Then   'This will mark changed if necessary
-    CHOS_Add nID, False
+If frm.Form_Show(fNew, c) Then   'This will mark changed if necessary
+    '<Add it to the database>
+    'frmMain.SetChangedFlagAndIndication
+
     'If Not SearchEditMode Then SRCH_Do False     'Redo search to make new client show up
     ChangeCurTab vSchedule, False
 End If

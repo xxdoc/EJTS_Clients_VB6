@@ -5,7 +5,7 @@ Begin VB.Form frmClientEditPost
    ClientHeight    =   9495
    ClientLeft      =   45
    ClientTop       =   435
-   ClientWidth     =   16095
+   ClientWidth     =   9375
    BeginProperty Font 
       Name            =   "Arial"
       Size            =   9.75
@@ -23,7 +23,7 @@ Begin VB.Form frmClientEditPost
    MinButton       =   0   'False
    ScaleHeight     =   633
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1073
+   ScaleWidth      =   625
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Begin VB.CheckBox chkgroupField 
@@ -94,6 +94,7 @@ Begin VB.Form frmClientEditPost
       ScaleWidth      =   97
       TabIndex        =   129
       Top             =   480
+      Visible         =   0   'False
       Width           =   1455
       Begin VB.CheckBox chkField 
          Height          =   255
@@ -467,6 +468,7 @@ Begin VB.Form frmClientEditPost
       ScaleWidth      =   97
       TabIndex        =   87
       Top             =   480
+      Visible         =   0   'False
       Width           =   1455
       Begin VB.TextBox txtField 
          Appearance      =   0  'Flat
@@ -1272,12 +1274,12 @@ Begin VB.Form frmClientEditPost
       Cancel          =   -1  'True
       Caption         =   "Cancel"
       Height          =   615
-      Left            =   7200
+      Left            =   5640
       TabIndex        =   24
       Top             =   8640
       Width           =   1575
    End
-   Begin VB.CommandButton btnSavePost 
+   Begin VB.CommandButton btnSave 
       Caption         =   "Save"
       BeginProperty Font 
          Name            =   "Arial"
@@ -1289,7 +1291,7 @@ Begin VB.Form frmClientEditPost
          Strikethrough   =   0   'False
       EndProperty
       Height          =   855
-      Left            =   3720
+      Left            =   2160
       TabIndex        =   23
       Top             =   8520
       Width           =   3135
@@ -1304,6 +1306,7 @@ Begin VB.Form frmClientEditPost
       ScaleWidth      =   97
       TabIndex        =   75
       Top             =   480
+      Visible         =   0   'False
       Width           =   1455
       Begin VB.TextBox txtField 
          Appearance      =   0  'Flat
@@ -1734,6 +1737,7 @@ Begin VB.Form frmClientEditPost
       TabIndex        =   154
       ToolTipText     =   "Shift the view to see older tax returns"
       Top             =   8400
+      Visible         =   0   'False
       Width           =   1455
    End
    Begin VB.Label lblShiftTRView 
@@ -2922,30 +2926,34 @@ Function Form_Show(vShowFormMode As enumShowFormMode, vClient As CClient, Option
 On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 'vShowFormMode              can be fPost, fEdit, or fNew
-'vClient                    if fPost/fEdit, this is the CClient to open; if fNew, the new CClient will be set to this parameter (ByRef)
+'vClient                    the CClient to open
 'vReadOnly                  if True, changes to vClient will not be allowed
 'vOwnerForm                 only specify this if it is not frmMain or one of the tab 'forms'
-'vNewClientInputString      only valid in fNew mode; initializes the new CClient with the specified data
 'Return value               True if the CClient was changed in any way or if new client; False if Cancel button was used to close the form
 
 Dim a As Long, Y As Long
 
 'Copy some parameters to global for later access
 ShowFormMode = vShowFormMode
-If ShowFormMode = fNew Then
-    Set This = New CClient
-Else
-    Set This = vClient
-End If
+Set This = vClient
 
 'Basic form initialize
-If ShowFormMode = fNew Then
+Select Case ShowFormMode
+Case fNew
     Me.Caption = "New Client"
-Else
-    Me.Caption = "Client #" & This.ID & " - " & Choose(ShowFormMode + 1, "Post", "Edit")
-End If
-btnSavePost.Caption = IIf(ShowFormMode = fPost, "&Post", "Save")
-btnSavePost.Enabled = Not vReadOnly
+    btnSave.Caption = "&Create"
+    ResizeFormByInnerScaleDimensions Me, 625, 633
+Case fPost
+    Me.Caption = "Client #" & This.ID & " - Post"
+    btnSave.Caption = "&Post"
+    ResizeFormByInnerScaleDimensions Me, 857, 633
+Case fEdit
+    Me.Caption = "Client #" & This.ID & " - Edit"
+    btnSave.Caption = "&Save"
+    ResizeFormByInnerScaleDimensions Me, 1073, 633
+    lblShiftTRView(1).Visible = True
+End Select
+btnSave.Enabled = Not vReadOnly
 
 'Populate the form with real data
 If Not This.PopulateToForm_Client(Me) Then
@@ -2959,9 +2967,11 @@ For a = 0 To NumberOfTaxReturnsVisible - 1
     Else
         Y = FileToOpen_Year - a - TRColumnOffset
     End If
-    If Not This.PopulateToForm_TaxReturn(Me, (a = 0), Y, a) Then
-        'An error occured, and the user was already notified, so just quit
-        HASERROR = True: GoTo CLEANUP
+    If Not This.AttachedDatabase Is Nothing Then
+        If Not This.PopulateToForm_TaxReturn(Me, (a = 0), Y, a) Then
+            'An error occured, and the user was already notified, so just quit
+            HASERROR = True: GoTo CLEANUP
+        End If
     End If
 Next a
 DataChanged = False
@@ -2984,7 +2994,6 @@ frmMain.IdleSetAction
 
 'Return values
 Form_Show = DataChanged
-If ShowFormMode = fNew Then vClient = This
 
 CLEANUP: INCLEANUP = True
     If HASERROR Then Unload Me
@@ -2994,22 +3003,23 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_Show", Err, INCLEANUP: HASERROR = Tr
 End Function
 
 'EHT=Standard
-Private Sub btnSavePost_Click()
+Private Sub btnSave_Click()
 On Error GoTo ERR_HANDLER
 
-If Not btnSavePost.Enabled Then Exit Sub
+If Not btnSave.Enabled Then Exit Sub
 
 If This.PopulateFromForm(Me) Then
-    If ShowFormMode = fNew Then
-        'Add it to the database
+    If ShowFormMode <> fNew Then
+        'We only set the changed flag if we're editing/posting a client that is actually in the database
+        'New clients are not yet, so let the calling function handle this when/if it's added to the database
+        frmMain.SetChangedFlagAndIndication
     End If
-    frmMain.SetChangedFlagAndIndication
     DataChanged = True
     Unload Me
 End If
 
 Exit Sub
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSavePost_Click", Err
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnSave_Click", Err
 End Sub
 
 'EHT=Standard
@@ -3022,6 +3032,19 @@ Unload Me
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_Click", Err
+End Sub
+
+'EHT=ResumeNext
+Private Sub Form_Resize()
+On Error Resume Next
+
+Dim sw!, sh!, tw!
+sw = Me.ScaleWidth
+sh = Me.ScaleHeight
+lblChangeTabOrder.Move sw - lblChangeTabOrder.Width - 8, sh - lblChangeTabOrder.Height - 8
+tw = btnSave.Width + btnCancel.Width + 23
+btnSave.Left = (sw / 2) - (tw / 2)
+btnCancel.Left = btnSave.Left + btnSave.Width + 23
 End Sub
 
 
@@ -3051,8 +3074,8 @@ On Error GoTo ERR_HANDLER
 Select Case KeyCode
 Case vbKeyReturn
     If Shift = vbCtrlMask Then
-        SetFocusWithoutErr btnSavePost
-        btnSavePost_Click
+        SetFocusWithoutErr btnSave
+        btnSave_Click
     Else
         TabToNextControl Me, True, (Shift = vbShiftMask)
     End If
@@ -3295,13 +3318,13 @@ End Sub
 '##### Other controls that should be hilighted when focused #####
 
 'EHT=ResumeNext
-Private Sub btnSavePost_GotFocus()
+Private Sub btnSave_GotFocus()
 On Error Resume Next
 
-HilightControl Me, btnSavePost
+HilightControl Me, btnSave
 End Sub
 'EHT=ResumeNext
-Private Sub btnSavePost_LostFocus()
+Private Sub btnSave_LostFocus()
 On Error Resume Next
 
 ClearControlHilight Me
