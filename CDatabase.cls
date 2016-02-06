@@ -293,6 +293,11 @@ mIsDirty = False
 RaiseEvent OnDirtyChanged(mIsDirty)
 End Sub
 
+'EHT=None
+Public Property Get IsWriteable() As Boolean
+IsWriteable = mIsWriteable
+End Property
+
 
 
 

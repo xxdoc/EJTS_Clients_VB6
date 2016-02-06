@@ -2976,6 +2976,9 @@ For a = 0 To NumberOfTaxReturnsVisible - 1
 Next a
 DataChanged = False
 
+'No changes allowed on read-only database
+btnSave.Enabled = frmMain.NEWDATABASE.IsWriteable
+
 'Set the tab order of controls
 TabOrderSetting = IIf(ShowFormMode = fPost, "GLOBAL_TabOrder_ClientPost", "GLOBAL_TabOrder_ClientEdit")
 SetControlTabOrder Me, DB_GetSetting(ActiveDBInstance, TabOrderSetting)

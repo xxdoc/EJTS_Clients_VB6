@@ -17,6 +17,9 @@ Private Const MOD_NAME = "CClient"
 'Back reference to database
 Public AttachedDatabase As CDatabase
 
+'Cached reference to current year tax return
+Public mCurrentYearReturn As CTaxReturn
+
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public ID As Long
 
@@ -129,6 +132,12 @@ End Property
 'EHT=None
 Public Property Get First(personnum As Long) As String
 First = m.Persons(personnum).First
+End Property
+
+'EHT=None
+Public Property Get CurrentYearReturn() As CTaxReturn
+If mCurrentYearReturn Is Nothing Then Set mCurrentYearReturn = AttachedDatabase.TaxReturn(ID, FileToOpen_Year)
+Set CurrentYearReturn = mCurrentYearReturn
 End Property
 
 'EHT=None

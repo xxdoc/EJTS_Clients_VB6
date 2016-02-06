@@ -619,24 +619,12 @@ Case "p"    'Post
         DrawSchedule
     End If
 Case "i"    'Mark incomplete
-    #If True Then
-    ShowErrorMsg "Not implemented yet."
-    #Else
-    cindex = DB_FindClientIndex(ActiveDBInstance, cID)
-    With ActiveDBInstance.Clients(cindex).c
-        If Flag_IsSet(.Flags, PartiallyComplete) Then
-            .Flags = Flag_Remove(.Flags, PartiallyComplete)
-            AddOpNote .OpNotes, "Removed flag: INC"
-            tabLogFile.WriteLine "Marked NOT INC: " & FormatClientName(fLog, ActiveDBInstance.Clients(cindex).c)
-        Else
-            .Flags = .Flags Or PartiallyComplete
-            AddOpNote .OpNotes, "Incomplete"
-            tabLogFile.WriteLine "Marked INC: " & FormatClientName(fLog, ActiveDBInstance.Clients(cindex).c)
-        End If
-        ActiveDBInstance.Clients(cindex).Temp_RegenerateTempData = True
-    End With
+    If c.CurrentYearReturn.Status = rsIncomplete Then
+        c.CurrentYearReturn.Status = rsNotStarted
+    Else
+        c.CurrentYearReturn.Status = rsIncomplete
+    End If
     frmMain.SetChangedFlagAndIndication
-    #End If
 End Select
 
 Exit Sub
@@ -796,7 +784,7 @@ On Error GoTo ERR_HANDLER
 
 pctSchedule_MouseMove Button, Shift, X, Y
 
-Dim aindex&, b&, cindex&, t$, cli&, comp As Boolean
+Dim aindex&, b&, cindex&, t$, cli&, c As CClient, st As enumReturnStatus
 Dim a As Appointment, defmi As Menu
 Dim abr&, moveexistingappt As ScheduleShapeStyle
 
@@ -849,41 +837,43 @@ If ClickedTimeslot >= 0 Then
                     menApptMarkDidntHappen.Enabled = (.ClientID_Count > 0) And (ActiveDBInstance.IsWriteable)
                     cli = 0
                     For b = 0 To .ClientID_Count - 1
-                        cindex = DB_FindClientIndex(ActiveDBInstance, .ClientIDs(b))
-                        comp = Flag_IsSet(ActiveDBInstance.Clients(cindex).c.Flags, CompletedReturn) Or Flag_IsSet(ActiveDBInstance.Clients(cindex).c.Flags, NoNeedToFile)
+                        Set c = frmMain.NEWDATABASE.Client(.ClientIDs(b))
+                        If Not c Is Nothing Then
+                            st = c.CurrentYearReturn.Status
 
-                        cli = cli + 1
-                        Load menApptCLItem(cli)
-                        menApptCLItem(cli).Caption = "-"
-                        menApptCLItem(cli).Visible = True
+                            cli = cli + 1
+                            Load menApptCLItem(cli)
+                            menApptCLItem(cli).Caption = "-"
+                            menApptCLItem(cli).Visible = True
 
-                        cli = cli + 1
-                        Load menApptCLItem(cli)
-                        menApptCLItem(cli).Caption = "== " & Replace(FormatClientName(fSchedulePct, ActiveDBInstance.Clients(cindex).c), "&", "&&") & " =="
-                        menApptCLItem(cli).Enabled = False
-                        menApptCLItem(cli).Visible = True
+                            cli = cli + 1
+                            Load menApptCLItem(cli)
+                            menApptCLItem(cli).Caption = "== " & Replace(FormatClientName(fSchedulePct, ActiveDBInstance.Clients(cindex).c), "&", "&&") & " =="
+                            menApptCLItem(cli).Enabled = False
+                            menApptCLItem(cli).Visible = True
 
-                        cli = cli + 1
-                        Load menApptCLItem(cli)
-                        menApptCLItem(cli).Caption = "Edit Client..."
-                        menApptCLItem(cli).Visible = True
-                        menApptCLItem(cli).Tag = "e" & .ClientIDs(b)
-                        If b = 0 Then Set defmi = menApptCLItem(cli)
+                            cli = cli + 1
+                            Load menApptCLItem(cli)
+                            menApptCLItem(cli).Caption = IIf(frmMain.NEWDATABASE.IsWriteable, "Edit Client...", "View Client...")
+                            menApptCLItem(cli).Visible = True
+                            menApptCLItem(cli).Tag = "e" & .ClientIDs(b)
+                            If b = 0 Then Set defmi = menApptCLItem(cli)
 
-                        cli = cli + 1
-                        Load menApptCLItem(cli)
-                        menApptCLItem(cli).Caption = "Post Client..."
-                        menApptCLItem(cli).Enabled = Not comp
-                        menApptCLItem(cli).Visible = True
-                        menApptCLItem(cli).Tag = "p" & .ClientIDs(b)
+                            cli = cli + 1
+                            Load menApptCLItem(cli)
+                            menApptCLItem(cli).Caption = "Post Client..."
+                            menApptCLItem(cli).Enabled = ((st = rsNotStarted) Or (st = rsIncomplete)) And frmMain.NEWDATABASE.IsWriteable
+                            menApptCLItem(cli).Visible = True
+                            menApptCLItem(cli).Tag = "p" & .ClientIDs(b)
 
-                        cli = cli + 1
-                        Load menApptCLItem(cli)
-                        menApptCLItem(cli).Caption = "Incomplete"
-                        menApptCLItem(cli).Checked = Flag_IsSet(ActiveDBInstance.Clients(cindex).c.Flags, PartiallyComplete)
-                        menApptCLItem(cli).Enabled = (Not comp) And (ActiveDBInstance.IsWriteable)
-                        menApptCLItem(cli).Visible = True
-                        menApptCLItem(cli).Tag = "i" & .ClientIDs(b)
+                            cli = cli + 1
+                            Load menApptCLItem(cli)
+                            menApptCLItem(cli).Caption = "Incomplete"
+                            menApptCLItem(cli).Checked = (st = rsIncomplete)
+                            menApptCLItem(cli).Enabled = ((st = rsNotStarted) Or (st = rsIncomplete)) And frmMain.NEWDATABASE.IsWriteable
+                            menApptCLItem(cli).Visible = True
+                            menApptCLItem(cli).Tag = "i" & .ClientIDs(b)
+                        End If
                     Next b
                 End With
                 'Must be outside the With block

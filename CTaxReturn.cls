@@ -78,6 +78,24 @@ End Function
 
 
 '#################################################################################
+'Attributes
+'#################################################################################
+
+'EHT=None
+Public Property Get Status() As enumReturnStatus
+Status = m.Status
+End Property
+
+'EHT=None
+Public Property Let Status(nv As enumReturnStatus)
+m.Status = nv
+End Property
+
+
+
+
+
+'#################################################################################
 'Form
 '#################################################################################
 
