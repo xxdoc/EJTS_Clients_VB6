@@ -37,12 +37,20 @@ Set AttachedDatabase = vDB
 'Primary key...
 TaxYear = vTaxYear: ClientID = vClientID
 'Defaults...
-m.EFiled = True
+m.Fee = NullLong
+m.FeeOwed = NullLong
 m.CompletionDate = NullLong
 m.MinutesToComplete = NullLong
 m.Results_AGI = NullLong
 m.Results_Fed = NullLong
 m.Results_State = NullLong
+m.EFiled = True
+End Sub
+
+'EHT=None
+Public Sub QuickSetData(vInboxType As enumInboxType, vStatus As enumReturnStatus)
+m.InboxType = vInboxType
+m.Status = vStatus
 End Sub
 
 'EHT=None

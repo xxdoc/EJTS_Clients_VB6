@@ -36,6 +36,8 @@ Public Sub Init(vDB As CDatabase, vID As Long)
 Set AttachedDatabase = vDB
 'Primary key...
 ID = vID
+'Defaults...
+m.ClientID = NullLong
 End Sub
 
 'EHT=None

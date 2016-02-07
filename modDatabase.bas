@@ -47,38 +47,15 @@ Public Type typeCoreData_Client
     Notes2 As String                    'May be blank
 End Type
 
-'ApptCliLink
-Public Enum enumReminderCallStatus
-    rcsNoneRequired                 'Default
-    rcsNeedToCall
-    rcsCalled
-End Enum
-Public Type typeCoreData_ApptCliLink
-    ReminderCallStatus As Long
-    NoShow As Boolean
-    PrimaryClient As Boolean        'Default=True
-End Type
-
-'Appointment
-Public Type typeCoreData_Appointment
-    Day As Long
-    TimeSlot As Long
-    CustomTimeSet As Boolean
-    CustomTime As Date              'Ignored if CustomTimeSet=False
-    NumSlots As Long
-    DidntHappen As Boolean
-    Notes As String                 'May be blank
-End Type
-
 'TaxReturn
 Public Enum enumReturnStatus
-    rsNotStarted                    'Default
+    rsNotStarted                        'Default
     rsIncomplete
     rsComplete
     rsNoNeedToFile
 End Enum
 Public Enum enumInboxType
-    itAppointment                   'Default
+    itAppointment                       'Default
     itDroppedOff
     itMailedIn
 End Enum
@@ -86,27 +63,58 @@ Public Type typeCoreData_TaxReturn
     InboxType As Long
     Status As Long
     FiledExtension As Boolean
-    EFiled As Boolean               'Default=True
-    CompletionDate As Long          'May be NullLong
-    MinutesToComplete As Long       'May be NullLong
-    Fee As Long
-    FeeOwed As Long
+    EFiled As Boolean                   'Default=True
+    CompletionDate As Long              'May be NullLong
+    MinutesToComplete As Long           'May be NullLong
+    Fee As Long                         'May be NullLong
+    FeeOwed As Long                     'May be NullLong
     ReleasedBeforePayment As Boolean
-    StateList As String             'Comma-separated list; blank = no state return
-    Results_AGI As Long             'May be NullLong
-    Results_Fed As Long             'May be NullLong
-    Results_State As Long           'May be NullLong
+    StateList As String                 'Comma-separated list; blank = no state return
+    Results_AGI As Long                 'May be NullLong
+    Results_Fed As Long                 'May be NullLong
+    Results_State As Long               'May be NullLong
+End Type
+
+'Appointment
+Public Type typeCoreData_Appointment
+    Day As Long
+    TimeSlot As Long
+    CustomTimeSet As Boolean
+    CustomTime As Date                  'Ignored if CustomTimeSet=False
+    NumSlots As Long
+    DidntHappen As Boolean
+    Notes As String                     'May be blank
+End Type
+
+'ApptCliLink
+Public Enum enumReminderCallStatus
+    rcsNoneRequired                     'Default
+    rcsNeedToCall
+    rcsCalled
+End Enum
+Public Type typeCoreData_ApptCliLink
+    ReminderCallStatus As Long
+    NoShow As Boolean
+    PrimaryClient As Boolean            'Default=True
+End Type
+
+'Schedule
+Public Type typeCoreData_Schedule
+    ApptBitmap() As Long
+    ApptBitmap_StartDate As Long
+    ApptBitmap_Count As Long
+    Subtitles() As String               'Same LBound and UBound as ApptBitmap
 End Type
 
 'BookkeepingJob
 Public Type typeBookkeepingMonth
-    CompletionDate As Long          'May be NullLong
+    CompletionDate As Long              'May be NullLong
     Fee As Long
     FeeOwed As Long
 End Type
 Public Type typeCoreData_BookkeepingJob
-    ClientID As Long                'May be NullLong
-    ClientName As String            'May be blank; ignored if ClientID <> NullLong
+    ClientID As Long                    'May be NullLong
+    ClientName As String                'May be blank; ignored if ClientID <> NullLong
     Months(11) As typeBookkeepingMonth
 End Type
 
@@ -119,20 +127,12 @@ End Type
 
 'ExtraCharge
 Public Type typeCoreData_ExtraCharge
-    ClientID As Long                'May be NullLong
-    ClientName As String            'May be blank; ignored if ClientID <> NullLong
-    Description As String           'May be blank
+    ClientID As Long                    'May be NullLong
+    ClientName As String                'May be blank; ignored if ClientID <> NullLong
+    Description As String               'May be blank
     CompletionDate As Date
     Fee As Long
     FeeOwed As Long
-End Type
-
-'Schedule
-Public Type typeCoreData_Schedule
-    ApptBitmap() As Long
-    ApptBitmap_StartDate As Long
-    ApptBitmap_Count As Long
-    Subtitles() As String       'Same LBound and UBound as ApptBitmap
 End Type
 
 
@@ -143,4 +143,4 @@ End Type
 'Old database structures, for migration purposes
 '#################################################################################
 
-
+'<None yet>

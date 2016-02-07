@@ -36,12 +36,12 @@ Private mLogFilename As String
 'Core data
 Private mClients() As DBModelClient
 Private mClientCount As Long
+Private mTaxReturns() As DBModelTaxReturn
+Private mTaxReturnCount As Long
 Private mAppointments() As DBModelAppointment
 Private mAppointmentCount As Long
 Private mApptCliLinks() As DBModelApptCliLink
 Private mApptCliLinkCount As Long
-Private mTaxReturns() As DBModelTaxReturn
-Private mTaxReturnCount As Long
 Private mSchedules() As DBModelSchedule
 Private mScheduleCount As Long
 
@@ -99,6 +99,13 @@ If loadable Then
         Set mClients(a) = New DBModelClient: mClients(a).Unserialize Me, schemaversion, mDBFile
     Next a
 
+    'TaxReturns
+    mTaxReturnCount = mDBFile.ReadLong
+    ReDim mTaxReturns(mTaxReturnCount - 1)
+    For a = 0 To mTaxReturnCount - 1
+        Set mTaxReturns(a) = New DBModelTaxReturn: mTaxReturns(a).Unserialize Me, schemaversion, mDBFile
+    Next a
+
     'Appointments
     mAppointmentCount = mDBFile.ReadLong
     ReDim mAppointments(mAppointmentCount - 1)
@@ -111,13 +118,6 @@ If loadable Then
     ReDim mApptCliLinks(mApptCliLinkCount - 1)
     For a = 0 To mApptCliLinkCount - 1
         Set mApptCliLinks(a) = New DBModelApptCliLink: mApptCliLinks(a).Unserialize Me, schemaversion, mDBFile
-    Next a
-
-    'TaxReturns
-    mTaxReturnCount = mDBFile.ReadLong
-    ReDim mTaxReturns(mTaxReturnCount - 1)
-    For a = 0 To mTaxReturnCount - 1
-        Set mTaxReturns(a) = New DBModelTaxReturn: mTaxReturns(a).Unserialize Me, schemaversion, mDBFile
     Next a
 
     'Schedules
@@ -176,6 +176,12 @@ If mLoaded And mIsWriteable Then
             mClients(a).Serialize tempfile
         Next a
 
+        'TaxReturns
+        tempfile.WriteLong mTaxReturnCount
+        For a = 0 To mTaxReturnCount - 1
+            mTaxReturns(a).Serialize tempfile
+        Next a
+
         'Appointments
         tempfile.WriteLong mAppointmentCount
         For a = 0 To mAppointmentCount - 1
@@ -186,12 +192,6 @@ If mLoaded And mIsWriteable Then
         tempfile.WriteLong mApptCliLinkCount
         For a = 0 To mApptCliLinkCount - 1
             mApptCliLinks(a).Serialize tempfile
-        Next a
-
-        'TaxReturns
-        tempfile.WriteLong mTaxReturnCount
-        For a = 0 To mTaxReturnCount - 1
-            mTaxReturns(a).Serialize tempfile
         Next a
 
         'Schedules
@@ -262,9 +262,9 @@ mLoaded = False
 mDBFilename = ""
 mLogFilename = ""
 Erase mClients: mClientCount = 0
+Erase mTaxReturns: mTaxReturnCount = 0
 Erase mAppointments: mAppointmentCount = 0
 Erase mApptCliLinks: mApptCliLinkCount = 0
-Erase mTaxReturns: mTaxReturnCount = 0
 Erase mSchedules: mScheduleCount = 0
 End Sub
 
@@ -337,7 +337,19 @@ For a = mClientCount - 1 To 0 Step -1
 Next a
 End Function
 
-'[ApptCliLink omitted]
+'EHT=None
+Public Function TaxReturn(vClientID As Long, vTaxYear As Long) As DBModelTaxReturn
+If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim a As Long, t As DBModelTaxReturn
+If vClientID < 0 Or vTaxYear < 0 Then Exit Function
+For a = mTaxReturnCount - 1 To 0 Step -1
+    Set t = mTaxReturns(a)
+    If t.ClientID = vClientID And t.TaxYear = vTaxYear Then
+        Set TaxReturn = t
+        Exit For
+    End If
+Next a
+End Function
 
 'EHT=None
 Public Function Appointment(vAppointmentID As Long) As DBModelAppointment
@@ -352,19 +364,7 @@ For a = mAppointmentCount - 1 To 0 Step -1
 Next a
 End Function
 
-'EHT=None
-Public Function TaxReturn(vClientID As Long, vTaxYear As Long) As DBModelTaxReturn
-If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, t As DBModelTaxReturn
-If vClientID < 0 Or vTaxYear < 0 Then Exit Function
-For a = mTaxReturnCount - 1 To 0 Step -1
-    Set t = mTaxReturns(a)
-    If t.ClientID = vClientID And t.TaxYear = vTaxYear Then
-        Set TaxReturn = t
-        Exit For
-    End If
-Next a
-End Function
+'[ApptCliLink omitted]
 
 'EHT=None
 Public Function Schedule(vTaxYear As Long) As DBModelSchedule
@@ -386,6 +386,21 @@ End Function
 '#################################################################################
 'One-to-many relational lookups
 '#################################################################################
+
+'EHT=None
+Public Function TaxReturnsByClient(vClientID As Long) As DBModelTaxReturn()
+If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim a As Long, c As Long, l() As DBModelTaxReturn
+If vClientID < 0 Then Exit Function
+For a = mTaxReturnCount - 1 To 0 Step -1
+    If mTaxReturns(a).ClientID = vClientID Then
+        ReDim Preserve l(c)
+        Set l(c) = mTaxReturns(a)
+        c = c + 1
+    End If
+Next a
+TaxReturnsByClient = l
+End Function
 
 'EHT=None
 Public Function ApptCliLinksByClient(vClientID As Long) As DBModelApptCliLink()
@@ -417,21 +432,6 @@ Next a
 ApptCliLinksByAppointment = l
 End Function
 
-'EHT=None
-Public Function TaxReturnsByClient(vClientID As Long) As DBModelTaxReturn()
-If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As DBModelTaxReturn
-If vClientID < 0 Then Exit Function
-For a = mTaxReturnCount - 1 To 0 Step -1
-    If mTaxReturns(a).ClientID = vClientID Then
-        ReDim Preserve l(c)
-        Set l(c) = mTaxReturns(a)
-        c = c + 1
-    End If
-Next a
-TaxReturnsByClient = l
-End Function
-
 
 
 
@@ -439,23 +439,6 @@ End Function
 '#################################################################################
 'Many-to-many relational lookups
 '#################################################################################
-
-'EHT=None
-Public Function AppointmentsByClient(vClientID As Long) As DBModelAppointment()
-If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As DBModelAppointment
-If vClientID < 0 Then Exit Function
-For a = mApptCliLinkCount - 1 To 0 Step -1
-    With mApptCliLinks(a)
-        If .ClientID = vClientID Then
-            ReDim Preserve l(c)
-            Set l(c) = Appointment(.AppointmentID)
-            c = c + 1
-        End If
-    End With
-Next a
-AppointmentsByClient = l
-End Function
 
 'EHT=None
 Public Function ClientsByAppointment(vAppointmentID As Long) As DBModelClient()
@@ -472,4 +455,21 @@ For a = mApptCliLinkCount - 1 To 0 Step -1
     End With
 Next a
 ClientsByAppointment = l
+End Function
+
+'EHT=None
+Public Function AppointmentsByClient(vClientID As Long) As DBModelAppointment()
+If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim a As Long, c As Long, l() As DBModelAppointment
+If vClientID < 0 Then Exit Function
+For a = mApptCliLinkCount - 1 To 0 Step -1
+    With mApptCliLinks(a)
+        If .ClientID = vClientID Then
+            ReDim Preserve l(c)
+            Set l(c) = Appointment(.AppointmentID)
+            c = c + 1
+        End If
+    End With
+Next a
+AppointmentsByClient = l
 End Function
