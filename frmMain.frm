@@ -561,10 +561,12 @@ Me.Tag = Me.Caption
 If DB_Load(DataFilesPath & "EJTSClients" & FileToOpen_Year & ".dat", ActiveDBInstance) Then
     ActiveDBInstance.IsWriteable = Not FileToOpen_OpenReadOnly
 Else
-    GoTo CLEANUP
+    HASERROR = True: GoTo CLEANUP
 End If
 Set NEWDATABASE = New CDatabase
-NEWDATABASE.ConnectToDatabase DataFilesPath & "EJTSClients.db", FileToOpen_OpenReadOnly, True
+If Not NEWDATABASE.ConnectToDatabase(DataFilesPath & "EJTSClients.db", FileToOpen_OpenReadOnly, True) Then
+    HASERROR = True: GoTo CLEANUP
+End If
 ClearChangedIndication
 DayTotal_Update
 HidePopupInfo
@@ -596,6 +598,7 @@ Form_Show = True
 CLEANUP: INCLEANUP = True
     If HASERROR Then
         ActiveDBInstance.Loaded = False
+        Set NEWDATABASE = Nothing
         HidePopupInfo
         Unload Me
     End If
@@ -860,8 +863,10 @@ If ActiveDBInstance.Loaded And ActiveDBInstance.Changed Then
         Exit Sub
     End If
 End If
-NEWDATABASE.SaveChanges
-NEWDATABASE.DisconnectFromDatabase
+If Not NEWDATABASE Is Nothing Then
+    NEWDATABASE.SaveChanges
+    NEWDATABASE.DisconnectFromDatabase
+End If
 
 For a = 0 To UBound(Tabs)
     If Not Tabs(a) Is Nothing Then
