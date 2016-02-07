@@ -864,7 +864,10 @@ If ActiveDBInstance.Loaded And ActiveDBInstance.Changed Then
     End If
 End If
 If Not NEWDATABASE Is Nothing Then
-    NEWDATABASE.SaveChanges
+    If Not NEWDATABASE.SaveChanges Then
+        Cancel = True
+        Exit Sub
+    End If
     NEWDATABASE.DisconnectFromDatabase
 End If
 
