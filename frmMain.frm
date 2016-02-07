@@ -1449,3 +1449,17 @@ Next a
 Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CHOS_IsChosen", Err
 End Function
+
+'EHT=Standard
+Private Sub NEWDATABASE_OnDirtyChanged(IsDirty As Boolean)
+On Error GoTo ERR_HANDLER
+
+If IsDirty Then
+    btnNewClient.Caption = "Changed"
+Else
+    btnNewClient.Caption = "(no change)"
+End If
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "NEWDATABASE_OnDirtyChanged", Err
+End Sub
