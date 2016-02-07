@@ -66,16 +66,16 @@ Dim p As Long, a As Long, loadable As Boolean, schemaversion As Long
 
 'Initialize
 If mLoaded Then Err.Raise 1, , errAlreadyLoaded
+ClearAllData
 mIsWriteable = Not vReadOnly
 mDBFilename = vDBFilename
 
 'Calculate logfile name
 p = InStrRev(vDBFilename, ".")
-If p > 0 Then
-    a = InStrRev(vDBFilename, "\")
-    If a < p Then
-        vDBFilename = Left$(vDBFilename, p - 1)
-    End If
+a = InStrRev(vDBFilename, "\")
+If p > a Then   'If there is a path (a > 0), then this also serves the purpose of verifying the . is in the file portion, not the path portion
+    'Strip the extension off
+    vDBFilename = Left$(vDBFilename, p - 1)
 End If
 mLogFilename = vDBFilename & ".log"
 
@@ -83,6 +83,7 @@ loadable = FileExists(mDBFilename)
 If loadable Then loadable = loadable And (FileLen(mDBFilename) > 0)
 If loadable Then
     'File exists, and is not empty, so open it
+    'We're using a global variable for this, so the file is left OPEN and LOCKED at the end of this function
     Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
 
     '-------------------------
@@ -245,19 +246,7 @@ If mLoaded Then
     If Not mDBFile Is Nothing Then mDBFile.CloseFile: Set mDBFile = Nothing
 
     'Clear out the data in memory
-    mLoaded = False
-    mDBFilename = ""
-    mLogFilename = ""
-    Erase mClients
-    mClientCount = 0
-    Erase mAppointments
-    mAppointmentCount = 0
-    Erase mApptCliLinks
-    mApptCliLinkCount = 0
-    Erase mTaxReturns
-    mTaxReturnCount = 0
-    Erase mSchedules
-    mScheduleCount = 0
+    ClearAllData
 End If
 
 'True just means that the database is successfully disconnected (even if it wasn't even connected in the first place)
@@ -266,6 +255,18 @@ DisconnectFromDatabase = True
 Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DisconnectFromDatabase", Err
 End Function
+
+'EHT=None
+Private Sub ClearAllData()
+mLoaded = False
+mDBFilename = ""
+mLogFilename = ""
+Erase mClients: mClientCount = 0
+Erase mAppointments: mAppointmentCount = 0
+Erase mApptCliLinks: mApptCliLinkCount = 0
+Erase mTaxReturns: mTaxReturnCount = 0
+Erase mSchedules: mScheduleCount = 0
+End Sub
 
 'EHT=None
 Private Sub Class_Terminate()
