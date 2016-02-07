@@ -46,7 +46,6 @@ Private mSchedules() As DBModelSchedule
 Private mScheduleCount As Long
 
 'Events
-Public Event OnCreateInitialDB()
 Public Event OnFinishedLoading()
 Public Event OnDirtyChanged(IsDirty As Boolean)
 
@@ -136,8 +135,43 @@ If loadable Then
 ElseIf vCreateIfNotExists Then
     'If the database doesn't exist, create it
     CreateFile mDBFilename, True
+    
+    '<Temporary development code>
+    Dim fh As CMNMOD_CFileHandler, t$, s$(), section&
+    Set fh = OpenFile(vDBFilename & ".sample", mLineByLine_Input)
+    section = -1
+    Do Until fh.EndOfFile
+        t$ = fh.ReadLine
+        If Len(t$) > 0 Then
+            s$ = Split(t$, vbTab)
+            If Mid$(t$, 1, 1) = "#" Then
+                section = s$(1)
+                Select Case section
+                Case 0:     mClientCount = s$(2):       ReDim mClients(mClientCount - 1)
+                Case 1:     mTaxReturnCount = s$(2):    ReDim mTaxReturns(mTaxReturnCount - 1)
+                Case 2:     mAppointmentCount = s$(2):  ReDim mAppointments(mAppointmentCount - 1)
+                Case 3:     mApptCliLinkCount = s$(2):  ReDim mApptCliLinks(mApptCliLinkCount - 1)
+                Case 4:     mScheduleCount = s$(2):     ReDim mSchedules(mScheduleCount - 1)
+                Case Else:  Err.Raise 1, , "Unknown section in sample data"
+                End Select
+                a = 0
+            Else
+                Select Case section
+                Case 0:     Set mClients(a) = New DBModelClient:            mClients(a).Init Me, CLng(s$(0)):                   mClients(a).QuickSetData s$(1), s$(2), s$(3), s$(4)
+                Case 1:     Set mTaxReturns(a) = New DBModelTaxReturn:      mTaxReturns(a).Init Me, CLng(s$(0)), CLng(s$(1)):   mTaxReturns(a).QuickSetData CLng(s$(2)), CLng(s$(3))
+                Case 2:     Set mAppointments(a) = New DBModelAppointment:  mAppointments(a).Init Me, CLng(s$(0)):              mAppointments(a).QuickSetData CDate(s$(1)), CLng(s$(2)), CLng(s$(3))
+                Case 3:     Set mApptCliLinks(a) = New DBModelApptCliLink:  mApptCliLinks(a).Init Me, CLng(s$(0)), CLng(s$(1)): mApptCliLinks(a).PrimaryClient = s$(2)
+                Case 4:     Set mSchedules(a) = New DBModelSchedule:        mSchedules(a).Init Me, CLng(s$(0))
+                Case Else:  Err.Raise 1, , "Section not set prior to use"
+                End Select
+                a = a + 1
+            End If
+        End If
+    Loop
+    fh.CloseFile
+    '</Temporary development code>
+    
     ClearDirty
-    RaiseEvent OnCreateInitialDB
 Else
     'If we're not allowed to create it, error
     Err.Raise 1, , FormatErrorMsg(errDBFileMissing, mDBFilename)
