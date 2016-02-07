@@ -42,6 +42,8 @@ Private mApptCliLinks() As DBModelApptCliLink
 Private mApptCliLinkCount As Long
 Private mTaxReturns() As DBModelTaxReturn
 Private mTaxReturnCount As Long
+Private mSchedules() As DBModelSchedule
+Private mScheduleCount As Long
 
 'Events
 Public Event OnCreateInitialDB()
@@ -117,6 +119,13 @@ If loadable Then
         Set mTaxReturns(a) = New DBModelTaxReturn: mTaxReturns(a).Unserialize Me, schemaversion, mDBFile
     Next a
 
+    'Schedules
+    mScheduleCount = mDBFile.ReadLong
+    ReDim mSchedules(mScheduleCount - 1)
+    For a = 0 To mScheduleCount - 1
+        Set mSchedules(a) = New DBModelSchedule: mSchedules(a).Unserialize Me, schemaversion, mDBFile
+    Next a
+
     'Database footer
     If mDBFile.ReadLong <> schemaversion Then Err.Raise 1, , FormatErrorMsg(errDamagedDB, mDBFilename)
 
@@ -184,6 +193,12 @@ If mLoaded And mIsWriteable Then
             mTaxReturns(a).Serialize tempfile
         Next a
 
+        'Schedules
+        tempfile.WriteLong mScheduleCount
+        For a = 0 To mScheduleCount - 1
+            mSchedules(a).Serialize tempfile
+        Next a
+
         'Database footer
         tempfile.WriteLong LatestSchemaVersion
 
@@ -241,6 +256,8 @@ If mLoaded Then
     mApptCliLinkCount = 0
     Erase mTaxReturns
     mTaxReturnCount = 0
+    Erase mSchedules
+    mScheduleCount = 0
 End If
 
 'True just means that the database is successfully disconnected (even if it wasn't even connected in the first place)
@@ -324,7 +341,7 @@ End Function
 'EHT=None
 Public Function Appointment(vAppointmentID As Long) As DBModelAppointment
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, o As DBModelAppointment
+Dim a As Long
 If vAppointmentID < 0 Then Exit Function
 For a = mAppointmentCount - 1 To 0 Step -1
     If mAppointments(a).ID = vAppointmentID Then
@@ -343,6 +360,19 @@ For a = mTaxReturnCount - 1 To 0 Step -1
     Set t = mTaxReturns(a)
     If t.ClientID = vClientID And t.TaxYear = vTaxYear Then
         Set TaxReturn = t
+        Exit For
+    End If
+Next a
+End Function
+
+'EHT=None
+Public Function Schedule(vTaxYear As Long) As DBModelSchedule
+If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim a As Long
+If vTaxYear < 0 Then Exit Function
+For a = mScheduleCount - 1 To 0 Step -1
+    If mSchedules(a).TaxYear = vTaxYear Then
+        Set Schedule = mSchedules(a)
         Exit For
     End If
 Next a

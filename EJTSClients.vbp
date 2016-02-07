@@ -47,6 +47,7 @@ Class=DBModelFavoriteSearch; DBModelFavoriteSearch.cls
 Class=DBModelExtraCharge; DBModelExtraCharge.cls
 Class=DBModelBookkeepingJob; DBModelBookkeepingJob.cls
 Module=modDatabase; modDatabase.bas
+Class=DBModelSchedule; DBModelSchedule.cls
 ResFile32="XP.manifest.res"
 IconForm="frmMain"
 Startup="Sub Main"

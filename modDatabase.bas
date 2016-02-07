@@ -127,6 +127,14 @@ Public Type typeCoreData_ExtraCharge
     FeeOwed As Long
 End Type
 
+'Schedule
+Public Type typeCoreData_Schedule
+    ApptBitmap() As Long
+    ApptBitmap_StartDate As Long
+    ApptBitmap_Count As Long
+    Subtitles() As String       'Same LBound and UBound as ApptBitmap
+End Type
+
 
 
 
