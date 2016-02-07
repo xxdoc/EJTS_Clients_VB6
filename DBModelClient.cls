@@ -40,19 +40,18 @@ Set AttachedDatabase = vDB
 'Primary key...
 ID = vID
 'Defaults...
-m.PersonCount = 1
-ReDim m.Persons(0)
 m.NumApptSlots = 2
 m.OldestYearFiled = NullLong
 m.NewestYearFiled = NullLong
-m.Persons(0).DateOfBirth = NullLong
-m.Persons(0).DateOfDeath = NullLong
 End Sub
 
 'EHT=None
-Public Sub QuickSetData(vFirst As String, vEmail As String)
-m.Persons(0).First = vFirst
+Public Sub QuickSetData(vFirst1 As String, vFirst2 As String, vLast As String, vEmail As String)
+PersonCount = 2
+m.Persons(0).First = vFirst1
+m.Persons(0).Last = vLast
 m.Persons(0).Email = vEmail
+m.Persons(1).First = vFirst2
 End Sub
 
 'EHT=None
@@ -120,6 +119,28 @@ End Function
 '#################################################################################
 
 'EHT=None
+Public Property Get PersonCount() As Long
+PersonCount = m.PersonCount
+End Property
+
+'EHT=None
+Public Property Let PersonCount(nv As Long)
+Dim a&
+If nv > m.PersonCount Then
+    ReDim Preserve m.Persons(nv - 1)
+    For a = m.PersonCount To nv - 1
+        'Initialize the person data
+        m.Persons(a).DateOfBirth = NullLong
+        m.Persons(a).DateOfDeath = NullLong
+    Next a
+    m.PersonCount = nv
+ElseIf nv < m.PersonCount Then
+    ReDim Preserve m.Persons(nv - 1)
+    m.PersonCount = nv
+End If
+End Property
+
+'EHT=None
 Public Property Get Last(personnum As Long) As String
 Last = m.Persons(personnum).Last
 End Property
@@ -145,12 +166,7 @@ Public Sub FillInNewClientData(t As String)
 Dim s() As String
 s = Split(t, ",")
 If UBound(s) >= 0 Then
-    If m.PersonCount = 0 Then
-        m.PersonCount = 1
-        ReDim m.Persons(m.PersonCount - 1)
-        m.Persons(0).DateOfBirth = NullLong
-        m.Persons(0).DateOfDeath = NullLong
-    End If
+    If m.PersonCount < 1 Then PersonCount = 1
     m.Persons(0).Last = Trim$(s(0))
     If UBound(s) > 0 Then
         m.Persons(0).First = Trim$(s(1))
