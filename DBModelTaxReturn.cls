@@ -6,13 +6,13 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "CTaxReturn"
+Attribute VB_Name = "DBModelTaxReturn"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
-Private Const MOD_NAME = "CTaxReturn"
+Private Const MOD_NAME = "DBModelTaxReturn"
 
 'Back reference to database
 Public AttachedDatabase As CDatabase
@@ -69,7 +69,7 @@ End Sub
 '#################################################################################
 
 'EHT=None
-Public Function Client() As CClient
+Public Function Client() As DBModelClient
 Set Client = AttachedDatabase.Client(ClientID)
 End Function
 

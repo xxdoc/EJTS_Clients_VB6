@@ -597,7 +597,7 @@ On Error GoTo ERR_HANDLER
 
 If Not menApptCLItem(Index).Enabled Then Exit Sub
 
-Dim t$, c As CClient, frm As frmClientEditPost
+Dim t$, c As DBModelClient, frm As frmClientEditPost
 
 t$ = menApptCLItem(Index).Tag
 If Len(t$) <= 1 Then Exit Sub
@@ -735,7 +735,7 @@ On Error GoTo ERR_HANDLER
 If DoubleClickAllowed Then
     If ClickedApptIndex >= 0 Then
         If ActiveDBInstance.Appointments(ClickedApptIndex).ClientID_Count > 0 Then
-            Dim c As CClient
+            Dim c As DBModelClient
             Set c = frmMain.NEWDATABASE.Client(ActiveDBInstance.Appointments(ClickedApptIndex).ClientIDs(0))
             If Not c Is Nothing Then
                 Dim frme As New frmClientEditPost
@@ -784,7 +784,7 @@ On Error GoTo ERR_HANDLER
 
 pctSchedule_MouseMove Button, Shift, X, Y
 
-Dim aindex&, b&, cindex&, t$, cli&, c As CClient, st As enumReturnStatus
+Dim aindex&, b&, cindex&, t$, cli&, c As DBModelClient, st As enumReturnStatus
 Dim a As Appointment, defmi As Menu
 Dim abr&, moveexistingappt As ScheduleShapeStyle
 

@@ -632,7 +632,7 @@ On Error GoTo ERR_HANDLER
 
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
 
-Dim c As CClient
+Dim c As DBModelClient
 Set c = frmMain.NEWDATABASE.Client(lstSection(Index).SelectedClientID)
 If Not c Is Nothing Then
     Dim frm As New frmClientEditPost

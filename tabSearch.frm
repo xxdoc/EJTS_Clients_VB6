@@ -574,7 +574,7 @@ If Not menClientEdit.Enabled Then Exit Sub
 
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
 
-Dim c As CClient
+Dim c As DBModelClient
 Set c = frmMain.NEWDATABASE.Client(lstResults.SelectedClientID)
 If Not c Is Nothing Then
     Dim frm As New frmClientEditPost
@@ -596,7 +596,7 @@ If Not menClientPost.Enabled Then Exit Sub
 
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
 
-Dim c As CClient
+Dim c As DBModelClient
 Set c = frmMain.NEWDATABASE.Client(lstResults.SelectedClientID)
 If Not c Is Nothing Then
     Dim frm As New frmClientEditPost

@@ -799,7 +799,7 @@ End Sub
 Private Sub lstClients_DblClick()
 On Error GoTo ERR_HANDLER
 
-Dim i&, c As CClient
+Dim i&, c As DBModelClient
 i = lstClients.ListIndex
 If i >= 0 Then
     Set c = frmMain.NEWDATABASE.Client(lstClients.ItemData(i))

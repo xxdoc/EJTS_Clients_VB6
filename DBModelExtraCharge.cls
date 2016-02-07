@@ -6,13 +6,13 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "CBookkeepingJob"
+Attribute VB_Name = "DBModelExtraCharge"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
-Private Const MOD_NAME = "CBookkeepingJob"
+Private Const MOD_NAME = "DBModelExtraCharge"
 
 'Back reference to database
 Public AttachedDatabase As CDatabase
@@ -21,7 +21,7 @@ Public AttachedDatabase As CDatabase
 Public ID As Long
 
 'Attributes (for efficiency, store within a type object)
-Private m As typeCoreData_BookkeepingJob
+Private m As typeCoreData_ExtraCharge
 
 
 

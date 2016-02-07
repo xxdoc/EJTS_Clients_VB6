@@ -34,13 +34,13 @@ Private mDBFilename As String
 Private mLogFilename As String
 
 'Core data
-Private mClients() As CClient
+Private mClients() As DBModelClient
 Private mClientCount As Long
-Private mAppointments() As CAppointment
+Private mAppointments() As DBModelAppointment
 Private mAppointmentCount As Long
-Private mApptCliLinks() As CApptCliLink
+Private mApptCliLinks() As DBModelApptCliLink
 Private mApptCliLinkCount As Long
-Private mTaxReturns() As CTaxReturn
+Private mTaxReturns() As DBModelTaxReturn
 Private mTaxReturnCount As Long
 
 'Events
@@ -82,46 +82,46 @@ If loadable Then loadable = loadable And (FileLen(mDBFilename) > 0)
 If loadable Then
     'File exists, and is not empty, so open it
     Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
-    
+
     '-------------------------
-    
+
     'Database header
     schemaversion = mDBFile.ReadLong
     If (schemaversion < LowestSupportedSchemaVersion) Or (schemaversion > LatestSchemaVersion) Then Err.Raise 1, , FormatErrorMsg(errSchemaNotSupported, schemaversion, LowestSupportedSchemaVersion, LatestSchemaVersion)
-    
+
     'Clients
     mClientCount = mDBFile.ReadLong
     ReDim mClients(mClientCount - 1)
     For a = 0 To mClientCount - 1
-        Set mClients(a) = New CClient: mClients(a).Unserialize Me, schemaversion, mDBFile
+        Set mClients(a) = New DBModelClient: mClients(a).Unserialize Me, schemaversion, mDBFile
     Next a
-    
+
     'Appointments
     mAppointmentCount = mDBFile.ReadLong
     ReDim mAppointments(mAppointmentCount - 1)
     For a = 0 To mAppointmentCount - 1
-        Set mAppointments(a) = New CAppointment: mAppointments(a).Unserialize Me, schemaversion, mDBFile
+        Set mAppointments(a) = New DBModelAppointment: mAppointments(a).Unserialize Me, schemaversion, mDBFile
     Next a
-    
+
     'ApptCliLinks
     mApptCliLinkCount = mDBFile.ReadLong
     ReDim mApptCliLinks(mApptCliLinkCount - 1)
     For a = 0 To mApptCliLinkCount - 1
-        Set mApptCliLinks(a) = New CApptCliLink: mApptCliLinks(a).Unserialize Me, schemaversion, mDBFile
+        Set mApptCliLinks(a) = New DBModelApptCliLink: mApptCliLinks(a).Unserialize Me, schemaversion, mDBFile
     Next a
-    
+
     'TaxReturns
     mTaxReturnCount = mDBFile.ReadLong
     ReDim mTaxReturns(mTaxReturnCount - 1)
     For a = 0 To mTaxReturnCount - 1
-        Set mTaxReturns(a) = New CTaxReturn: mTaxReturns(a).Unserialize Me, schemaversion, mDBFile
+        Set mTaxReturns(a) = New DBModelTaxReturn: mTaxReturns(a).Unserialize Me, schemaversion, mDBFile
     Next a
-    
+
     'Database footer
     If mDBFile.ReadLong <> schemaversion Then Err.Raise 1, , FormatErrorMsg(errDamagedDB, mDBFilename)
-    
+
     '-------------------------
-    
+
     ClearDirty
 ElseIf vCreateIfNotExists Then
     'If the database doesn't exist, create it
@@ -154,45 +154,45 @@ If mLoaded And mIsWriteable Then
         'Open the file
         tempfilename = mDBFilename & ".sav"
         Set tempfile = OpenFile(tempfilename, mBinary_Output)
-        
+
         '-------------------------
-        
+
         'Database header
         tempfile.WriteLong LatestSchemaVersion
-        
+
         'Clients
         tempfile.WriteLong mClientCount
         For a = 0 To mClientCount - 1
             mClients(a).Serialize tempfile
         Next a
-        
+
         'Appointments
         tempfile.WriteLong mAppointmentCount
         For a = 0 To mAppointmentCount - 1
             mAppointments(a).Serialize tempfile
         Next a
-        
+
         'ApptCliLinks
         tempfile.WriteLong mApptCliLinkCount
         For a = 0 To mApptCliLinkCount - 1
             mApptCliLinks(a).Serialize tempfile
         Next a
-        
+
         'TaxReturns
         tempfile.WriteLong mTaxReturnCount
         For a = 0 To mTaxReturnCount - 1
             mTaxReturns(a).Serialize tempfile
         Next a
-        
+
         'Database footer
         tempfile.WriteLong LatestSchemaVersion
-        
+
         '-------------------------
-        
+
         'Close the files and release any locks
         tempfile.CloseFile: Set tempfile = Nothing
         If Not mDBFile Is Nothing Then mDBFile.CloseFile: Set mDBFile = Nothing
-        
+
         'Make a backup, but don't overwrite it once it has been made. Each backup will contain all changes up to and including the day
         'indicated (.bak20160111 would include all changes from the beginning of time through 1/11 but none of the changes of 1/12).
         'Unfortunately, to make this work, the first backup created will be a 0-byte file (it means that prior to that first save of
@@ -201,13 +201,13 @@ If mLoaded And mIsWriteable Then
             bakfilename = mDBFilename & ".bak" & Format(Date - 1, "yyyymmdd")
             If Not FileExists(bakfilename) Then RenameFile mDBFilename, bakfilename, False
         End If
-        
+
         'Move the temp file into position as the new database; then reestablish the lock
         RenameFile tempfilename, mDBFilename, True
         Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
         ClearDirty
     End If
-    
+
     'Return value of True means that the database file now reflects the data (regardless if we had to write any data to make that happen)
     SaveChanges = True
 End If
@@ -307,7 +307,7 @@ End Property
 '#################################################################################
 
 'EHT=None
-Public Function Client(vClientID As Long) As CClient
+Public Function Client(vClientID As Long) As DBModelClient
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long
 If vClientID < 0 Then Exit Function
@@ -322,9 +322,9 @@ End Function
 '[ApptCliLink omitted]
 
 'EHT=None
-Public Function Appointment(vAppointmentID As Long) As CAppointment
+Public Function Appointment(vAppointmentID As Long) As DBModelAppointment
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, o As CAppointment
+Dim a As Long, o As DBModelAppointment
 If vAppointmentID < 0 Then Exit Function
 For a = mAppointmentCount - 1 To 0 Step -1
     If mAppointments(a).ID = vAppointmentID Then
@@ -335,9 +335,9 @@ Next a
 End Function
 
 'EHT=None
-Public Function TaxReturn(vClientID As Long, vTaxYear As Long) As CTaxReturn
+Public Function TaxReturn(vClientID As Long, vTaxYear As Long) As DBModelTaxReturn
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, t As CTaxReturn
+Dim a As Long, t As DBModelTaxReturn
 If vClientID < 0 Or vTaxYear < 0 Then Exit Function
 For a = mTaxReturnCount - 1 To 0 Step -1
     Set t = mTaxReturns(a)
@@ -357,9 +357,9 @@ End Function
 '#################################################################################
 
 'EHT=None
-Public Function ApptCliLinksByClient(vClientID As Long) As CApptCliLink()
+Public Function ApptCliLinksByClient(vClientID As Long) As DBModelApptCliLink()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As CApptCliLink
+Dim a As Long, c As Long, l() As DBModelApptCliLink
 If vClientID < 0 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     If mApptCliLinks(a).ClientID = vClientID Then
@@ -372,9 +372,9 @@ ApptCliLinksByClient = l
 End Function
 
 'EHT=None
-Public Function ApptCliLinksByAppointment(vAppointmentID As Long) As CApptCliLink()
+Public Function ApptCliLinksByAppointment(vAppointmentID As Long) As DBModelApptCliLink()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As CApptCliLink
+Dim a As Long, c As Long, l() As DBModelApptCliLink
 If vAppointmentID < 0 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     If mApptCliLinks(a).AppointmentID = vAppointmentID Then
@@ -387,9 +387,9 @@ ApptCliLinksByAppointment = l
 End Function
 
 'EHT=None
-Public Function TaxReturnsByClient(vClientID As Long) As CTaxReturn()
+Public Function TaxReturnsByClient(vClientID As Long) As DBModelTaxReturn()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As CTaxReturn
+Dim a As Long, c As Long, l() As DBModelTaxReturn
 If vClientID < 0 Then Exit Function
 For a = mTaxReturnCount - 1 To 0 Step -1
     If mTaxReturns(a).ClientID = vClientID Then
@@ -410,9 +410,9 @@ End Function
 '#################################################################################
 
 'EHT=None
-Public Function AppointmentsByClient(vClientID As Long) As CAppointment()
+Public Function AppointmentsByClient(vClientID As Long) As DBModelAppointment()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As CAppointment
+Dim a As Long, c As Long, l() As DBModelAppointment
 If vClientID < 0 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     With mApptCliLinks(a)
@@ -427,9 +427,9 @@ AppointmentsByClient = l
 End Function
 
 'EHT=None
-Public Function ClientsByAppointment(vAppointmentID As Long) As CClient()
+Public Function ClientsByAppointment(vAppointmentID As Long) As DBModelClient()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As CClient
+Dim a As Long, c As Long, l() As DBModelClient
 If vAppointmentID < 0 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     With mApptCliLinks(a)

@@ -6,13 +6,13 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "CApptCliLink"
+Attribute VB_Name = "DBModelApptCliLink"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
-Private Const MOD_NAME = "CApptCliLink"
+Private Const MOD_NAME = "DBModelApptCliLink"
 
 'Back reference to database
 Public AttachedDatabase As CDatabase
@@ -64,12 +64,12 @@ End Sub
 '#################################################################################
 
 'EHT=None
-Public Function Client() As CClient
+Public Function Client() As DBModelClient
 Set Client = AttachedDatabase.Client(ClientID)
 End Function
 
 'EHT=None
-Public Function Appointment() As CAppointment
+Public Function Appointment() As DBModelAppointment
 Set Appointment = AttachedDatabase.Appointment(AppointmentID)
 End Function
 

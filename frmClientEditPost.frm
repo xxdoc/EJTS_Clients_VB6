@@ -2847,7 +2847,7 @@ Public TRColumnOffset As Long
 Private mChooserConfig() As typeChooserConfig
 Private ShowFormMode As enumShowFormMode
 Private PreviouslyMarkedIncomplete As Boolean
-Private This As CClient
+Private This As DBModelClient
 Private DataChanged As Boolean
 
 
@@ -2922,14 +2922,14 @@ Err.Raise 1, , "Cannot find ChooserConfig #" & Field
 End Function
 
 'EHT=Cleanup2
-Function Form_Show(vShowFormMode As enumShowFormMode, vClient As CClient, Optional vReadOnly As Boolean, Optional ByVal vOwnerForm As Form, Optional vNewClientInputString As String) As Boolean
+Function Form_Show(vShowFormMode As enumShowFormMode, vClient As DBModelClient, Optional vReadOnly As Boolean, Optional ByVal vOwnerForm As Form, Optional vNewClientInputString As String) As Boolean
 On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
 
 'vShowFormMode              can be fPost, fEdit, or fNew
-'vClient                    the CClient to open
+'vClient                    the DBModelClient to open
 'vReadOnly                  if True, changes to vClient will not be allowed
 'vOwnerForm                 only specify this if it is not frmMain or one of the tab 'forms'
-'Return value               True if the CClient was changed in any way or if new client; False if Cancel button was used to close the form
+'Return value               True if the DBModelClient was changed in any way or if new client; False if Cancel button was used to close the form
 
 Dim a As Long, Y As Long
 

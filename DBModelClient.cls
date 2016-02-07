@@ -6,19 +6,19 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "CClient"
+Attribute VB_Name = "DBModelClient"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
-Private Const MOD_NAME = "CClient"
+Private Const MOD_NAME = "DBModelClient"
 
 'Back reference to database
 Public AttachedDatabase As CDatabase
 
 'Cached reference to current year tax return
-Public mCurrentYearReturn As CTaxReturn
+Public mCurrentYearReturn As DBModelTaxReturn
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public ID As Long
@@ -79,17 +79,17 @@ End Sub
 '#################################################################################
 
 'EHT=None
-Public Function Appointments() As CAppointment()
+Public Function Appointments() As DBModelAppointment()
 Appointments = AttachedDatabase.AppointmentsByClient(ID)
 End Function
 
 'EHT=None
-Public Function ApptCliLinks() As CApptCliLink()
+Public Function ApptCliLinks() As DBModelApptCliLink()
 ApptCliLinks = AttachedDatabase.ApptCliLinksByClient(ID)
 End Function
 
 'EHT=None
-Public Function TaxReturns() As CTaxReturn()
+Public Function TaxReturns() As DBModelTaxReturn()
 TaxReturns = AttachedDatabase.TaxReturnsByClient(ID)
 End Function
 
@@ -135,7 +135,7 @@ First = m.Persons(personnum).First
 End Property
 
 'EHT=None
-Public Property Get CurrentYearReturn() As CTaxReturn
+Public Property Get CurrentYearReturn() As DBModelTaxReturn
 If mCurrentYearReturn Is Nothing Then Set mCurrentYearReturn = AttachedDatabase.TaxReturn(ID, FileToOpen_Year)
 Set CurrentYearReturn = mCurrentYearReturn
 End Property
@@ -216,7 +216,7 @@ End Function
 Public Function PopulateToForm_TaxReturn(frm As frmClientEditPost, en As Boolean, TaxReturnYear As Long, TRColumn As Long) As Boolean
 On Error GoTo ERR_HANDLER
 
-Dim tr As CTaxReturn, pct As PictureBox, found As Boolean
+Dim tr As DBModelTaxReturn, pct As PictureBox, found As Boolean
 
 'Attempt to find the tax return
 Set tr = AttachedDatabase.TaxReturn(ID, TaxReturnYear)
@@ -254,7 +254,7 @@ On Error GoTo ERR_HANDLER
 'DO NOT ACCESS THE `m` STRUCTURE ANYWHERE IN THIS FUNCTION EXCEPT ON THE `m = temp` LINE AT THE END!!
 Dim temp As typeCoreData_Client
 
-Dim a As Long, b As Long, offset As Long, tr As CTaxReturn
+Dim a As Long, b As Long, offset As Long, tr As DBModelTaxReturn
 Dim pd(1) As typePersonData, hasname(1) As Boolean, hasotherdata(1) As Boolean, hasanydata(1) As Boolean
 
 'Load the person data initially into local variables
@@ -296,7 +296,7 @@ If hasanydata(0) Then
     If hasanydata(1) Then
         'There is data for both Persons
         temp.PersonCount = 2
-        
+
         'If second person has same last name as first person, blank it out
         If LCase$(pd(1).Last) = LCase$(pd(0).Last) Then pd(1).Last = ""
     Else
@@ -340,7 +340,7 @@ offset = 0
 For a = 0 To 0
     If frm.pctTaxReturn(a).Visible Then
         Set tr = AttachedDatabase.TaxReturn(ID, FileToOpen_Year - a)
-        If tr Is Nothing Then Set tr = New CTaxReturn
+        If tr Is Nothing Then Set tr = New DBModelTaxReturn
         If Not tr.PopulateFromForm(frm, offset) Then Exit Function
     End If
     offset = offset + frm.TaxReturnOffset

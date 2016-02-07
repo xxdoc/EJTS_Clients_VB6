@@ -938,7 +938,7 @@ On Error GoTo ERR_HANDLER
 
 If Not btnNewClient.Enabled Then Exit Sub
 
-Dim c As New CClient, frm As New frmClientEditPost
+Dim c As New DBModelClient, frm As New frmClientEditPost
 
 c.FillInNewClientData tabSearch.txtSearch.Text
 
