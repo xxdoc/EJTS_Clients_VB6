@@ -848,7 +848,7 @@ If ClickedTimeslot >= 0 Then
 
                             cli = cli + 1
                             Load menApptCLItem(cli)
-                            menApptCLItem(cli).Caption = "== " & Replace(FormatClientName(fSchedulePct, ActiveDBInstance.Clients(cindex).c), "&", "&&") & " =="
+                            menApptCLItem(cli).Caption = "== " & Replace(c.ToString, "&", "&&") & " =="
                             menApptCLItem(cli).Enabled = False
                             menApptCLItem(cli).Visible = True
 
