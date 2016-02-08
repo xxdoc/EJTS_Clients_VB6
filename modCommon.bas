@@ -453,7 +453,9 @@ Public Type typeChooserConfig
     Selections() As Label
 End Type
 
-Public Const NullLong = &H80000000      '-2147483648
+Public Const MinLong = &H80000000       'Lowest possible number for a Long (-2147483648)
+Public Const MaxLong = &H7FFFFFFF       'Highest possible number for a Long (2147483647)
+Public Const NullLong = MinLong
 
 Private MouseNullZoneRef As POINTAPI
 Private MouseNullZonePixels&
