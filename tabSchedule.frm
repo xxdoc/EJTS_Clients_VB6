@@ -624,7 +624,7 @@ Case "i"    'Mark incomplete
     Else
         c.CurrentYearReturn.Status = rsIncomplete
     End If
-    frmMain.SetChangedFlagAndIndication
+    frmMain.NEWDATABASE.SetDirty
 End Select
 
 Exit Sub

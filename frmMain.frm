@@ -952,8 +952,8 @@ c.FillInNewClientData tabSearch.txtSearch.Text
 
 SetFocusWithoutErr pctInitialFocus
 If frm.Form_Show(fNew, c) Then   'This will mark changed if necessary
-    '<Add it to the database>
-    'frmMain.SetChangedFlagAndIndication
+    NEWDATABASE.AddClient c
+    NEWDATABASE.SetDirty
 
     'If Not SearchEditMode Then SRCH_Do False     'Redo search to make new client show up
     ChangeCurTab vSchedule, False

@@ -21,6 +21,8 @@ Private Const errNotLoaded = "Database not loaded."
 Private Const errSchemaNotSupported = "The database schema version of the specified database (%1%) is outside of the range supported by this program (%2% to %3%)."
 Private Const errDamagedDB = "Database file '%1%' has been damaged. Schema version marker at end of file does not match beginning of file."
 Private Const errUnknownTable = "Unknown table index %1%."
+Private Const errTableMarkerNotFound = "Database file '%1%' has been damaged. Table marker not found at seek position %2%."
+Private Const errCountOnDiskMismatch = "Database file '%1%' has been damaged. CountOnDisk read from file does not match what was read on initial open of the database."
 
 'Schema version
 Private Const LowestSupportedSchemaVersion As Long = 2
@@ -64,10 +66,16 @@ Private Type typeTableInfo
     SeekPosition As Long        'Position in the database file that this table's data begins
     CountOnDisk As Long         'How many model instances exist in the most recent copy of the database file
     CountTotal As Long          'How many model instances really exist, even if not loaded into memory
-    NextPKAvailable As Long     'Primary key to use for the next model instance added to the database (not used for all models)
+    NextPK(1 To PKCount) As Long    'Primary key to use for the next model instance added to the database (not used for all models)
+    'Temporary variables
+    PendingSeekPosition As Long 'Used by SaveChanges and SaveTable
+    PendingCountOnDisk As Long  'Used by SaveChanges and SaveTable
+
+    InUse As Boolean            'Temporary, for development purposes only
 End Type
 Private Const NumberOfTables = 5
 Private TableInfo(NumberOfTables - 1) As typeTableInfo
+Private Const TableMarker = &HF9F9F900
 
 'Events
 Public Event OnFinishedLoading()
@@ -85,13 +93,16 @@ Public Event OnDirtyChanged(IsDirty As Boolean)
 Public Function ConnectToDatabase(vDBFilename As String, Optional vReadOnly As Boolean, Optional vCreateIfNotExists As Boolean) As Boolean
 On Error GoTo ERR_HANDLER
 
-Dim p As Long, a As Long
-Dim PK1 As Long, PK2 As Long
+Dim p As Long, a As Long, tableindex As Long
+Dim PK(1 To PKCount) As Long
 
 'Initialize
 If mLoaded Then Err.Raise 1, , errAlreadyLoaded
 mIsWriteable = Not vReadOnly
 mDBFilename = vDBFilename
+
+TableInfo(tClients).InUse = True
+TableInfo(tTaxReturns).InUse = True
 
 'Calculate logfile name
 p = InStrRev(vDBFilename, ".")
@@ -107,6 +118,15 @@ If FileExists(mDBFilename) Then
     'We're using a global variable for this, so the file is left OPEN and LOCKED at the end of this function
     Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
 
+    'Initialize the tables
+    For tableindex = 0 To UBound(TableInfo)
+        With TableInfo(tableindex)
+            .ArrayUbound = -1
+            .CountInMemory = 0
+            .OldestDataLoaded = MaxLong     'None have been loaded yet
+        End With
+    Next tableindex
+
     '-------------------------
 
     'Database header
@@ -114,26 +134,24 @@ If FileExists(mDBFilename) Then
     If (mSchemaVersionOnDisk < LowestSupportedSchemaVersion) Or (mSchemaVersionOnDisk > LatestSchemaVersion) Then Err.Raise 1, , FormatErrorMsg(errSchemaNotSupported, mSchemaVersionOnDisk, LowestSupportedSchemaVersion, LatestSchemaVersion)
 
     'Clients
-    mClientCount = mDBFile.ReadLong
-    If mClientCount = 0 Then
-        Erase mClients
-    Else
-        ReDim mClients(mClientCount - 1)
-        For a = 0 To mClientCount - 1
-            Set mClients(a) = New DBModelClient: mClients(a).Unserialize Me, mSchemaVersionOnDisk, mDBFile
-        Next a
-    End If
+    tableindex = tClients
+    With TableInfo(tableindex)
+        .SeekPosition = mDBFile.SeekPosition
+        If mDBFile.ReadLong <> (TableMarker + tableindex) Then Err.Raise 1, , FormatErrorMsg(errTableMarkerNotFound, mDBFilename, .SeekPosition)
+        .CountOnDisk = mDBFile.ReadLong
+        .CountTotal = .CountOnDisk
+    End With
+    LoadMoreRecords tableindex, MaxLong                         'Load nothing for now
 
     'TaxReturns
-    mTaxReturnCount = mDBFile.ReadLong
-    If mTaxReturnCount = 0 Then
-        Erase mTaxReturns
-    Else
-        ReDim mTaxReturns(mTaxReturnCount - 1)
-        For a = 0 To mTaxReturnCount - 1
-            Set mTaxReturns(a) = New DBModelTaxReturn: mTaxReturns(a).Unserialize Me, mSchemaVersionOnDisk, mDBFile
-        Next a
-    End If
+    tableindex = tTaxReturns
+    With TableInfo(tableindex)
+        .SeekPosition = mDBFile.SeekPosition
+        If mDBFile.ReadLong <> (TableMarker + tableindex) Then Err.Raise 1, , FormatErrorMsg(errTableMarkerNotFound, mDBFilename, .SeekPosition)
+        .CountOnDisk = mDBFile.ReadLong
+        .CountTotal = .CountOnDisk
+    End With
+    LoadMoreRecords tableindex, FileToOpen_Year                 'Only load current year
 
     'Appointments
     mAppointmentCount = mDBFile.ReadLong
@@ -142,7 +160,10 @@ If FileExists(mDBFilename) Then
     Else
         ReDim mAppointments(mAppointmentCount - 1)
         For a = 0 To mAppointmentCount - 1
-            Set mAppointments(a) = New DBModelAppointment: mAppointments(a).Unserialize Me, mSchemaVersionOnDisk, mDBFile
+            For p = 1 To PKCount
+                PK(p) = mDBFile.ReadLong
+            Next p
+            Set mAppointments(a) = New DBModelAppointment: mAppointments(a).InitFromFile mDBFile, mSchemaVersionOnDisk, PK
         Next a
     End If
 
@@ -153,7 +174,10 @@ If FileExists(mDBFilename) Then
     Else
         ReDim mApptCliLinks(mApptCliLinkCount - 1)
         For a = 0 To mApptCliLinkCount - 1
-            Set mApptCliLinks(a) = New DBModelApptCliLink: mApptCliLinks(a).Unserialize Me, mSchemaVersionOnDisk, mDBFile
+            For p = 1 To PKCount
+                PK(p) = mDBFile.ReadLong
+            Next p
+            Set mApptCliLinks(a) = New DBModelApptCliLink: mApptCliLinks(a).InitFromFile mDBFile, mSchemaVersionOnDisk, PK
         Next a
     End If
 
@@ -164,7 +188,10 @@ If FileExists(mDBFilename) Then
     Else
         ReDim mSchedules(mScheduleCount - 1)
         For a = 0 To mScheduleCount - 1
-            Set mSchedules(a) = New DBModelSchedule: mSchedules(a).Unserialize Me, mSchemaVersionOnDisk, mDBFile
+            For p = 1 To PKCount
+                PK(p) = mDBFile.ReadLong
+            Next p
+            Set mSchedules(a) = New DBModelSchedule: mSchedules(a).InitFromFile mDBFile, mSchemaVersionOnDisk, PK
         Next a
     End If
 
@@ -176,7 +203,7 @@ If FileExists(mDBFilename) Then
     ClearDirty
 ElseIf vCreateIfNotExists Then
     '<Temporary development code>
-    Dim fh As CMNMOD_CFileHandler, t$, s$(), tableindex&
+    Dim fh As CMNMOD_CFileHandler, t$, s$()
     Set fh = OpenFile(vDBFilename & ".sample", mLineByLine_Input)
     tableindex = -1
     Do Until fh.EndOfFile
@@ -185,9 +212,21 @@ ElseIf vCreateIfNotExists Then
             s$ = Split(t$, vbTab)
             If Mid$(t$, 1, 1) = "#" Then
                 tableindex = s$(1)
+                With TableInfo(tableindex)
+                    If .InUse Then
+                        .CountOnDisk = 0
+                        .CountInMemory = s$(2)
+                        .CountTotal = .CountInMemory
+                        .ArrayUbound = .CountInMemory + 2
+                        For p = 1 To PKCount
+                            .NextPK(p) = 1
+                        Next p
+                        .OldestDataLoaded = MinLong
+                    End If
+                End With
                 Select Case tableindex
-                Case tClients:      mClientCount = s$(2):       ReDim mClients(mClientCount - 1)
-                Case tTaxReturns:   mTaxReturnCount = s$(2):    ReDim mTaxReturns(mTaxReturnCount - 1)
+                Case tClients:                                  ReDim mClients(TableInfo(tableindex).ArrayUbound)
+                Case tTaxReturns:                               ReDim mTaxReturns(TableInfo(tableindex).ArrayUbound)
                 Case tAppointments: mAppointmentCount = s$(2):  ReDim mAppointments(mAppointmentCount - 1)
                 Case tApptCliLinks: mApptCliLinkCount = s$(2):  ReDim mApptCliLinks(mApptCliLinkCount - 1)
                 Case tSchedules:    mScheduleCount = s$(2):     ReDim mSchedules(mScheduleCount - 1)
@@ -195,14 +234,23 @@ ElseIf vCreateIfNotExists Then
                 End Select
                 a = 0
             Else
-                PK1 = CLng(s$(0))
-                PK2 = CLng(s$(1))
+                For p = 1 To PKCount
+                    PK(p) = CLng(s$(p - 1))
+                Next p
+                With TableInfo(tableindex)
+                    If .InUse Then
+                        For p = 1 To PKCount
+                            If PK(p) >= .NextPK(p) Then .NextPK(p) = PK(p) + 1
+                        Next p
+                        If a >= .CountInMemory Then Err.Raise 1, , "Too many items in table #" & tableindex
+                    End If
+                End With
                 Select Case tableindex
-                Case tClients:      Set mClients(a) = New DBModelClient:            mClients(a).Init Me, PK1, PK2:      mClients(a).QuickSetData s$(2), s$(3), s$(4), s$(5)
-                Case tTaxReturns:   Set mTaxReturns(a) = New DBModelTaxReturn:      mTaxReturns(a).Init Me, PK1, PK2:   mTaxReturns(a).QuickSetData CLng(s$(2)), CLng(s$(3))
-                Case tAppointments: Set mAppointments(a) = New DBModelAppointment:  mAppointments(a).Init Me, PK1, PK2: mAppointments(a).QuickSetData CDate(s$(2)), CLng(s$(3)), CLng(s$(4))
-                Case tApptCliLinks: Set mApptCliLinks(a) = New DBModelApptCliLink:  mApptCliLinks(a).Init Me, PK1, PK2: mApptCliLinks(a).PrimaryClient = s$(2)
-                Case tSchedules:    Set mSchedules(a) = New DBModelSchedule:        mSchedules(a).Init Me, PK1, PK2
+                Case tClients:      Set mClients(a) = New DBModelClient:            mClients(a).TEMP_InitWithData Me, PK, s$(PKCount), s$(PKCount + 1), s$(PKCount + 2), s$(PKCount + 3)
+                Case tTaxReturns:   Set mTaxReturns(a) = New DBModelTaxReturn:      mTaxReturns(a).TEMP_InitWithData Me, PK, CLng(s$(PKCount)), CLng(s$(PKCount + 1))
+                Case tAppointments: Set mAppointments(a) = New DBModelAppointment:  mAppointments(a).TEMP_InitWithData Me, PK, CDate(s$(PKCount)), CLng(s$(PKCount + 1)), CLng(s$(PKCount + 2))
+                Case tApptCliLinks: Set mApptCliLinks(a) = New DBModelApptCliLink:  mApptCliLinks(a).TEMP_InitWithData Me, PK, CBool(s$(PKCount))
+                Case tSchedules:    Set mSchedules(a) = New DBModelSchedule:        mSchedules(a).TEMP_InitWithData Me, PK
                 Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
                 End Select
                 a = a + 1
@@ -226,6 +274,108 @@ Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ConnectToDatabase", Err
 End Function
 
+'EHT=Cleanup2
+Private Sub LoadMoreRecords(tableindex As Long, newoldest As Long)
+On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean, HASERROR As Boolean
+
+Dim PK(1 To PKCount) As Long, a&, p&, countofnewloaded As Long
+Dim tempobject As Object
+
+With TableInfo(tableindex)
+    If Not .InUse Then Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
+
+    If mLoaded Then
+        'Since the initial load process (ConnectToDatabase) has already been completed, we have no requirement
+        '  to leave the file pointer at the end of this table. So if there's nothing to load, just exit.
+        If newoldest >= .OldestDataLoaded Then Exit Sub
+    End If
+
+    'Create a temporary object
+    Select Case tableindex
+    Case tClients:      Set tempobject = New DBModelClient
+    Case tTaxReturns:   Set tempobject = New DBModelTaxReturn
+    Case tAppointments: Set tempobject = New DBModelAppointment
+    Case tApptCliLinks: Set tempobject = New DBModelApptCliLink
+    Case tSchedules:    Set tempobject = New DBModelSchedule
+    Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
+    End Select
+
+    If mLoaded Then
+        'Since the initial load process (ConnectToDatabase) has already been completed, we must do our own
+        '  seeking to the table and verifying the marker.
+        mDBFile.SeekPosition = .SeekPosition
+        If mDBFile.ReadLong <> (TableMarker + tableindex) Then Err.Raise 1, , FormatErrorMsg(errTableMarkerNotFound, mDBFilename, .SeekPosition)
+        If mDBFile.ReadLong <> .CountOnDisk Then Err.Raise 1, , FormatErrorMsg(errCountOnDiskMismatch, mDBFilename)
+    End If
+    For a = 0 To .CountOnDisk - 1
+        For p = 1 To PKCount
+            PK(p) = mDBFile.ReadLong
+        Next p
+        If Not mLoaded Then
+            'Only during the initial load process (ConnectToDatabase), we calculate the next primary key available for use.
+            For p = 1 To PKCount
+                If PK(p) >= .NextPK(p) Then .NextPK(p) = PK(p) + 1
+            Next p
+        End If
+        If (PK(1) >= newoldest) And (PK(1) < .OldestDataLoaded) Then
+            'Load this record
+            tempobject.InitFromFile mDBFile, mSchemaVersionOnDisk, PK
+            Set tempobject.AttachedDatabase = Me
+            p = CalcNewIndexAndExpandIfNeeded(tableindex)
+
+            'Store the object, then recreate it so the next InitFromFile doesn't affect the object we just saved
+            Select Case tableindex
+            Case tClients:      Set mClients(p) = tempobject:       Set tempobject = New DBModelClient
+            Case tTaxReturns:   Set mTaxReturns(p) = tempobject:    Set tempobject = New DBModelTaxReturn
+            Case tAppointments: Set mAppointments(p) = tempobject:  Set tempobject = New DBModelAppointment
+            Case tApptCliLinks: Set mApptCliLinks(p) = tempobject:  Set tempobject = New DBModelApptCliLink
+            Case tSchedules:    Set mSchedules(p) = tempobject:     Set tempobject = New DBModelSchedule
+            Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
+            End Select
+
+            'If InitFromFile was successful, we can increment the count. But keep track of how many we added to the array. If this function
+            '  does not completely succeed, we'll have to subtract that amount from the count to rollback the transaction.
+            .CountInMemory = .CountInMemory + 1
+            countofnewloaded = countofnewloaded + 1
+        Else
+            'Skip this record, but still InitFromFile, so the file pointer moves properly
+            tempobject.InitFromFile mDBFile, mSchemaVersionOnDisk, PK
+        End If
+    Next a
+
+    'Only once this entire function has succeeded, we may update OldestDataLoaded. Otherwise, an error colud result in data loss.
+    .OldestDataLoaded = newoldest
+End With
+
+CLEANUP: INCLEANUP = True
+    If HASERROR Then
+        'Subtract from the count the number of items we added, so we don't end up with duplicate items in the database on next save.
+        'We don't need to remove the items themselves, though, since they'll be overwritten eventually.
+        If countofnewloaded > 0 Then TableInfo(tableindex).CountInMemory = TableInfo(tableindex).CountInMemory - countofnewloaded
+    End If
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "LoadMoreRecords", Err, INCLEANUP: HASERROR = True: Resume CLEANUP
+End Sub
+
+'EHT=None
+Private Function CalcNewIndexAndExpandIfNeeded(tableindex As Long) As Long
+With TableInfo(tableindex)
+    If .CountInMemory > .ArrayUbound Then
+        .ArrayUbound = .ArrayUbound + 3
+        Select Case tableindex
+        Case tClients:      ReDim Preserve mClients(.ArrayUbound)
+        Case tTaxReturns:   ReDim Preserve mTaxReturns(.ArrayUbound)
+        Case tAppointments: ReDim Preserve mAppointments(.ArrayUbound)
+        Case tApptCliLinks: ReDim Preserve mApptCliLinks(.ArrayUbound)
+        Case tSchedules:    ReDim Preserve mSchedules(.ArrayUbound)
+        Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
+        End Select
+    End If
+    CalcNewIndexAndExpandIfNeeded = .CountInMemory
+End With
+End Function
+
 'EHT=Cleanup1
 Public Function SaveChanges() As Boolean
 On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
@@ -233,7 +383,7 @@ On Error GoTo ERR_HANDLER: Dim INCLEANUP As Boolean
 'Instead of raising an error if the database is not loaded, we return False; that way, the calling function need not check first
 'Also note that a return Value of True doesn't mean we saved anything; it just means that everything is saved (even if it was already saved)
 
-Dim tempfile As CMNMOD_CFileHandler, tempfilename As String, bakfilename As String, a As Long
+Dim tempfile As CMNMOD_CFileHandler, tempfilename As String, bakfilename As String, a As Long, tableindex As Long
 
 If mLoaded And mIsWriteable Then
     If mIsDirty Then
@@ -241,22 +391,22 @@ If mLoaded And mIsWriteable Then
         tempfilename = mDBFilename & ".sav"
         Set tempfile = OpenFile(tempfilename, mBinary_Output)
 
+        'Update the table data
+        For tableindex = 0 To UBound(TableInfo)
+            TableInfo(tableindex).PendingCountOnDisk = 0
+            TableInfo(tableindex).PendingSeekPosition = 0
+        Next tableindex
+
         '-------------------------
 
         'Database header
         tempfile.WriteLong LatestSchemaVersion
 
         'Clients
-        tempfile.WriteLong mClientCount
-        For a = 0 To mClientCount - 1
-            mClients(a).Serialize tempfile
-        Next a
+        WriteTable tClients, tempfile
 
         'TaxReturns
-        tempfile.WriteLong mTaxReturnCount
-        For a = 0 To mTaxReturnCount - 1
-            mTaxReturns(a).Serialize tempfile
-        Next a
+        WriteTable tTaxReturns, tempfile
 
         'Appointments
         tempfile.WriteLong mAppointmentCount
@@ -299,6 +449,13 @@ If mLoaded And mIsWriteable Then
         'Move the temp file into position as the new database; then reestablish the lock
         RenameFile tempfilename, mDBFilename, True
         Set mDBFile = OpenFile(mDBFilename, mBinary_Input)
+
+        'Now that everything has succeeded, we can update the counts
+        For a = 0 To UBound(TableInfo)
+            TableInfo(a).CountOnDisk = TableInfo(a).PendingCountOnDisk
+            TableInfo(a).SeekPosition = TableInfo(a).PendingSeekPosition
+        Next a
+
         ClearDirty
     End If
 
@@ -312,6 +469,70 @@ CLEANUP: INCLEANUP = True
 Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SaveChanges", Err, INCLEANUP: Resume CLEANUP
 End Function
+
+'EHT=None
+Private Sub WriteTable(tableindex As Long, tempfile As CMNMOD_CFileHandler)
+Dim a As Long, b As Long, PK(1 To PKCount) As Long, tempobject As Object
+
+'Create a temporary object
+Select Case tableindex
+Case tClients:      Set tempobject = New DBModelClient
+Case tTaxReturns:   Set tempobject = New DBModelTaxReturn
+Case tAppointments: Set tempobject = New DBModelAppointment
+Case tApptCliLinks: Set tempobject = New DBModelApptCliLink
+Case tSchedules:    Set tempobject = New DBModelSchedule
+Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
+End Select
+
+With TableInfo(tableindex)
+    'Before we do any writing on the new database, store the current seek position for future saves
+    .PendingSeekPosition = tempfile.SeekPosition
+
+    'Write the total number of objects, regardless if they are loaded into memory or not
+    tempfile.WriteLong (TableMarker + tableindex)
+    tempfile.WriteLong .CountTotal
+
+    If Not mDBFile Is Nothing Then
+        'If we have a lock open to an existing database, seek the old file to where this table began originally
+        mDBFile.SeekPosition = .SeekPosition
+        If mDBFile.ReadLong <> (TableMarker + tableindex) Then Err.Raise 1, , FormatErrorMsg(errTableMarkerNotFound, mDBFilename, .SeekPosition)
+        If mDBFile.ReadLong <> .CountOnDisk Then Err.Raise 1, , FormatErrorMsg(errCountOnDiskMismatch, mDBFilename)
+
+        'Now scan through every record on-disk
+        For a = 0 To .CountOnDisk - 1
+            For b = 1 To PKCount
+                PK(b) = mDBFile.ReadLong
+            Next b
+            If PK(1) < .OldestDataLoaded Then
+                'If it is older than OldestDataLoaded, then we must copy the data from the old database
+                tempobject.InitFromFile mDBFile, mSchemaVersionOnDisk, PK
+                tempobject.Serialize tempfile
+                .PendingCountOnDisk = .PendingCountOnDisk + 1
+            Else
+                'Else, we already have it in memory, so the on-disk version for now
+                tempobject.InitFromFile mDBFile, mSchemaVersionOnDisk, PK
+            End If
+        Next a
+    End If
+
+    'Whether we had an old database or not, the count of objects we copied over plus the number we have left in memory to write must
+    'represent the entire dataset without overlap
+    If (.CountInMemory + .PendingCountOnDisk) <> .CountTotal Then Err.Raise 1, , "Count mismatch"
+
+    'Now store the ones we have in memory
+    For a = 0 To .CountInMemory - 1
+        Select Case tableindex
+        Case tClients:      mClients(a).Serialize tempfile
+        Case tTaxReturns:   mTaxReturns(a).Serialize tempfile
+        Case tAppointments: Set tempobject = New DBModelAppointment
+        Case tApptCliLinks: Set tempobject = New DBModelApptCliLink
+        Case tSchedules:    Set tempobject = New DBModelSchedule
+        Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
+        End Select
+        .PendingCountOnDisk = .PendingCountOnDisk + 1
+    Next a
+End With
+End Sub
 
 'EHT=Standard
 Public Function DisconnectFromDatabase() As Boolean
@@ -404,8 +625,9 @@ End Property
 Public Function Client(vClientID As Long) As DBModelClient
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long
-If vClientID < 0 Then Exit Function
-For a = mClientCount - 1 To 0 Step -1
+If vClientID < 1 Then Exit Function
+LoadMoreRecords tClients, vClientID
+For a = TableInfo(tClients).CountInMemory - 1 To 0 Step -1
     If mClients(a).ID = vClientID Then
         Set Client = mClients(a)
         Exit For
@@ -417,8 +639,9 @@ End Function
 Public Function TaxReturn(vTaxYear As Long, vClientID As Long) As DBModelTaxReturn
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, t As DBModelTaxReturn
-If vTaxYear < 0 Or vClientID < 0 Then Exit Function
-For a = mTaxReturnCount - 1 To 0 Step -1
+If vTaxYear < 1 Or vClientID < 1 Then Exit Function
+LoadMoreRecords tTaxReturns, vTaxYear
+For a = TableInfo(tTaxReturns).CountInMemory - 1 To 0 Step -1
     Set t = mTaxReturns(a)
     If t.TaxYear = vTaxYear And t.ClientID = vClientID Then
         Set TaxReturn = t
@@ -431,7 +654,7 @@ End Function
 Public Function Appointment(vAppointmentID As Long) As DBModelAppointment
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long
-If vAppointmentID < 0 Then Exit Function
+If vAppointmentID < 1 Then Exit Function
 For a = mAppointmentCount - 1 To 0 Step -1
     If mAppointments(a).ID = vAppointmentID Then
         Set Appointment = mAppointments(a)
@@ -440,72 +663,17 @@ For a = mAppointmentCount - 1 To 0 Step -1
 Next a
 End Function
 
-'[ApptCliLink omitted]
-
 'EHT=None
 Public Function Schedule(vCalendarYear As Long) As DBModelSchedule
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long
-If vCalendarYear < 0 Then Exit Function
+If vCalendarYear < 1 Then Exit Function
 For a = mScheduleCount - 1 To 0 Step -1
     If mSchedules(a).CalendarYear = vCalendarYear Then
         Set Schedule = mSchedules(a)
         Exit For
     End If
 Next a
-End Function
-
-
-
-
-
-'#################################################################################
-'One-to-many relational lookups
-'#################################################################################
-
-'EHT=None
-Public Function TaxReturnsByClient(vClientID As Long) As DBModelTaxReturn()
-If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As DBModelTaxReturn
-If vClientID < 0 Then Exit Function
-For a = mTaxReturnCount - 1 To 0 Step -1
-    If mTaxReturns(a).ClientID = vClientID Then
-        ReDim Preserve l(c)
-        Set l(c) = mTaxReturns(a)
-        c = c + 1
-    End If
-Next a
-TaxReturnsByClient = l
-End Function
-
-'EHT=None
-Public Function ApptCliLinksByClient(vClientID As Long) As DBModelApptCliLink()
-If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As DBModelApptCliLink
-If vClientID < 0 Then Exit Function
-For a = mApptCliLinkCount - 1 To 0 Step -1
-    If mApptCliLinks(a).ClientID = vClientID Then
-        ReDim Preserve l(c)
-        Set l(c) = mApptCliLinks(a)
-        c = c + 1
-    End If
-Next a
-ApptCliLinksByClient = l
-End Function
-
-'EHT=None
-Public Function ApptCliLinksByAppointment(vAppointmentID As Long) As DBModelApptCliLink()
-If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As DBModelApptCliLink
-If vAppointmentID < 0 Then Exit Function
-For a = mApptCliLinkCount - 1 To 0 Step -1
-    If mApptCliLinks(a).AppointmentID = vAppointmentID Then
-        ReDim Preserve l(c)
-        Set l(c) = mApptCliLinks(a)
-        c = c + 1
-    End If
-Next a
-ApptCliLinksByAppointment = l
 End Function
 
 
@@ -520,7 +688,7 @@ End Function
 Public Function ClientsByAppointment(vAppointmentID As Long) As DBModelClient()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, c As Long, l() As DBModelClient
-If vAppointmentID < 0 Then Exit Function
+If vAppointmentID < 1 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     With mApptCliLinks(a)
         If .AppointmentID = vAppointmentID Then
@@ -537,7 +705,7 @@ End Function
 Public Function AppointmentsByClient(vClientID As Long) As DBModelAppointment()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, c As Long, l() As DBModelAppointment
-If vClientID < 0 Then Exit Function
+If vClientID < 1 Then Exit Function
 For a = mApptCliLinkCount - 1 To 0 Step -1
     With mApptCliLinks(a)
         If .ClientID = vClientID Then

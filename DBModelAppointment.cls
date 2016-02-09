@@ -18,7 +18,8 @@ Private Const MOD_NAME = "DBModelAppointment"
 Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
-Public ID As Long
+Public CalendarYear As Long         'PK1 = Must be specified up front (not part of the unique portion of the primary key; it is used instead for caching purposes)
+Public ID As Long                   'PK2 = Autoincrement primary key
 
 'Attributes (for efficiency, store within a type object)
 Private m As typeCoreData_Appointment
@@ -32,32 +33,35 @@ Private m As typeCoreData_Appointment
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
-Set AttachedDatabase = vDB
-'Primary key...
-' = PK1                     'PK1, not used
-ID = PK2                    'PK2
+Public Sub InitNew(vCalendarYear As Long)
+CalendarYear = vCalendarYear
 End Sub
 
 'EHT=None
-Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set AttachedDatabase = vDB
+Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
 If schemaversion >= 1 Then
-    fh.ReadLong             'PK1, not used
-    ID = fh.ReadLong        'PK2
-    Get #fh.FileNum, , m    'Attr
+    CalendarYear = PK(1)
+    ID = PK(2)
+    Get #fh.FileNum, , m
 End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong 0              'PK1, not used
-fh.WriteLong ID             'PK2
-Put #fh.FileNum, , m        'Attr
+Dim a As Long
+fh.WriteLong CalendarYear
+fh.WriteLong ID
+For a = 1 To PKCount - 2
+    fh.WriteLong 0
+Next a
+Put #fh.FileNum, , m
 End Sub
 
 'EHT=None
-Public Sub QuickSetData(vDay As Date, vTimeSlot As Long, vNumSlots As Long)
+Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vDay As Date, vTimeSlot As Long, vNumSlots As Long)
+Set AttachedDatabase = vDB
+CalendarYear = PK(1)
+ID = PK(2)
 m.Day = vDay
 m.TimeSlot = vTimeSlot
 m.NumSlots = vNumSlots

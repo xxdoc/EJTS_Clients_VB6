@@ -135,6 +135,8 @@ Public Type typeCoreData_ExtraCharge
     FeeOwed As Long
 End Type
 
+Public Const PKCount = 2
+
 
 
 

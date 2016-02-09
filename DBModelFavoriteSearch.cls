@@ -18,7 +18,8 @@ Private Const MOD_NAME = "DBModelFavoriteSearch"
 Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
-Public ID As Long
+Public ID As Long                   'PK1 = Autoincrement primary key
+'(PK2 not used)
 
 'Attributes (for efficiency, store within a type object)
 Private m As typeCoreData_FavoriteSearch
@@ -32,26 +33,29 @@ Private m As typeCoreData_FavoriteSearch
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
-Set AttachedDatabase = vDB
-'Primary key...
-ID = PK1                    'PK1
-' = PK2                     'PK2, not used
+Public Sub InitNew()
 End Sub
 
 'EHT=None
-Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set AttachedDatabase = vDB
+Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
 If schemaversion >= 1 Then
-    ID = fh.ReadLong        'PK1
-    fh.ReadLong             'PK2, not used
-    Get #fh.FileNum, , m    'Attr
+    ID = PK(1)
+    Get #fh.FileNum, , m
 End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong ID             'PK1
-fh.WriteLong 0              'PK2, not used
-Put #fh.FileNum, , m        'Attr
+Dim a As Long
+fh.WriteLong ID
+For a = 1 To PKCount - 1
+    fh.WriteLong 0
+Next a
+Put #fh.FileNum, , m
+End Sub
+
+'EHT=None
+Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long)
+Set AttachedDatabase = vDB
+ID = PK(1)
 End Sub

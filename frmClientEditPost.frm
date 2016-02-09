@@ -3015,7 +3015,7 @@ If This.PopulateFromForm(Me) Then
     If ShowFormMode <> fNew Then
         'We only set the changed flag if we're editing/posting a client that is actually in the database
         'New clients are not yet, so let the calling function handle this when/if it's added to the database
-        frmMain.SetChangedFlagAndIndication
+        frmMain.NEWDATABASE.SetDirty
     End If
     DataChanged = True
     Unload Me

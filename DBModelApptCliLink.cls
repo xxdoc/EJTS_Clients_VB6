@@ -18,8 +18,8 @@ Private Const MOD_NAME = "DBModelApptCliLink"
 Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
-Public AppointmentID As Long
-Public ClientID As Long
+Public AppointmentID As Long        'PK1 = Foreign key (DBModelAppointment.ID)
+Public ClientID As Long             'PK2 = Foreign key (DBModelClient.ID)
 
 'Attributes (for efficiency, store within a type object)
 Private m As typeCoreData_ApptCliLink
@@ -33,30 +33,38 @@ Private m As typeCoreData_ApptCliLink
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
-Set AttachedDatabase = vDB
-'Primary key...
-AppointmentID = PK1                 'PK1
-ClientID = PK2                      'PK2
-'Defaults...
+Public Sub InitNew(vAppointmentID As Long, vClientID As Long)
+AppointmentID = vAppointmentID
+ClientID = vClientID
 m.PrimaryClient = True
 End Sub
 
 'EHT=None
-Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set AttachedDatabase = vDB
+Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
 If schemaversion >= 1 Then
-    AppointmentID = fh.ReadLong     'PK1
-    ClientID = fh.ReadLong          'PK2
-    Get #fh.FileNum, , m            'Attr
+    AppointmentID = PK(1)
+    ClientID = PK(2)
+    Get #fh.FileNum, , m
 End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong AppointmentID          'PK1
-fh.WriteLong ClientID               'PK2
-Put #fh.FileNum, , m                'Attr
+Dim a As Long
+fh.WriteLong AppointmentID
+fh.WriteLong ClientID
+For a = 1 To PKCount - 2
+    fh.WriteLong 0
+Next a
+Put #fh.FileNum, , m
+End Sub
+
+'EHT=None
+Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vPrimaryClient As Boolean)
+Set AttachedDatabase = vDB
+AppointmentID = PK(1)
+ClientID = PK(2)
+m.PrimaryClient = vPrimaryClient
 End Sub
 
 

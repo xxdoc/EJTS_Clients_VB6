@@ -18,8 +18,8 @@ Private Const MOD_NAME = "DBModelTaxReturn"
 Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
-Public TaxYear As Long
-Public ClientID As Long
+Public TaxYear As Long              'PK1 = Must be specified up front
+Public ClientID As Long             'PK2 = Foreign key (DBModelClient.ID)
 
 'Attributes (for efficiency, store within a type object)
 Private m As typeCoreData_TaxReturn
@@ -33,12 +33,7 @@ Private m As typeCoreData_TaxReturn
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
-Set AttachedDatabase = vDB
-'Primary key...
-TaxYear = PK1                   'PK1
-ClientID = PK2                  'PK2
-'Defaults...
+Public Sub InitNew()
 m.Fee = NullLong
 m.FeeOwed = NullLong
 m.CompletionDate = NullLong
@@ -50,24 +45,30 @@ m.EFiled = True
 End Sub
 
 'EHT=None
-Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set AttachedDatabase = vDB
+Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
 If schemaversion >= 1 Then
-    TaxYear = fh.ReadLong       'PK1
-    ClientID = fh.ReadLong      'PK2
-    Get #fh.FileNum, , m        'Attr
+    TaxYear = PK(1)
+    ClientID = PK(2)
+    Get #fh.FileNum, , m
 End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong TaxYear            'PK1
-fh.WriteLong ClientID           'PK2
-Put #fh.FileNum, , m            'Attr
+Dim a As Long
+fh.WriteLong TaxYear
+fh.WriteLong ClientID
+For a = 1 To PKCount - 2
+    fh.WriteLong 0
+Next a
+Put #fh.FileNum, , m
 End Sub
 
 'EHT=None
-Public Sub QuickSetData(vInboxType As enumInboxType, vStatus As enumReturnStatus)
+Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vInboxType As enumInboxType, vStatus As enumReturnStatus)
+Set AttachedDatabase = vDB
+TaxYear = PK(1)
+ClientID = PK(2)
 m.InboxType = vInboxType
 m.Status = vStatus
 End Sub

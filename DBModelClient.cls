@@ -17,17 +17,15 @@ Private Const MOD_NAME = "DBModelClient"
 'Back reference to database
 Public AttachedDatabase As CDatabase
 
-'Cached reference to current year tax return
-Public mCurrentYearReturn As DBModelTaxReturn
-
 'Primary key (for efficiency, make public and do not put within the core data type)
-Public ID As Long
+Public ID As Long                   'PK1 = Autoincrement primary key
+'(PK2 not used)
 
 'Attributes (for efficiency, store within a type object)
 Private m As typeCoreData_Client
 
-
-
+'Cached reference to current year tax return
+Public mCurrentYearReturn As DBModelTaxReturn
 
 
 '#################################################################################
@@ -35,36 +33,34 @@ Private m As typeCoreData_Client
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
-Set AttachedDatabase = vDB
-'Primary key...
-ID = PK1                    'PK1
-' = PK2                     'PK2, not used
-'Defaults...
+Public Sub InitNew()
 m.NumApptSlots = 2
 m.OldestYearFiled = NullLong
 m.NewestYearFiled = NullLong
 End Sub
 
 'EHT=None
-Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set AttachedDatabase = vDB
+Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
 If schemaversion >= 1 Then
-    ID = fh.ReadLong        'PK1
-    fh.ReadLong             'PK2, not used
-    Get #fh.FileNum, , m    'Attr
+    ID = PK(1)
+    Get #fh.FileNum, , m
 End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong ID             'PK1
-fh.WriteLong 0              'PK2, not used
-Put #fh.FileNum, , m        'Attr
+Dim a As Long
+fh.WriteLong ID
+For a = 1 To PKCount - 1
+    fh.WriteLong 0
+Next a
+Put #fh.FileNum, , m
 End Sub
 
 'EHT=None
-Public Sub QuickSetData(vFirst1 As String, vFirst2 As String, vLast As String, vEmail As String)
+Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vFirst1 As String, vFirst2 As String, vLast As String, vEmail As String)
+Set AttachedDatabase = vDB
+ID = PK(1)
 PersonCount = 2
 m.Persons(0).First = vFirst1
 m.Persons(0).Last = vLast
@@ -83,16 +79,6 @@ End Sub
 'EHT=None
 Public Function Appointments() As DBModelAppointment()
 Appointments = AttachedDatabase.AppointmentsByClient(ID)
-End Function
-
-'EHT=None
-Public Function ApptCliLinks() As DBModelApptCliLink()
-ApptCliLinks = AttachedDatabase.ApptCliLinksByClient(ID)
-End Function
-
-'EHT=None
-Public Function TaxReturns() As DBModelTaxReturn()
-TaxReturns = AttachedDatabase.TaxReturnsByClient(ID)
 End Function
 
 
