@@ -32,23 +32,26 @@ Private m As typeCoreData_FavoriteSearch
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vID As Long)
+Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
 Set AttachedDatabase = vDB
 'Primary key...
-ID = vID
+ID = PK1                    'PK1
+' = PK2                     'PK2, not used
 End Sub
 
 'EHT=None
 Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
 Set AttachedDatabase = vDB
 If schemaversion >= 1 Then
-    ID = fh.ReadLong        'PK
+    ID = fh.ReadLong        'PK1
+    fh.ReadLong             'PK2, not used
     Get #fh.FileNum, , m    'Attr
 End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong ID             'PK
+fh.WriteLong ID             'PK1
+fh.WriteLong 0              'PK2, not used
 Put #fh.FileNum, , m        'Attr
 End Sub

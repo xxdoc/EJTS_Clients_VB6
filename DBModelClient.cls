@@ -35,14 +35,32 @@ Private m As typeCoreData_Client
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vID As Long)
+Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
 Set AttachedDatabase = vDB
 'Primary key...
-ID = vID
+ID = PK1                    'PK1
+' = PK2                     'PK2, not used
 'Defaults...
 m.NumApptSlots = 2
 m.OldestYearFiled = NullLong
 m.NewestYearFiled = NullLong
+End Sub
+
+'EHT=None
+Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
+Set AttachedDatabase = vDB
+If schemaversion >= 1 Then
+    ID = fh.ReadLong        'PK1
+    fh.ReadLong             'PK2, not used
+    Get #fh.FileNum, , m    'Attr
+End If
+End Sub
+
+'EHT=None
+Public Sub Serialize(fh As CMNMOD_CFileHandler)
+fh.WriteLong ID             'PK1
+fh.WriteLong 0              'PK2, not used
+Put #fh.FileNum, , m        'Attr
 End Sub
 
 'EHT=None
@@ -52,21 +70,6 @@ m.Persons(0).First = vFirst1
 m.Persons(0).Last = vLast
 m.Persons(0).Email = vEmail
 m.Persons(1).First = vFirst2
-End Sub
-
-'EHT=None
-Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set AttachedDatabase = vDB
-If schemaversion >= 1 Then
-    ID = fh.ReadLong        'PK
-    Get #fh.FileNum, , m    'Attr
-End If
-End Sub
-
-'EHT=None
-Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong ID             'PK
-Put #fh.FileNum, , m        'Attr
 End Sub
 
 
@@ -157,7 +160,7 @@ End Property
 
 'EHT=None
 Public Property Get CurrentYearReturn() As DBModelTaxReturn
-If mCurrentYearReturn Is Nothing Then Set mCurrentYearReturn = AttachedDatabase.TaxReturn(ID, FileToOpen_Year)
+If mCurrentYearReturn Is Nothing Then Set mCurrentYearReturn = AttachedDatabase.TaxReturn(FileToOpen_Year, ID)
 Set CurrentYearReturn = mCurrentYearReturn
 End Property
 
@@ -235,7 +238,7 @@ On Error GoTo ERR_HANDLER
 Dim tr As DBModelTaxReturn, pct As PictureBox, found As Boolean
 
 'Attempt to find the tax return
-Set tr = AttachedDatabase.TaxReturn(ID, TaxReturnYear)
+Set tr = AttachedDatabase.TaxReturn(TaxReturnYear, ID)
 found = Not tr Is Nothing
 
 frm.lblTaxYear(TRColumn).Caption = TaxReturnYear
@@ -355,7 +358,7 @@ If Not ValidateTextbox(frm.txtField(fncNotes2), temp.Notes2) Then GoTo VALIDATIO
 offset = 0
 For a = 0 To 0
     If frm.pctTaxReturn(a).Visible Then
-        Set tr = AttachedDatabase.TaxReturn(ID, FileToOpen_Year - a)
+        Set tr = AttachedDatabase.TaxReturn(FileToOpen_Year - a, ID)
         If tr Is Nothing Then Set tr = New DBModelTaxReturn
         If Not tr.PopulateFromForm(frm, offset) Then Exit Function
     End If

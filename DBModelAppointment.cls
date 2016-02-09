@@ -32,10 +32,28 @@ Private m As typeCoreData_Appointment
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vID As Long)
+Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
 Set AttachedDatabase = vDB
 'Primary key...
-ID = vID
+' = PK1                     'PK1, not used
+ID = PK2                    'PK2
+End Sub
+
+'EHT=None
+Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
+Set AttachedDatabase = vDB
+If schemaversion >= 1 Then
+    fh.ReadLong             'PK1, not used
+    ID = fh.ReadLong        'PK2
+    Get #fh.FileNum, , m    'Attr
+End If
+End Sub
+
+'EHT=None
+Public Sub Serialize(fh As CMNMOD_CFileHandler)
+fh.WriteLong 0              'PK1, not used
+fh.WriteLong ID             'PK2
+Put #fh.FileNum, , m        'Attr
 End Sub
 
 'EHT=None
@@ -43,21 +61,6 @@ Public Sub QuickSetData(vDay As Date, vTimeSlot As Long, vNumSlots As Long)
 m.Day = vDay
 m.TimeSlot = vTimeSlot
 m.NumSlots = vNumSlots
-End Sub
-
-'EHT=None
-Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
-Set AttachedDatabase = vDB
-If schemaversion >= 1 Then
-    ID = fh.ReadLong        'PK
-    Get #fh.FileNum, , m    'Attr
-End If
-End Sub
-
-'EHT=None
-Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong ID             'PK
-Put #fh.FileNum, , m        'Attr
 End Sub
 
 

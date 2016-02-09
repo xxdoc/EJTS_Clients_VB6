@@ -18,7 +18,8 @@ Private Const MOD_NAME = "DBModelTaxReturn"
 Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
-Public ClientID As Long, TaxYear As Long
+Public TaxYear As Long
+Public ClientID As Long
 
 'Attributes (for efficiency, store within a type object)
 Private m As typeCoreData_TaxReturn
@@ -32,10 +33,11 @@ Private m As typeCoreData_TaxReturn
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vClientID As Long, vTaxYear As Long)
+Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
 Set AttachedDatabase = vDB
 'Primary key...
-TaxYear = vTaxYear: ClientID = vClientID
+TaxYear = PK1                   'PK1
+ClientID = PK2                  'PK2
 'Defaults...
 m.Fee = NullLong
 m.FeeOwed = NullLong
@@ -48,24 +50,26 @@ m.EFiled = True
 End Sub
 
 'EHT=None
-Public Sub QuickSetData(vInboxType As enumInboxType, vStatus As enumReturnStatus)
-m.InboxType = vInboxType
-m.Status = vStatus
-End Sub
-
-'EHT=None
 Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
 Set AttachedDatabase = vDB
 If schemaversion >= 1 Then
-    ClientID = fh.ReadLong: TaxYear = fh.ReadLong   'PK
-    Get #fh.FileNum, , m                            'Attr
+    TaxYear = fh.ReadLong       'PK1
+    ClientID = fh.ReadLong      'PK2
+    Get #fh.FileNum, , m        'Attr
 End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong ClientID: fh.WriteLong TaxYear         'PK
-Put #fh.FileNum, , m                                'Attr
+fh.WriteLong TaxYear            'PK1
+fh.WriteLong ClientID           'PK2
+Put #fh.FileNum, , m            'Attr
+End Sub
+
+'EHT=None
+Public Sub QuickSetData(vInboxType As enumInboxType, vStatus As enumReturnStatus)
+m.InboxType = vInboxType
+m.Status = vStatus
 End Sub
 
 

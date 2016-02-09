@@ -18,7 +18,7 @@ Private Const MOD_NAME = "DBModelSchedule"
 Public AttachedDatabase As CDatabase
 
 'Primary key (for efficiency, make public and do not put within the core data type)
-Public TaxYear As Long
+Public CalendarYear As Long
 
 'Attributes (for efficiency, store within a type object)
 Private m As typeCoreData_Schedule
@@ -32,23 +32,26 @@ Private m As typeCoreData_Schedule
 '#################################################################################
 
 'EHT=None
-Public Sub Init(vDB As CDatabase, vTaxYear As Long)
+Public Sub Init(vDB As CDatabase, PK1 As Long, PK2 As Long)
 Set AttachedDatabase = vDB
 'Primary key...
-TaxYear = vTaxYear
+CalendarYear = PK1              'PK1
+' = PK2                         'PK2, not used
 End Sub
 
 'EHT=None
 Public Sub Unserialize(vDB As CDatabase, schemaversion As Long, fh As CMNMOD_CFileHandler)
 Set AttachedDatabase = vDB
 If schemaversion >= 1 Then
-    TaxYear = fh.ReadLong   'PK
-    Get #fh.FileNum, , m    'Attr
+    CalendarYear = fh.ReadLong  'PK1
+    fh.ReadLong                 'PK2, not used
+    Get #fh.FileNum, , m        'Attr
 End If
 End Sub
 
 'EHT=None
 Public Sub Serialize(fh As CMNMOD_CFileHandler)
-fh.WriteLong TaxYear        'PK
-Put #fh.FileNum, , m        'Attr
+fh.WriteLong CalendarYear       'PK1
+fh.WriteLong 0                  'PK2, not used
+Put #fh.FileNum, , m            'Attr
 End Sub

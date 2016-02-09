@@ -982,6 +982,7 @@ If DB_Save(ActiveDBInstance) Then
     ClearChangedIndication
     tabLogFile.WriteLine "Save"
 End If
+NEWDATABASE.SaveChanges
 HidePopupInfo
 
 Exit Sub
