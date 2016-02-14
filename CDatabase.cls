@@ -70,8 +70,6 @@ Private Type typeTableInfo
     'Temporary variables
     PendingSeekPosition As Long 'Used by SaveChanges and SaveTable
     PendingCountOnDisk As Long  'Used by SaveChanges and SaveTable
-
-    InUse As Boolean            'Temporary, for development purposes only
 End Type
 Private Const NumberOfTables = 5
 Private TableInfo(NumberOfTables - 1) As typeTableInfo
@@ -100,9 +98,6 @@ Dim PK(1 To PKCount) As Long
 If mLoaded Then Err.Raise 1, , errAlreadyLoaded
 mIsWriteable = Not vReadOnly
 mDBFilename = vDBFilename
-
-TableInfo(tClients).InUse = True
-TableInfo(tTaxReturns).InUse = True
 
 'Calculate logfile name
 p = InStrRev(vDBFilename, ".")
@@ -133,53 +128,12 @@ If FileExists(mDBFilename) Then
     mSchemaVersionOnDisk = mDBFile.ReadLong
     If (mSchemaVersionOnDisk < LowestSupportedSchemaVersion) Or (mSchemaVersionOnDisk > LatestSchemaVersion) Then Err.Raise 1, , FormatErrorMsg(errSchemaNotSupported, mSchemaVersionOnDisk, LowestSupportedSchemaVersion, LatestSchemaVersion)
 
-    'Clients
-    LoadTable tClients, MaxLong             'Load nothing for now
-
-    'TaxReturns
-    LoadTable tTaxReturns, FileToOpen_Year  'Only load current year
-
-    'Appointments
-    mAppointmentCount = mDBFile.ReadLong
-    If mAppointmentCount = 0 Then
-        Erase mAppointments
-    Else
-        ReDim mAppointments(mAppointmentCount - 1)
-        For a = 0 To mAppointmentCount - 1
-            For p = 1 To PKCount
-                PK(p) = mDBFile.ReadLong
-            Next p
-            Set mAppointments(a) = New DBModelAppointment: mAppointments(a).InitFromFile mDBFile, mSchemaVersionOnDisk, PK
-        Next a
-    End If
-
-    'ApptCliLinks
-    mApptCliLinkCount = mDBFile.ReadLong
-    If mApptCliLinkCount = 0 Then
-        Erase mApptCliLinks
-    Else
-        ReDim mApptCliLinks(mApptCliLinkCount - 1)
-        For a = 0 To mApptCliLinkCount - 1
-            For p = 1 To PKCount
-                PK(p) = mDBFile.ReadLong
-            Next p
-            Set mApptCliLinks(a) = New DBModelApptCliLink: mApptCliLinks(a).InitFromFile mDBFile, mSchemaVersionOnDisk, PK
-        Next a
-    End If
-
-    'Schedules
-    mScheduleCount = mDBFile.ReadLong
-    If mScheduleCount = 0 Then
-        Erase mSchedules
-    Else
-        ReDim mSchedules(mScheduleCount - 1)
-        For a = 0 To mScheduleCount - 1
-            For p = 1 To PKCount
-                PK(p) = mDBFile.ReadLong
-            Next p
-            Set mSchedules(a) = New DBModelSchedule: mSchedules(a).InitFromFile mDBFile, mSchemaVersionOnDisk, PK
-        Next a
-    End If
+    'Table
+    LoadTable tClients, MaxLong                 'Load nothing for now
+    LoadTable tTaxReturns, FileToOpen_Year      'Only load current year
+    LoadTable tAppointments, FileToOpen_Year    'Only load current year
+    LoadTable tApptCliLinks, MaxLong            'Load nothing for now
+    LoadTable tSchedules, FileToOpen_Year       'Only load current year
 
     'Database footer
     If mDBFile.ReadLong <> mSchemaVersionOnDisk Then Err.Raise 1, , FormatErrorMsg(errDamagedDB, mDBFilename)
@@ -199,23 +153,21 @@ ElseIf vCreateIfNotExists Then
             If Mid$(t$, 1, 1) = "#" Then
                 tableindex = s$(1)
                 With TableInfo(tableindex)
-                    If .InUse Then
-                        .CountOnDisk = 0
-                        .CountInMemory = s$(2)
-                        .CountTotal = .CountInMemory
-                        .ArrayUbound = .CountInMemory + 2
-                        For p = 1 To PKCount
-                            .NextPK(p) = 1
-                        Next p
-                        .OldestDataLoaded = MinLong
-                    End If
+                    .CountOnDisk = 0
+                    .CountInMemory = s$(2)
+                    .CountTotal = .CountInMemory
+                    .ArrayUbound = .CountInMemory + 2
+                    For p = 1 To PKCount
+                        .NextPK(p) = 1
+                    Next p
+                    .OldestDataLoaded = MinLong
                 End With
                 Select Case tableindex
-                Case tClients:                                  ReDim mClients(TableInfo(tableindex).ArrayUbound)
-                Case tTaxReturns:                               ReDim mTaxReturns(TableInfo(tableindex).ArrayUbound)
-                Case tAppointments: mAppointmentCount = s$(2):  ReDim mAppointments(mAppointmentCount - 1)
-                Case tApptCliLinks: mApptCliLinkCount = s$(2):  ReDim mApptCliLinks(mApptCliLinkCount - 1)
-                Case tSchedules:    mScheduleCount = s$(2):     ReDim mSchedules(mScheduleCount - 1)
+                Case tClients:          ReDim mClients(TableInfo(tableindex).ArrayUbound)
+                Case tTaxReturns:       ReDim mTaxReturns(TableInfo(tableindex).ArrayUbound)
+                Case tAppointments:     ReDim mAppointments(TableInfo(tableindex).ArrayUbound)
+                Case tApptCliLinks:     ReDim mApptCliLinks(TableInfo(tableindex).ArrayUbound)
+                Case tSchedules:        ReDim mSchedules(TableInfo(tableindex).ArrayUbound)
                 Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
                 End Select
                 a = 0
@@ -224,12 +176,10 @@ ElseIf vCreateIfNotExists Then
                     PK(p) = CLng(s$(p - 1))
                 Next p
                 With TableInfo(tableindex)
-                    If .InUse Then
-                        For p = 1 To PKCount
-                            If PK(p) >= .NextPK(p) Then .NextPK(p) = PK(p) + 1
-                        Next p
-                        If a >= .CountInMemory Then Err.Raise 1, , "Too many items in table #" & tableindex
-                    End If
+                    For p = 1 To PKCount
+                        If PK(p) >= .NextPK(p) Then .NextPK(p) = PK(p) + 1
+                    Next p
+                    If a >= .CountInMemory Then Err.Raise 1, , "Too many items in table #" & tableindex
                 End With
                 Select Case tableindex
                 Case tClients:      Set mClients(a) = New DBModelClient:            mClients(a).TEMP_InitWithData Me, PK, s$(PKCount), s$(PKCount + 1), s$(PKCount + 2), s$(PKCount + 3)
@@ -279,8 +229,6 @@ Dim PK(1 To PKCount) As Long, a&, p&, countofnewloaded As Long
 Dim tempobject As Object
 
 With TableInfo(tableindex)
-    If Not .InUse Then Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
-
     If mLoaded Then
         'Since the initial load process (ConnectToDatabase) has already been completed, we have no requirement
         '  to leave the file pointer at the end of this table. So if there's nothing to load, just exit.
@@ -393,29 +341,12 @@ If mLoaded And mIsWriteable Then
         'Database header
         tempfile.WriteLong LatestSchemaVersion
 
-        'Clients
+        'Tables
         WriteTable tClients, tempfile
-
-        'TaxReturns
         WriteTable tTaxReturns, tempfile
-
-        'Appointments
-        tempfile.WriteLong mAppointmentCount
-        For a = 0 To mAppointmentCount - 1
-            mAppointments(a).Serialize tempfile
-        Next a
-
-        'ApptCliLinks
-        tempfile.WriteLong mApptCliLinkCount
-        For a = 0 To mApptCliLinkCount - 1
-            mApptCliLinks(a).Serialize tempfile
-        Next a
-
-        'Schedules
-        tempfile.WriteLong mScheduleCount
-        For a = 0 To mScheduleCount - 1
-            mSchedules(a).Serialize tempfile
-        Next a
+        WriteTable tAppointments, tempfile
+        WriteTable tApptCliLinks, tempfile
+        WriteTable tSchedules, tempfile
 
         'Database footer
         tempfile.WriteLong LatestSchemaVersion
@@ -637,7 +568,7 @@ Set c = FindClient(vClientID, i)        'This will check mLoaded for us
 If c Is Nothing Then Exit Sub
 'Remove foreign key references to this record first
 LoadMoreRecords tTaxReturns, MinLong    'Load all into memory
-'LoadMoreRecords tApptCliLinks, MinLong  'Load all into memory
+LoadMoreRecords tApptCliLinks, MinLong  'Load all into memory
 With TableInfo(tTaxReturns)
     For b = 0 To .CountInMemory - 1
         If mTaxReturns(b).ClientID = vClientID Then
@@ -648,16 +579,16 @@ With TableInfo(tTaxReturns)
         End If
     Next b
 End With
-'With TableInfo(tApptCliLinks)
-'    For b = 0 To .CountInMemory - 1
-'        If mApptCliLinks(b).ClientID = vClientID Then
-'            If Not mApptCliLinks(b).Deleted Then
-'                mApptCliLinks(b).Deleted = True
-'                .CountInMemoryDeleted = .CountInMemoryDeleted + 1
-'            End If
-'        End If
-'    Next b
-'End With
+With TableInfo(tApptCliLinks)
+    For b = 0 To .CountInMemory - 1
+        If mApptCliLinks(b).ClientID = vClientID Then
+            If Not mApptCliLinks(b).Deleted Then
+                mApptCliLinks(b).Deleted = True
+                .CountInMemoryDeleted = .CountInMemoryDeleted + 1
+            End If
+        End If
+    Next b
+End With
 'Then delete the client
 With TableInfo(tClients)
     mClients(i).Deleted = True
