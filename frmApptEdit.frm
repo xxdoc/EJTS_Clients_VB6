@@ -802,7 +802,7 @@ On Error GoTo ERR_HANDLER
 Dim i&, c As DBModelClient
 i = lstClients.ListIndex
 If i >= 0 Then
-    Set c = frmMain.NEWDATABASE.Client(lstClients.ItemData(i))
+    Set c = frmMain.NEWDATABASE.FindClient(lstClients.ItemData(i))
     If Not c Is Nothing Then
         Dim frm As New frmClientEditPost
         frm.Form_Show fEdit, c, , Me     'This will mark changed if necessary

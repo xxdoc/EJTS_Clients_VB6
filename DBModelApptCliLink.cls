@@ -16,6 +16,7 @@ Private Const MOD_NAME = "DBModelApptCliLink"
 
 'Back reference to database
 Public AttachedDatabase As CDatabase
+Public Deleted As Boolean
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public AppointmentID As Long        'PK1 = Foreign key (DBModelAppointment.ID)
@@ -66,24 +67,6 @@ AppointmentID = PK(1)
 ClientID = PK(2)
 m.PrimaryClient = vPrimaryClient
 End Sub
-
-
-
-
-
-'#################################################################################
-'Relational lookups
-'#################################################################################
-
-'EHT=None
-Public Function Client() As DBModelClient
-Set Client = AttachedDatabase.Client(ClientID)
-End Function
-
-'EHT=None
-Public Function Appointment() As DBModelAppointment
-Set Appointment = AttachedDatabase.Appointment(AppointmentID)
-End Function
 
 
 

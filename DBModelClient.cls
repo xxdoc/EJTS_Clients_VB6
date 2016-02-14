@@ -16,6 +16,7 @@ Private Const MOD_NAME = "DBModelClient"
 
 'Back reference to database
 Public AttachedDatabase As CDatabase
+Public Deleted As Boolean
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public ID As Long                   'PK1 = Autoincrement primary key
@@ -67,19 +68,6 @@ m.Persons(0).Last = vLast
 m.Persons(0).Email = vEmail
 m.Persons(1).First = vFirst2
 End Sub
-
-
-
-
-
-'#################################################################################
-'Relational lookups
-'#################################################################################
-
-'EHT=None
-Public Function Appointments() As DBModelAppointment()
-Appointments = AttachedDatabase.AppointmentsByClient(ID)
-End Function
 
 
 
@@ -146,7 +134,7 @@ End Property
 
 'EHT=None
 Public Property Get CurrentYearReturn() As DBModelTaxReturn
-If mCurrentYearReturn Is Nothing Then Set mCurrentYearReturn = AttachedDatabase.TaxReturn(FileToOpen_Year, ID)
+If mCurrentYearReturn Is Nothing Then Set mCurrentYearReturn = AttachedDatabase.FindTaxReturn(FileToOpen_Year, ID)
 Set CurrentYearReturn = mCurrentYearReturn
 End Property
 
@@ -224,7 +212,7 @@ On Error GoTo ERR_HANDLER
 Dim tr As DBModelTaxReturn, pct As PictureBox, found As Boolean
 
 'Attempt to find the tax return
-Set tr = AttachedDatabase.TaxReturn(TaxReturnYear, ID)
+Set tr = AttachedDatabase.FindTaxReturn(TaxReturnYear, ID)
 found = Not tr Is Nothing
 
 frm.lblTaxYear(TRColumn).Caption = TaxReturnYear
@@ -344,7 +332,7 @@ If Not ValidateTextbox(frm.txtField(fncNotes2), temp.Notes2) Then GoTo VALIDATIO
 offset = 0
 For a = 0 To 0
     If frm.pctTaxReturn(a).Visible Then
-        Set tr = AttachedDatabase.TaxReturn(FileToOpen_Year - a, ID)
+        Set tr = AttachedDatabase.FindTaxReturn(FileToOpen_Year - a, ID)
         If tr Is Nothing Then Set tr = New DBModelTaxReturn
         If Not tr.PopulateFromForm(frm, offset) Then Exit Function
     End If

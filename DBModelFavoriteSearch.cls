@@ -16,6 +16,7 @@ Private Const MOD_NAME = "DBModelFavoriteSearch"
 
 'Back reference to database
 Public AttachedDatabase As CDatabase
+Public Deleted As Boolean
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public ID As Long                   'PK1 = Autoincrement primary key

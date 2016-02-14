@@ -16,6 +16,7 @@ Private Const MOD_NAME = "DBModelBookkeepingJob"
 
 'Back reference to database
 Public AttachedDatabase As CDatabase
+Public Deleted As Boolean
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public CalendarYear As Long         'PK1 = Must be specified up front (not part of the unique portion of the primary key; it is used instead for caching purposes)

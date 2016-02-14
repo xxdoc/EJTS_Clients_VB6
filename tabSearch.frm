@@ -575,7 +575,7 @@ If Not menClientEdit.Enabled Then Exit Sub
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
 
 Dim c As DBModelClient
-Set c = frmMain.NEWDATABASE.Client(lstResults.SelectedClientID)
+Set c = frmMain.NEWDATABASE.FindClient(lstResults.SelectedClientID)
 If Not c Is Nothing Then
     Dim frm As New frmClientEditPost
     If frm.Form_Show(fEdit, c) Then     'This will mark changed if necessary
@@ -597,7 +597,7 @@ If Not menClientPost.Enabled Then Exit Sub
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
 
 Dim c As DBModelClient
-Set c = frmMain.NEWDATABASE.Client(lstResults.SelectedClientID)
+Set c = frmMain.NEWDATABASE.FindClient(lstResults.SelectedClientID)
 If Not c Is Nothing Then
     Dim frm As New frmClientEditPost
     If frm.Form_Show(fPost, c) Then     'This will mark changed if necessary

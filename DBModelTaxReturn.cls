@@ -16,6 +16,7 @@ Private Const MOD_NAME = "DBModelTaxReturn"
 
 'Back reference to database
 Public AttachedDatabase As CDatabase
+Public Deleted As Boolean
 
 'Primary key (for efficiency, make public and do not put within the core data type)
 Public TaxYear As Long              'PK1 = Must be specified up front
@@ -72,19 +73,6 @@ ClientID = PK(2)
 m.InboxType = vInboxType
 m.Status = vStatus
 End Sub
-
-
-
-
-
-'#################################################################################
-'Relational lookups
-'#################################################################################
-
-'EHT=None
-Public Function Client() As DBModelClient
-Set Client = AttachedDatabase.Client(ClientID)
-End Function
 
 
 

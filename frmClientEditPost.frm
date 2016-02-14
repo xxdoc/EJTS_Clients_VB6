@@ -26,11 +26,56 @@ Begin VB.Form frmClientEditPost
    ScaleWidth      =   625
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
+   Begin VB.PictureBox pctButtonFrame 
+      BorderStyle     =   0  'None
+      Height          =   975
+      Left            =   1260
+      ScaleHeight     =   65
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   457
+      TabIndex        =   164
+      Top             =   8460
+      Width           =   6855
+      Begin VB.CommandButton btnDelete 
+         Caption         =   "Delete..."
+         Height          =   615
+         Left            =   60
+         TabIndex        =   167
+         Top             =   180
+         Width           =   1575
+      End
+      Begin VB.CommandButton btnSave 
+         Caption         =   "Save"
+         BeginProperty Font 
+            Name            =   "Arial"
+            Size            =   13.5
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   855
+         Left            =   1860
+         TabIndex        =   166
+         Top             =   60
+         Width           =   3135
+      End
+      Begin VB.CommandButton btnCancel 
+         Cancel          =   -1  'True
+         Caption         =   "Cancel"
+         Height          =   615
+         Left            =   5220
+         TabIndex        =   165
+         Top             =   180
+         Width           =   1575
+      End
+   End
    Begin VB.CheckBox chkgroupField 
       Height          =   375
       Index           =   38
       Left            =   9060
-      TabIndex        =   161
+      TabIndex        =   159
       Top             =   1440
       Value           =   2  'Grayed
       Width           =   255
@@ -39,7 +84,7 @@ Begin VB.Form frmClientEditPost
       Height          =   375
       Index           =   39
       Left            =   9060
-      TabIndex        =   160
+      TabIndex        =   158
       Top             =   3600
       Value           =   2  'Grayed
       Width           =   255
@@ -48,7 +93,7 @@ Begin VB.Form frmClientEditPost
       Height          =   375
       Index           =   37
       Left            =   9060
-      TabIndex        =   159
+      TabIndex        =   157
       Top             =   5040
       Value           =   2  'Grayed
       Width           =   255
@@ -57,7 +102,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   30
       Left            =   8400
-      TabIndex        =   156
+      TabIndex        =   154
       Tag             =   "YES|no"
       Top             =   120
       Value           =   2  'Grayed
@@ -79,7 +124,7 @@ Begin VB.Form frmClientEditPost
       Left            =   120
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
-      TabIndex        =   155
+      TabIndex        =   153
       Tag             =   "50"
       Top             =   7560
       Width           =   8895
@@ -92,7 +137,7 @@ Begin VB.Form frmClientEditPost
       ScaleHeight     =   521
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   97
-      TabIndex        =   129
+      TabIndex        =   127
       Top             =   480
       Visible         =   0   'False
       Width           =   1455
@@ -100,7 +145,7 @@ Begin VB.Form frmClientEditPost
          Height          =   255
          Index           =   97
          Left            =   360
-         TabIndex        =   150
+         TabIndex        =   148
          Top             =   4800
          Value           =   2  'Grayed
          Width           =   735
@@ -109,7 +154,7 @@ Begin VB.Form frmClientEditPost
          Height          =   255
          Index           =   102
          Left            =   360
-         TabIndex        =   149
+         TabIndex        =   147
          Top             =   7080
          Value           =   2  'Grayed
          Width           =   735
@@ -118,7 +163,7 @@ Begin VB.Form frmClientEditPost
          Height          =   255
          Index           =   103
          Left            =   360
-         TabIndex        =   148
+         TabIndex        =   146
          Top             =   7440
          Value           =   2  'Grayed
          Width           =   735
@@ -137,7 +182,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   94
          Left            =   120
-         TabIndex        =   147
+         TabIndex        =   145
          Tag             =   "12"
          Top             =   3360
          Width           =   1215
@@ -156,7 +201,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   93
          Left            =   120
-         TabIndex        =   146
+         TabIndex        =   144
          Tag             =   "31"
          Top             =   2880
          Width           =   1215
@@ -175,7 +220,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   101
          Left            =   120
-         TabIndex        =   145
+         TabIndex        =   143
          Tag             =   "54"
          Top             =   6600
          Width           =   1215
@@ -194,7 +239,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   95
          Left            =   120
-         TabIndex        =   144
+         TabIndex        =   142
          Tag             =   "23"
          Top             =   3840
          Width           =   1215
@@ -213,7 +258,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   96
          Left            =   120
-         TabIndex        =   143
+         TabIndex        =   141
          Tag             =   "23"
          Top             =   4320
          Width           =   1215
@@ -232,7 +277,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   98
          Left            =   120
-         TabIndex        =   142
+         TabIndex        =   140
          Tag             =   "21"
          Top             =   5160
          Width           =   1215
@@ -251,7 +296,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   100
          Left            =   120
-         TabIndex        =   141
+         TabIndex        =   139
          Tag             =   "21"
          Top             =   6120
          Width           =   1215
@@ -270,7 +315,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   99
          Left            =   120
-         TabIndex        =   140
+         TabIndex        =   138
          Tag             =   "21"
          Top             =   5640
          Width           =   1215
@@ -285,7 +330,7 @@ Begin VB.Form frmClientEditPost
          ScaleHeight     =   57
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   79
-         TabIndex        =   136
+         TabIndex        =   134
          Top             =   120
          Width           =   1215
          Begin VB.Label lblChooserChoice 
@@ -295,7 +340,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   18
             Left            =   0
-            TabIndex        =   139
+            TabIndex        =   137
             Top             =   0
             Width           =   1185
          End
@@ -306,7 +351,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   19
             Left            =   0
-            TabIndex        =   138
+            TabIndex        =   136
             Top             =   285
             Width           =   1185
          End
@@ -317,7 +362,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   20
             Left            =   0
-            TabIndex        =   137
+            TabIndex        =   135
             Top             =   570
             Width           =   1185
          End
@@ -332,7 +377,7 @@ Begin VB.Form frmClientEditPost
          ScaleHeight     =   76
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   79
-         TabIndex        =   131
+         TabIndex        =   129
          Top             =   1080
          Width           =   1215
          Begin VB.Label lblChooserChoice 
@@ -342,7 +387,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   24
             Left            =   0
-            TabIndex        =   135
+            TabIndex        =   133
             Top             =   855
             Width           =   1185
          End
@@ -353,7 +398,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   23
             Left            =   0
-            TabIndex        =   134
+            TabIndex        =   132
             Top             =   570
             Width           =   1185
          End
@@ -364,7 +409,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   22
             Left            =   0
-            TabIndex        =   133
+            TabIndex        =   131
             Top             =   285
             Width           =   1185
          End
@@ -375,7 +420,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   21
             Left            =   0
-            TabIndex        =   132
+            TabIndex        =   130
             Top             =   0
             Width           =   1185
          End
@@ -394,7 +439,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   92
          Left            =   120
-         TabIndex        =   130
+         TabIndex        =   128
          Tag             =   "31"
          Top             =   2400
          Width           =   1215
@@ -410,7 +455,7 @@ Begin VB.Form frmClientEditPost
       ScaleHeight     =   76
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   135
-      TabIndex        =   112
+      TabIndex        =   110
       Top             =   5760
       Width           =   2055
       Begin VB.Label lblChooserChoice 
@@ -420,7 +465,7 @@ Begin VB.Form frmClientEditPost
          Height          =   285
          Index           =   3
          Left            =   0
-         TabIndex        =   116
+         TabIndex        =   114
          Top             =   855
          Width           =   2025
       End
@@ -431,7 +476,7 @@ Begin VB.Form frmClientEditPost
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   115
+         TabIndex        =   113
          Top             =   570
          Width           =   2025
       End
@@ -442,7 +487,7 @@ Begin VB.Form frmClientEditPost
          Height          =   285
          Index           =   1
          Left            =   0
-         TabIndex        =   114
+         TabIndex        =   112
          Top             =   285
          Width           =   2025
       End
@@ -453,7 +498,7 @@ Begin VB.Form frmClientEditPost
          Height          =   285
          Index           =   0
          Left            =   0
-         TabIndex        =   113
+         TabIndex        =   111
          Top             =   0
          Width           =   2025
       End
@@ -466,7 +511,7 @@ Begin VB.Form frmClientEditPost
       ScaleHeight     =   521
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   97
-      TabIndex        =   87
+      TabIndex        =   85
       Top             =   480
       Visible         =   0   'False
       Width           =   1455
@@ -484,7 +529,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   72
          Left            =   120
-         TabIndex        =   128
+         TabIndex        =   126
          Tag             =   "31"
          Top             =   2400
          Width           =   1215
@@ -499,7 +544,7 @@ Begin VB.Form frmClientEditPost
          ScaleHeight     =   76
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   79
-         TabIndex        =   122
+         TabIndex        =   120
          Top             =   1080
          Width           =   1215
          Begin VB.Label lblChooserChoice 
@@ -509,7 +554,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   14
             Left            =   0
-            TabIndex        =   126
+            TabIndex        =   124
             Top             =   0
             Width           =   1185
          End
@@ -520,7 +565,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   15
             Left            =   0
-            TabIndex        =   125
+            TabIndex        =   123
             Top             =   285
             Width           =   1185
          End
@@ -531,7 +576,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   16
             Left            =   0
-            TabIndex        =   124
+            TabIndex        =   122
             Top             =   570
             Width           =   1185
          End
@@ -542,7 +587,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   17
             Left            =   0
-            TabIndex        =   123
+            TabIndex        =   121
             Top             =   855
             Width           =   1185
          End
@@ -557,7 +602,7 @@ Begin VB.Form frmClientEditPost
          ScaleHeight     =   57
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   79
-         TabIndex        =   108
+         TabIndex        =   106
          Top             =   120
          Width           =   1215
          Begin VB.Label lblChooserChoice 
@@ -567,7 +612,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   13
             Left            =   0
-            TabIndex        =   111
+            TabIndex        =   109
             Top             =   570
             Width           =   1185
          End
@@ -578,7 +623,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   12
             Left            =   0
-            TabIndex        =   110
+            TabIndex        =   108
             Top             =   285
             Width           =   1185
          End
@@ -589,7 +634,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   11
             Left            =   0
-            TabIndex        =   109
+            TabIndex        =   107
             Top             =   0
             Width           =   1185
          End
@@ -608,7 +653,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   79
          Left            =   120
-         TabIndex        =   98
+         TabIndex        =   96
          Tag             =   "21"
          Top             =   5640
          Width           =   1215
@@ -627,7 +672,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   80
          Left            =   120
-         TabIndex        =   97
+         TabIndex        =   95
          Tag             =   "21"
          Top             =   6120
          Width           =   1215
@@ -646,7 +691,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   78
          Left            =   120
-         TabIndex        =   96
+         TabIndex        =   94
          Tag             =   "21"
          Top             =   5160
          Width           =   1215
@@ -665,7 +710,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   76
          Left            =   120
-         TabIndex        =   95
+         TabIndex        =   93
          Tag             =   "23"
          Top             =   4320
          Width           =   1215
@@ -684,7 +729,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   75
          Left            =   120
-         TabIndex        =   94
+         TabIndex        =   92
          Tag             =   "23"
          Top             =   3840
          Width           =   1215
@@ -703,7 +748,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   81
          Left            =   120
-         TabIndex        =   93
+         TabIndex        =   91
          Tag             =   "54"
          Top             =   6600
          Width           =   1215
@@ -722,7 +767,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   73
          Left            =   120
-         TabIndex        =   92
+         TabIndex        =   90
          Tag             =   "31"
          Top             =   2880
          Width           =   1215
@@ -741,7 +786,7 @@ Begin VB.Form frmClientEditPost
          Height          =   375
          Index           =   74
          Left            =   120
-         TabIndex        =   91
+         TabIndex        =   89
          Tag             =   "12"
          Top             =   3360
          Width           =   1215
@@ -750,7 +795,7 @@ Begin VB.Form frmClientEditPost
          Height          =   255
          Index           =   83
          Left            =   360
-         TabIndex        =   90
+         TabIndex        =   88
          Top             =   7440
          Value           =   2  'Grayed
          Width           =   735
@@ -759,7 +804,7 @@ Begin VB.Form frmClientEditPost
          Height          =   255
          Index           =   82
          Left            =   360
-         TabIndex        =   89
+         TabIndex        =   87
          Top             =   7080
          Value           =   2  'Grayed
          Width           =   735
@@ -768,7 +813,7 @@ Begin VB.Form frmClientEditPost
          Height          =   255
          Index           =   77
          Left            =   360
-         TabIndex        =   88
+         TabIndex        =   86
          Top             =   4800
          Value           =   2  'Grayed
          Width           =   735
@@ -778,7 +823,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   31
       Left            =   5400
-      TabIndex        =   66
+      TabIndex        =   64
       Tag             =   "YES|no"
       Top             =   120
       Value           =   2  'Grayed
@@ -788,7 +833,7 @@ Begin VB.Form frmClientEditPost
       Height          =   360
       Index           =   41
       Left            =   1440
-      TabIndex        =   63
+      TabIndex        =   61
       Top             =   6240
       Value           =   2  'Grayed
       Width           =   1455
@@ -807,7 +852,7 @@ Begin VB.Form frmClientEditPost
       Height          =   360
       Index           =   26
       Left            =   3840
-      TabIndex        =   58
+      TabIndex        =   56
       Tag             =   "31"
       Top             =   3600
       Width           =   1455
@@ -826,7 +871,7 @@ Begin VB.Form frmClientEditPost
       Height          =   360
       Index           =   6
       Left            =   3840
-      TabIndex        =   56
+      TabIndex        =   54
       Tag             =   "31"
       Top             =   1440
       Width           =   1455
@@ -1270,32 +1315,6 @@ Begin VB.Form frmClientEditPost
       Top             =   720
       Width           =   3375
    End
-   Begin VB.CommandButton btnCancel 
-      Cancel          =   -1  'True
-      Caption         =   "Cancel"
-      Height          =   615
-      Left            =   5640
-      TabIndex        =   24
-      Top             =   8640
-      Width           =   1575
-   End
-   Begin VB.CommandButton btnSave 
-      Caption         =   "Save"
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   13.5
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   855
-      Left            =   2160
-      TabIndex        =   23
-      Top             =   8520
-      Width           =   3135
-   End
    Begin VB.PictureBox pctTaxReturn 
       BorderStyle     =   0  'None
       Height          =   7815
@@ -1304,7 +1323,7 @@ Begin VB.Form frmClientEditPost
       ScaleHeight     =   521
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   97
-      TabIndex        =   75
+      TabIndex        =   73
       Top             =   480
       Visible         =   0   'False
       Width           =   1455
@@ -1322,7 +1341,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   52
          Left            =   120
-         TabIndex        =   158
+         TabIndex        =   156
          Tag             =   "31"
          Top             =   2400
          Width           =   1215
@@ -1337,7 +1356,7 @@ Begin VB.Form frmClientEditPost
          ScaleHeight     =   76
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   79
-         TabIndex        =   117
+         TabIndex        =   115
          Top             =   1080
          Width           =   1215
          Begin VB.Label lblChooserChoice 
@@ -1347,7 +1366,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   10
             Left            =   0
-            TabIndex        =   121
+            TabIndex        =   119
             Top             =   855
             Width           =   1185
          End
@@ -1358,7 +1377,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   9
             Left            =   0
-            TabIndex        =   120
+            TabIndex        =   118
             Top             =   570
             Width           =   1185
          End
@@ -1369,7 +1388,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   8
             Left            =   0
-            TabIndex        =   119
+            TabIndex        =   117
             Top             =   285
             Width           =   1185
          End
@@ -1380,7 +1399,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   7
             Left            =   0
-            TabIndex        =   118
+            TabIndex        =   116
             Top             =   0
             Width           =   1185
          End
@@ -1395,7 +1414,7 @@ Begin VB.Form frmClientEditPost
          ScaleHeight     =   57
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   79
-         TabIndex        =   104
+         TabIndex        =   102
          Top             =   120
          Width           =   1215
          Begin VB.Label lblChooserChoice 
@@ -1405,7 +1424,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   4
             Left            =   0
-            TabIndex        =   107
+            TabIndex        =   105
             Top             =   0
             Width           =   1185
          End
@@ -1416,7 +1435,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   5
             Left            =   0
-            TabIndex        =   106
+            TabIndex        =   104
             Top             =   285
             Width           =   1185
          End
@@ -1427,7 +1446,7 @@ Begin VB.Form frmClientEditPost
             Height          =   285
             Index           =   6
             Left            =   0
-            TabIndex        =   105
+            TabIndex        =   103
             Top             =   570
             Width           =   1185
          End
@@ -1446,7 +1465,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   54
          Left            =   120
-         TabIndex        =   86
+         TabIndex        =   84
          Tag             =   "12"
          Top             =   3360
          Width           =   1215
@@ -1465,7 +1484,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   53
          Left            =   120
-         TabIndex        =   85
+         TabIndex        =   83
          Tag             =   "31"
          Top             =   2880
          Width           =   1215
@@ -1484,7 +1503,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   61
          Left            =   120
-         TabIndex        =   84
+         TabIndex        =   82
          Tag             =   "54"
          Top             =   6600
          Width           =   1215
@@ -1503,7 +1522,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   55
          Left            =   120
-         TabIndex        =   83
+         TabIndex        =   81
          Tag             =   "23"
          Top             =   3840
          Width           =   1215
@@ -1522,7 +1541,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   56
          Left            =   120
-         TabIndex        =   82
+         TabIndex        =   80
          Tag             =   "23"
          Top             =   4320
          Width           =   1215
@@ -1541,7 +1560,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   58
          Left            =   120
-         TabIndex        =   81
+         TabIndex        =   79
          Tag             =   "21"
          Top             =   5160
          Width           =   1215
@@ -1560,7 +1579,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   60
          Left            =   120
-         TabIndex        =   80
+         TabIndex        =   78
          Tag             =   "21"
          Top             =   6120
          Width           =   1215
@@ -1579,7 +1598,7 @@ Begin VB.Form frmClientEditPost
          Height          =   360
          Index           =   59
          Left            =   120
-         TabIndex        =   79
+         TabIndex        =   77
          Tag             =   "21"
          Top             =   5640
          Width           =   1215
@@ -1588,7 +1607,7 @@ Begin VB.Form frmClientEditPost
          Height          =   240
          Index           =   63
          Left            =   360
-         TabIndex        =   78
+         TabIndex        =   76
          Top             =   7440
          Value           =   2  'Grayed
          Width           =   735
@@ -1597,7 +1616,7 @@ Begin VB.Form frmClientEditPost
          Height          =   240
          Index           =   62
          Left            =   360
-         TabIndex        =   77
+         TabIndex        =   75
          Top             =   7080
          Value           =   2  'Grayed
          Width           =   735
@@ -1606,7 +1625,7 @@ Begin VB.Form frmClientEditPost
          Height          =   240
          Index           =   57
          Left            =   360
-         TabIndex        =   76
+         TabIndex        =   74
          Top             =   4800
          Value           =   2  'Grayed
          Width           =   735
@@ -1627,7 +1646,7 @@ Begin VB.Form frmClientEditPost
       Height          =   330
       Index           =   1
       Left            =   7815
-      TabIndex        =   165
+      TabIndex        =   163
       ToolTipText     =   "Swap data between Taxpayer and Spouse"
       Top             =   2130
       Width           =   705
@@ -1647,7 +1666,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   37
       Left            =   8640
-      TabIndex        =   164
+      TabIndex        =   162
       Top             =   4800
       Visible         =   0   'False
       Width           =   615
@@ -1667,7 +1686,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   39
       Left            =   8640
-      TabIndex        =   163
+      TabIndex        =   161
       Top             =   3360
       Visible         =   0   'False
       Width           =   615
@@ -1687,7 +1706,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   38
       Left            =   8640
-      TabIndex        =   162
+      TabIndex        =   160
       Top             =   1200
       Visible         =   0   'False
       Width           =   615
@@ -1707,7 +1726,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   30
       Left            =   6480
-      TabIndex        =   157
+      TabIndex        =   155
       Top             =   135
       Width           =   1815
    End
@@ -1734,7 +1753,7 @@ Begin VB.Form frmClientEditPost
       Height          =   615
       Index           =   1
       Left            =   14520
-      TabIndex        =   154
+      TabIndex        =   152
       ToolTipText     =   "Shift the view to see older tax returns"
       Top             =   8400
       Visible         =   0   'False
@@ -1755,7 +1774,7 @@ Begin VB.Form frmClientEditPost
       Height          =   615
       Index           =   0
       Left            =   12960
-      TabIndex        =   153
+      TabIndex        =   151
       ToolTipText     =   "Shift the view to see more recent tax returns"
       Top             =   8400
       Visible         =   0   'False
@@ -1776,7 +1795,7 @@ Begin VB.Form frmClientEditPost
       Height          =   285
       Index           =   2
       Left            =   14520
-      TabIndex        =   152
+      TabIndex        =   150
       Top             =   120
       Width           =   1455
    End
@@ -1794,7 +1813,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   2
       Left            =   14520
-      TabIndex        =   151
+      TabIndex        =   149
       Top             =   600
       Visible         =   0   'False
       Width           =   1455
@@ -1814,7 +1833,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   52
       Left            =   9480
-      TabIndex        =   127
+      TabIndex        =   125
       Top             =   2925
       Width           =   1815
    End
@@ -1833,7 +1852,7 @@ Begin VB.Form frmClientEditPost
       Height          =   315
       Index           =   0
       Left            =   8520
-      TabIndex        =   103
+      TabIndex        =   101
       Top             =   2160
       Width           =   510
    End
@@ -1851,7 +1870,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   1
       Left            =   12960
-      TabIndex        =   102
+      TabIndex        =   100
       Top             =   600
       Visible         =   0   'False
       Width           =   1455
@@ -1870,7 +1889,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   0
       Left            =   11400
-      TabIndex        =   101
+      TabIndex        =   99
       Top             =   600
       Visible         =   0   'False
       Width           =   1455
@@ -1890,7 +1909,7 @@ Begin VB.Form frmClientEditPost
       Height          =   285
       Index           =   1
       Left            =   12960
-      TabIndex        =   100
+      TabIndex        =   98
       Top             =   120
       Width           =   1455
    End
@@ -1909,7 +1928,7 @@ Begin VB.Form frmClientEditPost
       Height          =   285
       Index           =   0
       Left            =   11400
-      TabIndex        =   99
+      TabIndex        =   97
       Top             =   120
       Width           =   1455
    End
@@ -1929,7 +1948,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   1
       Left            =   5400
-      TabIndex        =   74
+      TabIndex        =   72
       Top             =   3990
       Visible         =   0   'False
       Width           =   1455
@@ -1950,7 +1969,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   0
       Left            =   5400
-      TabIndex        =   73
+      TabIndex        =   71
       Top             =   1830
       Visible         =   0   'False
       Width           =   1455
@@ -1971,7 +1990,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   1
       Left            =   3840
-      TabIndex        =   72
+      TabIndex        =   70
       Top             =   3990
       Visible         =   0   'False
       Width           =   1455
@@ -1991,7 +2010,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   31
       Left            =   3480
-      TabIndex        =   71
+      TabIndex        =   69
       Top             =   135
       Width           =   1815
    End
@@ -2009,7 +2028,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   41
       Left            =   1440
-      TabIndex        =   70
+      TabIndex        =   68
       Top             =   6000
       Width           =   1455
    End
@@ -2027,7 +2046,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   44
       Left            =   6960
-      TabIndex        =   62
+      TabIndex        =   60
       Top             =   5520
       Width           =   2055
    End
@@ -2045,7 +2064,7 @@ Begin VB.Form frmClientEditPost
       EndProperty
       Height          =   255
       Left            =   5280
-      TabIndex        =   61
+      TabIndex        =   59
       Top             =   6300
       Width           =   255
    End
@@ -2065,7 +2084,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   0
       Left            =   3840
-      TabIndex        =   60
+      TabIndex        =   58
       Top             =   1830
       Visible         =   0   'False
       Width           =   1455
@@ -2084,7 +2103,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   26
       Left            =   3840
-      TabIndex        =   59
+      TabIndex        =   57
       Top             =   3360
       Width           =   1455
    End
@@ -2102,7 +2121,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   6
       Left            =   3840
-      TabIndex        =   57
+      TabIndex        =   55
       Top             =   1200
       Width           =   1455
    End
@@ -2120,7 +2139,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   42
       Left            =   4560
-      TabIndex        =   54
+      TabIndex        =   52
       Top             =   6000
       Width           =   1695
    End
@@ -2138,7 +2157,7 @@ Begin VB.Form frmClientEditPost
       Height          =   375
       Index           =   2
       Left            =   120
-      TabIndex        =   43
+      TabIndex        =   41
       Top             =   4440
       Width           =   2535
    End
@@ -2156,7 +2175,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   24
       Left            =   6960
-      TabIndex        =   40
+      TabIndex        =   38
       Top             =   3360
       Width           =   1695
    End
@@ -2174,7 +2193,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   27
       Left            =   5400
-      TabIndex        =   39
+      TabIndex        =   37
       Top             =   3360
       Width           =   1455
    End
@@ -2192,7 +2211,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   22
       Left            =   4560
-      TabIndex        =   36
+      TabIndex        =   34
       Top             =   2640
       Width           =   975
    End
@@ -2210,7 +2229,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   21
       Left            =   2760
-      TabIndex        =   35
+      TabIndex        =   33
       Top             =   2640
       Width           =   1695
    End
@@ -2228,7 +2247,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   25
       Left            =   120
-      TabIndex        =   38
+      TabIndex        =   36
       Top             =   3360
       Width           =   3615
    End
@@ -2246,7 +2265,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   23
       Left            =   5640
-      TabIndex        =   34
+      TabIndex        =   32
       Top             =   2640
       Width           =   3375
    End
@@ -2264,7 +2283,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   20
       Left            =   120
-      TabIndex        =   33
+      TabIndex        =   31
       Top             =   2640
       Width           =   2535
    End
@@ -2282,7 +2301,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   4
       Left            =   6960
-      TabIndex        =   31
+      TabIndex        =   29
       Top             =   1200
       Width           =   1695
    End
@@ -2300,7 +2319,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   7
       Left            =   5400
-      TabIndex        =   32
+      TabIndex        =   30
       Top             =   1200
       Width           =   1455
    End
@@ -2318,7 +2337,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   2
       Left            =   4560
-      TabIndex        =   26
+      TabIndex        =   24
       Top             =   480
       Width           =   975
    End
@@ -2336,7 +2355,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   1
       Left            =   2760
-      TabIndex        =   27
+      TabIndex        =   25
       Top             =   480
       Width           =   1695
    End
@@ -2354,7 +2373,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   0
       Left            =   120
-      TabIndex        =   25
+      TabIndex        =   23
       Top             =   480
       Width           =   2535
    End
@@ -2372,7 +2391,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   3
       Left            =   5640
-      TabIndex        =   28
+      TabIndex        =   26
       Top             =   480
       Width           =   3375
    End
@@ -2390,7 +2409,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   40
       Left            =   120
-      TabIndex        =   45
+      TabIndex        =   43
       Top             =   6000
       Width           =   975
    End
@@ -2408,7 +2427,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   45
       Left            =   120
-      TabIndex        =   44
+      TabIndex        =   42
       Top             =   6840
       Width           =   6975
    End
@@ -2426,7 +2445,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   5
       Left            =   120
-      TabIndex        =   30
+      TabIndex        =   28
       Top             =   1200
       Width           =   3615
    End
@@ -2444,7 +2463,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   36
       Left            =   6960
-      TabIndex        =   42
+      TabIndex        =   40
       Top             =   4800
       Width           =   1695
    End
@@ -2462,7 +2481,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   32
       Left            =   120
-      TabIndex        =   41
+      TabIndex        =   39
       Top             =   4800
       Width           =   6735
    End
@@ -2480,7 +2499,7 @@ Begin VB.Form frmClientEditPost
       Height          =   375
       Index           =   1
       Left            =   120
-      TabIndex        =   37
+      TabIndex        =   35
       Top             =   2280
       Width           =   2535
    End
@@ -2498,7 +2517,7 @@ Begin VB.Form frmClientEditPost
       Height          =   375
       Index           =   0
       Left            =   120
-      TabIndex        =   29
+      TabIndex        =   27
       Top             =   120
       Width           =   2535
    End
@@ -2517,7 +2536,7 @@ Begin VB.Form frmClientEditPost
       ForeColor       =   &H00808080&
       Height          =   150
       Left            =   15000
-      TabIndex        =   55
+      TabIndex        =   53
       Top             =   9240
       Width           =   975
    End
@@ -2536,7 +2555,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   63
       Left            =   9480
-      TabIndex        =   69
+      TabIndex        =   67
       Top             =   7935
       Width           =   1815
    End
@@ -2555,7 +2574,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   62
       Left            =   9480
-      TabIndex        =   68
+      TabIndex        =   66
       Top             =   7575
       Width           =   1815
    End
@@ -2574,7 +2593,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   57
       Left            =   9480
-      TabIndex        =   67
+      TabIndex        =   65
       Top             =   5295
       Width           =   1815
    End
@@ -2593,7 +2612,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   50
       Left            =   9480
-      TabIndex        =   65
+      TabIndex        =   63
       Top             =   630
       Width           =   1815
    End
@@ -2612,7 +2631,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   51
       Left            =   9480
-      TabIndex        =   64
+      TabIndex        =   62
       Top             =   1590
       Width           =   1815
    End
@@ -2631,7 +2650,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   61
       Left            =   9480
-      TabIndex        =   53
+      TabIndex        =   51
       Top             =   7125
       Width           =   1815
    End
@@ -2650,7 +2669,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   60
       Left            =   9480
-      TabIndex        =   52
+      TabIndex        =   50
       Top             =   6645
       Width           =   1815
    End
@@ -2669,7 +2688,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   59
       Left            =   9480
-      TabIndex        =   51
+      TabIndex        =   49
       Top             =   6165
       Width           =   1815
    End
@@ -2688,7 +2707,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   58
       Left            =   9480
-      TabIndex        =   50
+      TabIndex        =   48
       Top             =   5685
       Width           =   1815
    End
@@ -2707,7 +2726,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   56
       Left            =   9480
-      TabIndex        =   49
+      TabIndex        =   47
       Top             =   4845
       Width           =   1815
    End
@@ -2726,7 +2745,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   55
       Left            =   9480
-      TabIndex        =   48
+      TabIndex        =   46
       Top             =   4365
       Width           =   1815
    End
@@ -2745,7 +2764,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   54
       Left            =   9480
-      TabIndex        =   47
+      TabIndex        =   45
       Top             =   3885
       Width           =   1815
    End
@@ -2764,7 +2783,7 @@ Begin VB.Form frmClientEditPost
       Height          =   255
       Index           =   53
       Left            =   9480
-      TabIndex        =   46
+      TabIndex        =   44
       Top             =   3405
       Width           =   1815
    End
@@ -3037,17 +3056,28 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnCancel_Click", Err
 End Sub
 
+'EHT=Standard
+Private Sub btnDelete_Click()
+On Error GoTo ERR_HANDLER
+
+If MsgBox("Are you sure you want to delete " & This.ToString & "?" & vbCrLf & vbCrLf & "This will permanently modify the entire database history:" & vbCrLf & "  * remove this client's name from any associated appointments" & vbCrLf & "  * delete associated tax returns (not just the years visible here)", vbExclamation Or vbOKCancel Or vbDefaultButton2) = vbCancel Then Exit Sub
+frmMain.NEWDATABASE.DeleteClient This.ID
+DataChanged = True
+Unload Me
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnDelete_Click", Err
+End Sub
+
 'EHT=ResumeNext
 Private Sub Form_Resize()
 On Error Resume Next
 
-Dim sw!, sh!, tw!
+Dim sw!, sh!
 sw = Me.ScaleWidth
 sh = Me.ScaleHeight
 lblChangeTabOrder.Move sw - lblChangeTabOrder.Width - 8, sh - lblChangeTabOrder.Height - 8
-tw = btnSave.Width + btnCancel.Width + 23
-btnSave.Left = (sw / 2) - (tw / 2)
-btnCancel.Left = btnSave.Left + btnSave.Width + 23
+pctButtonFrame.Move (sw / 2) - (pctButtonFrame.Width / 2), sh - pctButtonFrame.Height - 4
 End Sub
 
 
@@ -3340,6 +3370,18 @@ HilightControl Me, btnCancel
 End Sub
 'EHT=ResumeNext
 Private Sub btnCancel_LostFocus()
+On Error Resume Next
+
+ClearControlHilight Me
+End Sub
+'EHT=ResumeNext
+Private Sub btnDelete_GotFocus()
+On Error Resume Next
+
+HilightControl Me, btnDelete
+End Sub
+'EHT=ResumeNext
+Private Sub btnDelete_LostFocus()
 On Error Resume Next
 
 ClearControlHilight Me

@@ -633,7 +633,7 @@ On Error GoTo ERR_HANDLER
 'Don't check .Enabled, because sometimes this code is called without showing the menu first
 
 Dim c As DBModelClient
-Set c = frmMain.NEWDATABASE.Client(lstSection(Index).SelectedClientID)
+Set c = frmMain.NEWDATABASE.FindClient(lstSection(Index).SelectedClientID)
 If Not c Is Nothing Then
     Dim frm As New frmClientEditPost
     If frm.Form_Show(fEdit, c) Then   'This will mark changed if necessary
