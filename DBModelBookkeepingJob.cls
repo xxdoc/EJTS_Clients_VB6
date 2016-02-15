@@ -64,3 +64,17 @@ Set AttachedDatabase = vDB
 CalendarYear = PK(1)
 ID = PK(2)
 End Sub
+
+
+
+
+
+'#################################################################################
+'ToString
+'#################################################################################
+
+'EHT=None
+Public Function ToString() As String
+'<B1234 Last, First>
+ToString = "<B" & ID & " " & m.ClientName & ">"
+End Function

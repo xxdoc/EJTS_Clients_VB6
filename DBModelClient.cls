@@ -81,6 +81,11 @@ End Sub
 Public Function ToString(Optional formatcode As Long) As String
 Select Case formatcode
 Case 0
+    '<C1234 Lastname, First1 & First2>
+    ToString = "<C" & ID & " " & m.Persons(0).Last & ", " & m.Persons(0).First
+    If m.PersonCount > 1 Then ToString = ToString & " & " & m.Persons(1).First
+    ToString = ToString & ">"
+Case 100
     'Lastname, First1 & First2
     ToString = m.Persons(0).Last & ", " & m.Persons(0).First
     If m.PersonCount > 1 Then ToString = ToString & " & " & m.Persons(1).First

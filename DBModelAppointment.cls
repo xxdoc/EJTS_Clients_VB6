@@ -77,10 +77,7 @@ End Sub
 '#################################################################################
 
 'EHT=None
-Public Function ToString(Optional formatcode As Long) As String
-Select Case formatcode
-Case 0
-    '5/6/2015, 4, 2
-    ToString = CDate(m.Day) & ", " & m.TimeSlot & ", " & m.NumSlots
-End Select
+Public Function ToString() As String
+'<A1234 5/6/2015 slot 4 length 2>
+ToString = "<A" & ID & " " & CDate(m.Day) & " slot " & m.TimeSlot & " length " & m.NumSlots & ">"
 End Function

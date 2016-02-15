@@ -61,3 +61,17 @@ Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long)
 Set AttachedDatabase = vDB
 CalendarYear = PK(1)
 End Sub
+
+
+
+
+
+'#################################################################################
+'ToString
+'#################################################################################
+
+'EHT=None
+Public Function ToString() As String
+'<Cal2015>
+ToString = "<Cal" & CalendarYear & ">"
+End Function
