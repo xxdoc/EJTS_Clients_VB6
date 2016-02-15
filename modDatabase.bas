@@ -113,8 +113,7 @@ Public Type typeBookkeepingMonth
     FeeOwed As Long
 End Type
 Public Type typeCoreData_BookkeepingJob
-    ClientID As Long                    'May be NullLong
-    ClientName As String                'May be blank; ignored if ClientID <> NullLong
+    ClientName As String
     Months(11) As typeBookkeepingMonth
 End Type
 
@@ -127,8 +126,7 @@ End Type
 
 'ExtraCharge
 Public Type typeCoreData_ExtraCharge
-    ClientID As Long                    'May be NullLong
-    ClientName As String                'May be blank; ignored if ClientID <> NullLong
+    ClientName As String
     Description As String               'May be blank
     CompletionDate As Date
     Fee As Long

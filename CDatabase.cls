@@ -26,8 +26,8 @@ Private Const errCountOnDiskMismatch1 = "Database file '%1%' has been damaged. C
 Private Const errCountOnDiskMismatch2 = "Count mismatch during save. CountInMemory + PendingCountOnDisk <> CountTotal"
 
 'Schema version
-Private Const LowestSupportedSchemaVersion As Long = 2
-Private Const LatestSchemaVersion As Long = 2
+Private Const LowestSupportedSchemaVersion As Long = 3
+Private Const LatestSchemaVersion As Long = 3
 
 'Database attributes (accessible through class properties)
 Private mDBFile As CMNMOD_CFileHandler

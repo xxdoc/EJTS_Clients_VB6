@@ -36,7 +36,6 @@ Private m As typeCoreData_ExtraCharge
 'EHT=None
 Public Sub InitNew(vCalendarYear As Long)
 CalendarYear = vCalendarYear
-m.ClientID = NullLong
 End Sub
 
 'EHT=None
