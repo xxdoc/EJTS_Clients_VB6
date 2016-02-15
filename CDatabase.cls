@@ -24,6 +24,8 @@ Private Const errUnknownTable = "Unknown table index %1%."
 Private Const errTableMarkerNotFound = "Database file '%1%' has been damaged. Table marker not found at seek position %2%."
 Private Const errCountOnDiskMismatch1 = "Database file '%1%' has been damaged. CountOnDisk read from file does not match what was read on initial open of the database."
 Private Const errCountOnDiskMismatch2 = "Count mismatch during save. CountInMemory + PendingCountOnDisk <> CountTotal"
+Private Const errInvalidPrimaryKey = "Cannot add new record, since it has an invalid primary key."
+Private Const errDuplicateRecord = "Cannot add new record, since a record with the same primary key already exists."
 
 'Schema version
 Private Const LowestSupportedSchemaVersion As Long = 3
@@ -593,31 +595,32 @@ End Function
 
 'EHT=None
 Public Sub DeleteClient(vClientID As Long)
-Dim c As DBModelClient, i As Long, a As Long, b As Long
+'If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim c As DBModelClient, i As Long, a As Long
 Set c = FindClient(vClientID, i)        'This will check mLoaded for us
 If c Is Nothing Then Exit Sub
 'Remove foreign key references to this record first
 LoadMoreRecords tTaxReturns, MinLong    'Load all into memory
 LoadMoreRecords tApptCliLinks, MinLong  'Load all into memory
 With TableInfo(tTaxReturns)
-    For b = 0 To .CountInMemory - 1
-        If mTaxReturns(b).ClientID = vClientID Then
-            If Not mTaxReturns(b).Deleted Then
-                mTaxReturns(b).Deleted = True
+    For a = 0 To .CountInMemory - 1
+        If mTaxReturns(a).ClientID = vClientID Then
+            If Not mTaxReturns(a).Deleted Then
+                mTaxReturns(a).Deleted = True
                 .CountInMemoryDeleted = .CountInMemoryDeleted + 1
             End If
         End If
-    Next b
+    Next a
 End With
 With TableInfo(tApptCliLinks)
-    For b = 0 To .CountInMemory - 1
-        If mApptCliLinks(b).ClientID = vClientID Then
-            If Not mApptCliLinks(b).Deleted Then
-                mApptCliLinks(b).Deleted = True
+    For a = 0 To .CountInMemory - 1
+        If mApptCliLinks(a).ClientID = vClientID Then
+            If Not mApptCliLinks(a).Deleted Then
+                mApptCliLinks(a).Deleted = True
                 .CountInMemoryDeleted = .CountInMemoryDeleted + 1
             End If
         End If
-    Next b
+    Next a
 End With
 'Then delete the client
 With TableInfo(tClients)
@@ -631,6 +634,7 @@ End Sub
 Public Sub AddClient(m As DBModelClient)
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long
+If m.ID < 1 Then Err.Raise 1, , errInvalidPrimaryKey
 With TableInfo(tClients)
     'Since the primary key is autoincrement, there is no need to check for duplicates. We can trust NextPK.
     m.ID = .NextPK(1)
@@ -650,7 +654,7 @@ End With
 End Sub
 
 'EHT=None
-Public Function FindTaxReturn(vTaxYear As Long, vClientID As Long) As DBModelTaxReturn
+Public Function FindTaxReturn(vTaxYear As Long, vClientID As Long, Optional ByRef oFoundIndex As Long) As DBModelTaxReturn
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, t As DBModelTaxReturn
 If vTaxYear < 1 Or vClientID < 1 Then Exit Function
@@ -661,6 +665,7 @@ For a = TableInfo(tTaxReturns).CountInMemory - 1 To 0 Step -1
         If t.ClientID = vClientID Then
             If Not t.Deleted Then
                 Set FindTaxReturn = t
+                oFoundIndex = a
                 Exit For
             End If
         End If
@@ -670,28 +675,51 @@ End Function
 
 'EHT=None
 Public Sub DeleteTaxReturn(vTaxYear As Long, vClientID As Long)
-If Not mLoaded Then Err.Raise 1, , errNotLoaded
-
+'If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim t As DBModelTaxReturn, i As Long
+Set t = FindTaxReturn(vTaxYear, vClientID, i)       'This will check mLoaded for us
+If t Is Nothing Then Exit Sub
+With TableInfo(tTaxReturns)
+    mTaxReturns(i).Deleted = True
+    .CountInMemoryDeleted = .CountInMemoryDeleted + 1
+End With
+SetDirty
 End Sub
 
 'EHT=None
 Public Sub AddTaxReturn(m As DBModelTaxReturn)
-If Not mLoaded Then Err.Raise 1, , errNotLoaded
-'Check for duplicates (and load records back that old in the process)
-
-'LoadMoreRecords tTaxReturns, c.ID
-
+'If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim t As DBModelTaxReturn, a As Long, i As Long
+If m.TaxYear < 1 Or m.ClientID < 1 Then Err.Raise 1, , errInvalidPrimaryKey
+Set t = FindTaxReturn(m.TaxYear, m.ClientID, i)     'This will check mLoaded for us
+If Not t Is Nothing Then Err.Raise 1, , errDuplicateRecord
+With TableInfo(tTaxReturns)
+    'Add the new item to the database
+    a = CalcNewIndexAndExpandIfNeeded(tTaxReturns)
+    Set mTaxReturns(a) = m
+    'If we assume NextPK(1) is correct, then there cannot be any item with a PK(1) higher than NextPK(1).
+    'Therefore, we can (and must) lower OldestDataLoaded to match without actually loading more data, so
+    '  our new PK(1) will be >= OldestDataLoaded, to avoid data corruption and duplication
+    If .OldestDataLoaded > .NextPK(1) Then .OldestDataLoaded = .NextPK(1)
+    'Update counts last
+    .CountInMemory = .CountInMemory + 1
+    .CountTotal = .CountTotal + 1
+    .NextPK(1) = .NextPK(1) + 1
+    SetDirty
+End With
 End Sub
 
 'EHT=None
-Public Function FindAppointment(vAppointmentID As Long) As DBModelAppointment
+Public Function FindAppointment(vAppointmentID As Long, Optional ByRef oFoundIndex As Long) As DBModelAppointment
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long
 If vAppointmentID < 1 Then Exit Function
-For a = mAppointmentCount - 1 To 0 Step -1
+LoadMoreRecords tAppointments, vAppointmentID
+For a = TableInfo(tAppointments).CountInMemory - 1 To 0 Step -1
     If mAppointments(a).ID = vAppointmentID Then
         If Not mAppointments(a).Deleted Then
             Set FindAppointment = mAppointments(a)
+            oFoundIndex = a
             Exit For
         End If
     End If
@@ -699,14 +727,16 @@ Next a
 End Function
 
 'EHT=None
-Public Function FindSchedule(vCalendarYear As Long) As DBModelSchedule
+Public Function FindSchedule(vCalendarYear As Long, Optional ByRef oFoundIndex As Long) As DBModelSchedule
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long
 If vCalendarYear < 1 Then Exit Function
-For a = mScheduleCount - 1 To 0 Step -1
+LoadMoreRecords tSchedules, vCalendarYear
+For a = TableInfo(tSchedules).CountInMemory - 1 To 0 Step -1
     If mSchedules(a).CalendarYear = vCalendarYear Then
         If Not mSchedules(a).Deleted Then
             Set FindSchedule = mSchedules(a)
+            oFoundIndex = a
             Exit For
         End If
     End If
@@ -726,7 +756,8 @@ Public Function FindClientsByAppointment(vAppointmentID As Long) As DBModelClien
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
 Dim a As Long, c As Long, l() As DBModelClient
 If vAppointmentID < 1 Then Exit Function
-For a = mApptCliLinkCount - 1 To 0 Step -1
+LoadMoreRecords tApptCliLinks, vAppointmentID
+For a = TableInfo(tApptCliLinks).CountInMemory - 1 To 0 Step -1
     With mApptCliLinks(a)
         If .AppointmentID = vAppointmentID Then
             If Not .Deleted Then
@@ -741,20 +772,59 @@ FindClientsByAppointment = l
 End Function
 
 'EHT=None
-Public Function FindAppointmentsByClient(vClientID As Long) As DBModelAppointment()
+Public Function FindAppointmentsByClient(vClientID As Long, Optional vCalendarYear As Long = NullLong) As DBModelAppointment()
 If Not mLoaded Then Err.Raise 1, , errNotLoaded
-Dim a As Long, c As Long, l() As DBModelAppointment
+Dim a As Long, c As Long, l() As DBModelAppointment, ta As DBModelAppointment
 If vClientID < 1 Then Exit Function
-For a = mApptCliLinkCount - 1 To 0 Step -1
+LoadMoreRecords tApptCliLinks, MinLong  'Load them all
+For a = TableInfo(tApptCliLinks).CountInMemory - 1 To 0 Step -1
     With mApptCliLinks(a)
         If .ClientID = vClientID Then
             If Not .Deleted Then
-                ReDim Preserve l(c)
-                Set l(c) = FindAppointment(.AppointmentID)
-                c = c + 1
+                Set ta = FindAppointment(.AppointmentID)
+                If vCalendarYear = NullLong Then
+                    ReDim Preserve l(c)
+                    Set l(c) = ta
+                    c = c + 1
+                Else
+                    If ta.CalendarYear = vCalendarYear Then
+                        ReDim Preserve l(c)
+                        Set l(c) = ta
+                        c = c + 1
+                    End If
+                End If
             End If
         End If
     End With
 Next a
 FindAppointmentsByClient = l
+End Function
+
+'EHT=None
+Public Function FindMostRecentAppointment(vClientID As Long, Optional vCalendarYear As Long = NullLong) As DBModelAppointment
+'If Not mLoaded Then Err.Raise 1, , errNotLoaded
+Dim appts() As DBModelAppointment, i As Long, ub As Long
+Dim appt As DBModelAppointment, d As Long, ts As Long, mrd As Long, mrts As Long
+appts = FindAppointmentsByClient(vClientID, vCalendarYear)      'This will check mLoaded for us
+On Error Resume Next
+    ub = -1
+    ub = UBound(appts)
+On Error GoTo 0
+d = MinLong
+ts = MinLong
+For i = 0 To ub
+    If Not appts(i).DidntHappen Then
+        d = appts(i).Day
+        ts = appts(i).TimeSlot
+        If d > mrd Then
+            mrd = d
+            mrts = ts
+            Set FindMostRecentAppointment = appts(i)
+        ElseIf (d = mrd) And (ts > mrts) Then
+            mrd = d
+            mrts = ts
+            Set FindMostRecentAppointment = appts(i)
+        End If
+    End If
+Next i
 End Function

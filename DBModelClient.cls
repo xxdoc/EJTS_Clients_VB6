@@ -215,6 +215,7 @@ Public Function PopulateToForm_TaxReturn(frm As frmClientEditPost, en As Boolean
 On Error GoTo ERR_HANDLER
 
 Dim tr As DBModelTaxReturn, pct As PictureBox, found As Boolean
+Dim appt As DBModelAppointment
 
 'Attempt to find the tax return
 Set tr = AttachedDatabase.FindTaxReturn(TaxReturnYear, ID)
@@ -227,8 +228,13 @@ Set pct = frm.pctTaxReturn(TRColumn)
 If found Then
     'Found it, so populate the data
     If Not tr.PopulateToForm(frm, TRColumn * frm.TaxReturnOffset, en) Then Exit Function
-    'Lookup the appointment for each year
-    FieldToTextbox frm.txtField(fncTaxReturn_AppointmentDate + (TRColumn * frm.TaxReturnOffset)), "TBD", False
+    'Lookup the most recent appointment for each year
+    Set appt = AttachedDatabase.FindMostRecentAppointment(ID, TaxReturnYear + 1)
+    If appt Is Nothing Then
+        FieldToTextbox frm.txtField(fncTaxReturn_AppointmentDate + (TRColumn * frm.TaxReturnOffset)), "N/A", False
+    Else
+        FieldToTextbox frm.txtField(fncTaxReturn_AppointmentDate + (TRColumn * frm.TaxReturnOffset)), appt.ToString(100), False
+    End If
 Else
     'Not found, so hide the frame and show a message instead
     With frm.lblNoTaxReturn(TRColumn)

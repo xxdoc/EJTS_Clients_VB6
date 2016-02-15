@@ -77,7 +77,36 @@ End Sub
 '#################################################################################
 
 'EHT=None
-Public Function ToString() As String
-'<A1234 5/6/2015 slot 4 length 2>
-ToString = "<A" & ID & " " & CDate(m.Day) & " slot " & m.TimeSlot & " length " & m.NumSlots & ">"
+Public Function ToString(Optional formatcode As Long) As String
+Select Case formatcode
+Case 0
+    '<A1234 5/6/2015 slot 4 length 2>
+    ToString = "<A" & ID & " " & CDate(m.Day) & " slot " & m.TimeSlot & " length " & m.NumSlots & ">"
+Case 100
+    '5/6/2015 slot 4
+    ToString = Format(m.Day, "m/d/yy") & " ts" & m.TimeSlot
+End Select
 End Function
+
+
+
+
+
+'#################################################################################
+'Attributes
+'#################################################################################
+
+'EHT=None
+Public Property Get Day() As Long
+Day = m.Day
+End Property
+
+'EHT=None
+Public Property Get TimeSlot() As Long
+TimeSlot = m.TimeSlot
+End Property
+
+'EHT=None
+Public Property Get DidntHappen() As Boolean
+DidntHappen = m.DidntHappen
+End Property
