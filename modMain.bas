@@ -2,7 +2,7 @@ Attribute VB_Name = "modMain"
 Option Explicit
 Private Const MOD_NAME = "modMain"
 
-'MANIFEST HANDLER CODE FROM THE MANIFEST CREATOR ADD-IN>
+'<manifestcode>
 Private Declare Function LoadLibraryA Lib "kernel32.dll" (ByVal lpLibFileName As String) As Long
 Private Declare Function FreeLibrary Lib "kernel32.dll" (ByVal hLibModule As Long) As Long
 Private Declare Function InitCommonControlsEx Lib "comctl32.dll" (iccex As InitCommonControlsExStruct) As Boolean
@@ -11,9 +11,8 @@ Private Type InitCommonControlsExStruct
     lngSize As Long
     lngICC As Long
 End Type
-'<MANIFEST HANDLER CODE FROM THE MANIFEST CREATOR ADD-IN
+'</manifestcode>
 
-'These must be public in order for the modules to access them>
 Public DEBUGMODE As Boolean
 Public FlashStopTime As Single
 Public Const FlashDuration = 5     'Seconds
@@ -35,10 +34,9 @@ Public FileToOpen_Year&
 Public FileToOpen_OpenReadOnly As Boolean
 
 Public ApptBeingRescheduled As Appointment
-'<These must be public in order for the modules to access them
 
 'EHT=Standard
-'MANIFEST HANDLER CODE FROM THE MANIFEST CREATOR ADD-IN>
+'<manifestcode>
 Sub Main()
 On Error GoTo ERR_HANDLER
 
@@ -62,7 +60,6 @@ Const ICC_USEREX_CLASSES As Long = &H200&
 Const ICC_STANDARD_CLASSES As Long = &H4000&
 Const ICC_WIN95_CLASSES As Long = &HFF&
 Const ICC_ALL_CLASSES As Long = &HFDFF& ' combination of all values above
-
 With iccex
    .lngSize = LenB(iccex)
    .lngICC = ICC_STANDARD_CLASSES ' vb intrinsic controls (buttons, textbox, etc)
@@ -81,7 +78,6 @@ On Error GoTo ERR_HANDLER
 '... show your main form next (i.e., Form1.Show)
 Main_AfterManifestHandling
 If hMod Then FreeLibrary hMod
-
 '** Tip 1: Avoid using VB Frames when applying XP/Vista themes
 '          In place of VB Frames, use pictureboxes instead.
 '** Tip 2: Avoid using Graphical Style property of buttons, checkboxes and option buttons
@@ -90,7 +86,7 @@ If hMod Then FreeLibrary hMod
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Main", Err
 End Sub
-'<MANIFEST HANDLER CODE FROM THE MANIFEST CREATOR ADD-IN
+'</manifestcode>
 
 'EHT=Standard
 Sub Main_AfterManifestHandling()
@@ -99,10 +95,12 @@ On Error GoTo ERR_HANDLER
 Dim c$(), a
 
 If RunningFromIDE Then DEBUGMODE = True
-'DEBUGMODE = True        '[Mark]
 
 'Location of exe
 AppPath = AddTrailingSlash(App.Path)
+
+'We are a single instance app
+If App.PrevInstance Then ShowErrorMsg "Another instance is already running."
 
 'Check if SubClassingForVB.dll is registered
 TryAgain:
@@ -112,12 +110,6 @@ If Not Is_SubClassingForVBdll_Registered Then
         Sleep 2000
         GoTo TryAgain
     Else
-        End
-    End If
-End If
-
-If App.PrevInstance Then
-    If MsgBox("Another instance is already running. Continue anyway?", vbCritical Or vbOKCancel) = vbCancel Then
         End
     End If
 End If
@@ -136,15 +128,15 @@ c$ = Split(Command$, " ")
 For a = 0 To UBound(c$)
     If LCase$(c$(a)) = "readonly" Then
         FileToOpen_OpenReadOnly = True
-    ElseIf LCase$(c$(a)) = "auto" Then
-        FileToOpen_Year = Year(Date) - 1
     Else
         ConvertToLong c$(a), FileToOpen_Year        'If it fails, FileToOpen_Year will remain unchanged
     End If
 Next a
+If FileToOpen_Year = 0 Then FileToOpen_Year = Year(Date) - 1
 
-Set frmStart = New frmStart
-frmStart.Form_Show      'Code will continue after this (not modal)
+Set frmMain = New frmMain
+frmMain.Form_Show
+'Code will continue after this (not modal)
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Main_AfterManifestHandling", Err
