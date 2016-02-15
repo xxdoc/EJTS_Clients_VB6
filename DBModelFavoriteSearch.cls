@@ -56,9 +56,10 @@ Put #fh.FileNum, , m
 End Sub
 
 'EHT=None
-Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long)
+Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vDisplayName As String)
 Set AttachedDatabase = vDB
 ID = PK(1)
+m.DisplayName = vDisplayName
 End Sub
 
 

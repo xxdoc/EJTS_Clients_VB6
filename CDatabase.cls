@@ -38,23 +38,26 @@ Private mLoaded As Boolean
 Private mIsWriteable As Boolean
 Private mIsDirty As Boolean
 
-'Core data
+'Data stored in managed tables (CTAASBEF)
 Private mClients() As DBModelClient
 Private mTaxReturns() As DBModelTaxReturn
 Private mAppointments() As DBModelAppointment
-Private mAppointmentCount As Long
 Private mApptCliLinks() As DBModelApptCliLink
-Private mApptCliLinkCount As Long
 Private mSchedules() As DBModelSchedule
-Private mScheduleCount As Long
+Private mBookkeepingJobs() As DBModelBookkeepingJob
+Private mExtraCharges() As DBModelExtraCharge
+Private mFavoriteSearches() As DBModelFavoriteSearch
 
-'Table data (caching extents, next ID to assign, etc.)
+'Table data (search for "CTAASBEF" to find all locations this is used)
 Private Enum enumTable
     tClients
     tTaxReturns
     tAppointments
     tApptCliLinks
     tSchedules
+    tBookkeepingJobs
+    tExtraCharges
+    tFavoriteSearches
 End Enum
 Private Type typeTableInfo
     'For the portion of data we've already loaded into memory...
@@ -71,7 +74,7 @@ Private Type typeTableInfo
     PendingSeekPosition As Long 'Used by SaveChanges and SaveTable
     PendingCountOnDisk As Long  'Used by SaveChanges and SaveTable
 End Type
-Private Const NumberOfTables = 5
+Private Const NumberOfTables = 8
 Private TableInfo(NumberOfTables - 1) As typeTableInfo
 Private Const TableMarker = &HF9F9F900
 
@@ -128,12 +131,15 @@ If FileExists(mDBFilename) Then
     mSchemaVersionOnDisk = mDBFile.ReadLong
     If (mSchemaVersionOnDisk < LowestSupportedSchemaVersion) Or (mSchemaVersionOnDisk > LatestSchemaVersion) Then Err.Raise 1, , FormatErrorMsg(errSchemaNotSupported, mSchemaVersionOnDisk, LowestSupportedSchemaVersion, LatestSchemaVersion)
 
-    'Table
-    LoadTable tClients, MaxLong                 'Load nothing for now
-    LoadTable tTaxReturns, FileToOpen_Year      'Only load current year
-    LoadTable tAppointments, FileToOpen_Year    'Only load current year
-    LoadTable tApptCliLinks, MaxLong            'Load nothing for now
-    LoadTable tSchedules, FileToOpen_Year       'Only load current year
+    'Table (CTAASBEF)
+    LoadTable tClients, MaxLong                     'Load nothing for now
+    LoadTable tTaxReturns, FileToOpen_Year          'Only load current year
+    LoadTable tAppointments, FileToOpen_Year        'Only load current year
+    LoadTable tApptCliLinks, MaxLong                'Load nothing for now
+    LoadTable tSchedules, FileToOpen_Year           'Only load current year
+    LoadTable tBookkeepingJobs, FileToOpen_Year     'Only load current year
+    LoadTable tExtraCharges, FileToOpen_Year        'Only load current year
+    LoadTable tFavoriteSearches, MinLong            'Load all
 
     'Database footer
     If mDBFile.ReadLong <> mSchemaVersionOnDisk Then Err.Raise 1, , FormatErrorMsg(errDamagedDB, mDBFilename)
@@ -162,12 +168,15 @@ ElseIf vCreateIfNotExists Then
                     Next p
                     .OldestDataLoaded = MinLong
                 End With
-                Select Case tableindex
-                Case tClients:          ReDim mClients(TableInfo(tableindex).ArrayUbound)
-                Case tTaxReturns:       ReDim mTaxReturns(TableInfo(tableindex).ArrayUbound)
-                Case tAppointments:     ReDim mAppointments(TableInfo(tableindex).ArrayUbound)
-                Case tApptCliLinks:     ReDim mApptCliLinks(TableInfo(tableindex).ArrayUbound)
-                Case tSchedules:        ReDim mSchedules(TableInfo(tableindex).ArrayUbound)
+                Select Case tableindex      'CTAASBEF
+                Case tClients:              ReDim mClients(TableInfo(tableindex).ArrayUbound)
+                Case tTaxReturns:           ReDim mTaxReturns(TableInfo(tableindex).ArrayUbound)
+                Case tAppointments:         ReDim mAppointments(TableInfo(tableindex).ArrayUbound)
+                Case tApptCliLinks:         ReDim mApptCliLinks(TableInfo(tableindex).ArrayUbound)
+                Case tSchedules:            ReDim mSchedules(TableInfo(tableindex).ArrayUbound)
+                Case tBookkeepingJobs:      ReDim mBookkeepingJobs(TableInfo(tableindex).ArrayUbound)
+                Case tExtraCharges:         ReDim mExtraCharges(TableInfo(tableindex).ArrayUbound)
+                Case tFavoriteSearches:     ReDim mFavoriteSearches(TableInfo(tableindex).ArrayUbound)
                 Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
                 End Select
                 a = 0
@@ -181,12 +190,15 @@ ElseIf vCreateIfNotExists Then
                     Next p
                     If a >= .CountInMemory Then Err.Raise 1, , "Too many items in table #" & tableindex
                 End With
-                Select Case tableindex
-                Case tClients:      Set mClients(a) = New DBModelClient:            mClients(a).TEMP_InitWithData Me, PK, s$(PKCount), s$(PKCount + 1), s$(PKCount + 2), s$(PKCount + 3)
-                Case tTaxReturns:   Set mTaxReturns(a) = New DBModelTaxReturn:      mTaxReturns(a).TEMP_InitWithData Me, PK, CLng(s$(PKCount)), CLng(s$(PKCount + 1))
-                Case tAppointments: Set mAppointments(a) = New DBModelAppointment:  mAppointments(a).TEMP_InitWithData Me, PK, CDate(s$(PKCount)), CLng(s$(PKCount + 1)), CLng(s$(PKCount + 2))
-                Case tApptCliLinks: Set mApptCliLinks(a) = New DBModelApptCliLink:  mApptCliLinks(a).TEMP_InitWithData Me, PK, CBool(s$(PKCount))
-                Case tSchedules:    Set mSchedules(a) = New DBModelSchedule:        mSchedules(a).TEMP_InitWithData Me, PK
+                Select Case tableindex      'CTAASBEF
+                Case tClients:              Set mClients(a) = New DBModelClient:                    mClients(a).TEMP_InitWithData Me, PK, s$(PKCount), s$(PKCount + 1), s$(PKCount + 2), s$(PKCount + 3)
+                Case tTaxReturns:           Set mTaxReturns(a) = New DBModelTaxReturn:              mTaxReturns(a).TEMP_InitWithData Me, PK, CLng(s$(PKCount)), CLng(s$(PKCount + 1))
+                Case tAppointments:         Set mAppointments(a) = New DBModelAppointment:          mAppointments(a).TEMP_InitWithData Me, PK, CDate(s$(PKCount)), CLng(s$(PKCount + 1)), CLng(s$(PKCount + 2))
+                Case tApptCliLinks:         Set mApptCliLinks(a) = New DBModelApptCliLink:          mApptCliLinks(a).TEMP_InitWithData Me, PK, CBool(s$(PKCount))
+                Case tSchedules:            Set mSchedules(a) = New DBModelSchedule:                mSchedules(a).TEMP_InitWithData Me, PK
+                Case tBookkeepingJobs:      Set mBookkeepingJobs(a) = New DBModelBookkeepingJob:    mBookkeepingJobs(a).TEMP_InitWithData Me, PK, s$(PKCount)
+                Case tExtraCharges:         Set mExtraCharges(a) = New DBModelExtraCharge:          mExtraCharges(a).TEMP_InitWithData Me, PK, s$(PKCount), CLng(PKCount + 1)
+                Case tFavoriteSearches:     Set mFavoriteSearches(a) = New DBModelFavoriteSearch:   mFavoriteSearches(a).TEMP_InitWithData Me, PK, s$(PKCount)
                 Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
                 End Select
                 a = a + 1
@@ -236,12 +248,15 @@ With TableInfo(tableindex)
     End If
 
     'Create a temporary object
-    Select Case tableindex
-    Case tClients:      Set tempobject = New DBModelClient
-    Case tTaxReturns:   Set tempobject = New DBModelTaxReturn
-    Case tAppointments: Set tempobject = New DBModelAppointment
-    Case tApptCliLinks: Set tempobject = New DBModelApptCliLink
-    Case tSchedules:    Set tempobject = New DBModelSchedule
+    Select Case tableindex      'CTAASBEF
+    Case tClients:              Set tempobject = New DBModelClient
+    Case tTaxReturns:           Set tempobject = New DBModelTaxReturn
+    Case tAppointments:         Set tempobject = New DBModelAppointment
+    Case tApptCliLinks:         Set tempobject = New DBModelApptCliLink
+    Case tSchedules:            Set tempobject = New DBModelSchedule
+    Case tBookkeepingJobs:      Set tempobject = New DBModelBookkeepingJob
+    Case tExtraCharges:         Set tempobject = New DBModelExtraCharge
+    Case tFavoriteSearches:     Set tempobject = New DBModelFavoriteSearch
     Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
     End Select
 
@@ -269,12 +284,15 @@ With TableInfo(tableindex)
             p = CalcNewIndexAndExpandIfNeeded(tableindex)
 
             'Store the object, then recreate it so the next InitFromFile doesn't affect the object we just saved
-            Select Case tableindex
-            Case tClients:      Set mClients(p) = tempobject:       Set tempobject = New DBModelClient
-            Case tTaxReturns:   Set mTaxReturns(p) = tempobject:    Set tempobject = New DBModelTaxReturn
-            Case tAppointments: Set mAppointments(p) = tempobject:  Set tempobject = New DBModelAppointment
-            Case tApptCliLinks: Set mApptCliLinks(p) = tempobject:  Set tempobject = New DBModelApptCliLink
-            Case tSchedules:    Set mSchedules(p) = tempobject:     Set tempobject = New DBModelSchedule
+            Select Case tableindex      'CTAASBEF
+            Case tClients:              Set mClients(p) = tempobject:           Set tempobject = New DBModelClient
+            Case tTaxReturns:           Set mTaxReturns(p) = tempobject:        Set tempobject = New DBModelTaxReturn
+            Case tAppointments:         Set mAppointments(p) = tempobject:      Set tempobject = New DBModelAppointment
+            Case tApptCliLinks:         Set mApptCliLinks(p) = tempobject:      Set tempobject = New DBModelApptCliLink
+            Case tSchedules:            Set mSchedules(p) = tempobject:         Set tempobject = New DBModelSchedule
+            Case tBookkeepingJobs:      Set mBookkeepingJobs(p) = tempobject:   Set tempobject = New DBModelBookkeepingJob
+            Case tExtraCharges:         Set mExtraCharges(p) = tempobject:      Set tempobject = New DBModelExtraCharge
+            Case tFavoriteSearches:     Set mFavoriteSearches(p) = tempobject:  Set tempobject = New DBModelFavoriteSearch
             Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
             End Select
 
@@ -308,12 +326,15 @@ Private Function CalcNewIndexAndExpandIfNeeded(tableindex As Long) As Long
 With TableInfo(tableindex)
     If .CountInMemory > .ArrayUbound Then
         .ArrayUbound = .ArrayUbound + 3
-        Select Case tableindex
-        Case tClients:      ReDim Preserve mClients(.ArrayUbound)
-        Case tTaxReturns:   ReDim Preserve mTaxReturns(.ArrayUbound)
-        Case tAppointments: ReDim Preserve mAppointments(.ArrayUbound)
-        Case tApptCliLinks: ReDim Preserve mApptCliLinks(.ArrayUbound)
-        Case tSchedules:    ReDim Preserve mSchedules(.ArrayUbound)
+        Select Case tableindex      'CTAASBEF
+        Case tClients:              ReDim Preserve mClients(.ArrayUbound)
+        Case tTaxReturns:           ReDim Preserve mTaxReturns(.ArrayUbound)
+        Case tAppointments:         ReDim Preserve mAppointments(.ArrayUbound)
+        Case tApptCliLinks:         ReDim Preserve mApptCliLinks(.ArrayUbound)
+        Case tSchedules:            ReDim Preserve mSchedules(.ArrayUbound)
+        Case tBookkeepingJobs:      ReDim Preserve mBookkeepingJobs(.ArrayUbound)
+        Case tExtraCharges:         ReDim Preserve mExtraCharges(.ArrayUbound)
+        Case tFavoriteSearches:     ReDim Preserve mFavoriteSearches(.ArrayUbound)
         Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
         End Select
     End If
@@ -341,12 +362,15 @@ If mLoaded And mIsWriteable Then
         'Database header
         tempfile.WriteLong LatestSchemaVersion
 
-        'Tables
+        'Tables (CTAASBEF)
         WriteTable tClients, tempfile
         WriteTable tTaxReturns, tempfile
         WriteTable tAppointments, tempfile
         WriteTable tApptCliLinks, tempfile
         WriteTable tSchedules, tempfile
+        WriteTable tBookkeepingJobs, tempfile
+        WriteTable tExtraCharges, tempfile
+        WriteTable tFavoriteSearches, tempfile
 
         'Database footer
         tempfile.WriteLong LatestSchemaVersion
@@ -397,12 +421,15 @@ Private Sub WriteTable(tableindex As Long, tempfile As CMNMOD_CFileHandler)
 Dim a As Long, b As Long, PK(1 To PKCount) As Long, tempobject As Object
 
 'Create a temporary object
-Select Case tableindex
-Case tClients:      Set tempobject = New DBModelClient
-Case tTaxReturns:   Set tempobject = New DBModelTaxReturn
-Case tAppointments: Set tempobject = New DBModelAppointment
-Case tApptCliLinks: Set tempobject = New DBModelApptCliLink
-Case tSchedules:    Set tempobject = New DBModelSchedule
+Select Case tableindex      'CTAASBEF
+Case tClients:              Set tempobject = New DBModelClient
+Case tTaxReturns:           Set tempobject = New DBModelTaxReturn
+Case tAppointments:         Set tempobject = New DBModelAppointment
+Case tApptCliLinks:         Set tempobject = New DBModelApptCliLink
+Case tSchedules:            Set tempobject = New DBModelSchedule
+Case tBookkeepingJobs:      Set tempobject = New DBModelBookkeepingJob
+Case tExtraCharges:         Set tempobject = New DBModelExtraCharge
+Case tFavoriteSearches:     Set tempobject = New DBModelFavoriteSearch
 Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
 End Select
 
@@ -444,12 +471,15 @@ With TableInfo(tableindex)
 
     'Now store the ones we have in memory, that have not been marked for deletion (those were already excluded from the total count earlier)
     For a = 0 To .CountInMemory - 1
-        Select Case tableindex
-        Case tClients:      If Not mClients(a).Deleted Then mClients(a).Serialize tempfile
-        Case tTaxReturns:   If Not mTaxReturns(a).Deleted Then mTaxReturns(a).Serialize tempfile
-        Case tAppointments: If Not mAppointments(a).Deleted Then mAppointments(a).Serialize tempfile
-        Case tApptCliLinks: If Not mApptCliLinks(a).Deleted Then mApptCliLinks(a).Serialize tempfile
-        Case tSchedules:    If Not mSchedules(a).Deleted Then mSchedules(a).Serialize tempfile
+        Select Case tableindex      'CTAASBEF
+        Case tClients:              If Not mClients(a).Deleted Then mClients(a).Serialize tempfile
+        Case tTaxReturns:           If Not mTaxReturns(a).Deleted Then mTaxReturns(a).Serialize tempfile
+        Case tAppointments:         If Not mAppointments(a).Deleted Then mAppointments(a).Serialize tempfile
+        Case tApptCliLinks:         If Not mApptCliLinks(a).Deleted Then mApptCliLinks(a).Serialize tempfile
+        Case tSchedules:            If Not mSchedules(a).Deleted Then mSchedules(a).Serialize tempfile
+        Case tBookkeepingJobs:      If Not mBookkeepingJobs(a).Deleted Then mBookkeepingJobs(a).Serialize tempfile
+        Case tExtraCharges:         If Not mExtraCharges(a).Deleted Then mExtraCharges(a).Serialize tempfile
+        Case tFavoriteSearches:     If Not mFavoriteSearches(a).Deleted Then mFavoriteSearches(a).Serialize tempfile
         Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
         End Select
         .PendingCountOnDisk = .PendingCountOnDisk + 1
