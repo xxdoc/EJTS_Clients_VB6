@@ -1185,32 +1185,6 @@ Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsIsAvail", Err
 End Function
 
-'EHT=Standard
-Function DB_FindNextAvailableSlot(LocalDBInstance As EJTSClientsDB, ByVal startdate As Long, NumSlots&, retDay&, retSlot&) As Boolean
-On Error GoTo ERR_HANDLER
-
-Dim cd As Long, a&, b&
-For cd = startdate - LocalDBInstance.ApptBitmap_StartDate To LocalDBInstance.ApptBitmap_Count - 1
-    b = 0
-    For a = 0 To Appointment_NumSlotsUB
-        If LocalDBInstance.ApptBitmap(cd, a) Then
-            b = 0
-        Else
-            b = b + 1
-            If b = NumSlots Then
-                retDay = LocalDBInstance.ApptBitmap_StartDate + cd
-                retSlot = a - NumSlots + 1
-                DB_FindNextAvailableSlot = True
-                Exit Function
-            End If
-        End If
-    Next a
-Next cd
-
-Exit Function
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_FindNextAvailableSlot", Err
-End Function
-
 'EHT=None
 Function DB_GetTimeSlotTime(ts&) As String
 DB_GetTimeSlotTime = Format$(CDate(Appointment_FirstSlotTime + (ts * Appointment_SlotLength)), "h:mm AM/PM")

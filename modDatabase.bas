@@ -99,6 +99,12 @@ Public Type typeCoreData_ApptCliLink
 End Type
 
 'Schedule
+Public Enum enumSlotSpecialValue
+    sDefaultAccordingToTemplate = 0     'Default
+    sAvailable = -10
+    sReserved = -20
+    sMealBreak = -30
+End Enum
 Public Type typeCoreData_Schedule
     StartDate As Long
     DayCount As Long
