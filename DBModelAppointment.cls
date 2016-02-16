@@ -61,7 +61,7 @@ End Sub
 'EHT=None
 Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vDay As Date, vTimeSlot As Long, vNumSlots As Long)
 Set AttachedDatabase = vDB
-CalendarYear = PK(1)
+InitNew PK(1)
 ID = PK(2)
 m.Day = vDay
 m.TimeSlot = vTimeSlot

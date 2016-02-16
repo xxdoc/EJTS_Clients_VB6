@@ -59,7 +59,7 @@ End Sub
 'EHT=None
 Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long)
 Set AttachedDatabase = vDB
-CalendarYear = PK(1)
+InitNew PK(1)
 End Sub
 
 

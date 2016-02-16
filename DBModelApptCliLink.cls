@@ -63,8 +63,7 @@ End Sub
 'EHT=None
 Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vPrimaryClient As Boolean)
 Set AttachedDatabase = vDB
-AppointmentID = PK(1)
-ClientID = PK(2)
+InitNew PK(1), PK(2)
 m.PrimaryClient = vPrimaryClient
 End Sub
 

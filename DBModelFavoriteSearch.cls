@@ -58,6 +58,7 @@ End Sub
 'EHT=None
 Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vDisplayName As String)
 Set AttachedDatabase = vDB
+InitNew
 ID = PK(1)
 m.DisplayName = vDisplayName
 End Sub

@@ -61,6 +61,7 @@ End Sub
 'EHT=None
 Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vFirst1 As String, vFirst2 As String, vLast As String, vEmail As String)
 Set AttachedDatabase = vDB
+InitNew
 ID = PK(1)
 PersonCount = 2
 m.Persons(0).First = vFirst1

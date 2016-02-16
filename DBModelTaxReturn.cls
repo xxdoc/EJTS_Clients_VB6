@@ -34,7 +34,9 @@ Private m As typeCoreData_TaxReturn
 '#################################################################################
 
 'EHT=None
-Public Sub InitNew()
+Public Sub InitNew(vTaxYear As Long, vClientID As Long)
+TaxYear = vTaxYear
+ClientID = vClientID
 m.Fee = NullLong
 m.FeeOwed = NullLong
 m.CompletionDate = NullLong
@@ -68,8 +70,7 @@ End Sub
 'EHT=None
 Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vInboxType As enumInboxType, vStatus As enumReturnStatus)
 Set AttachedDatabase = vDB
-TaxYear = PK(1)
-ClientID = PK(2)
+InitNew PK(1), PK(2)
 m.InboxType = vInboxType
 m.Status = vStatus
 End Sub
