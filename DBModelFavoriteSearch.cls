@@ -38,6 +38,14 @@ Public Sub InitNew()
 End Sub
 
 'EHT=None
+Public Sub InitFromSampleData(vDB As CDatabase, PK() As Long, vDisplayName As String)
+Set AttachedDatabase = vDB
+InitNew
+ID = PK(1)
+m.DisplayName = vDisplayName
+End Sub
+
+'EHT=None
 Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
 If schemaversion >= 1 Then
     ID = PK(1)
@@ -53,14 +61,6 @@ For a = 1 To PKCount - 1
     fh.WriteLong 0
 Next a
 Put #fh.FileNum, , m
-End Sub
-
-'EHT=None
-Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vDisplayName As String)
-Set AttachedDatabase = vDB
-InitNew
-ID = PK(1)
-m.DisplayName = vDisplayName
 End Sub
 
 

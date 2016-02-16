@@ -39,6 +39,16 @@ CalendarYear = vCalendarYear
 End Sub
 
 'EHT=None
+Public Sub InitFromSampleData(vDB As CDatabase, PK() As Long, vDay As Date, vTimeSlot As Long, vNumSlots As Long)
+Set AttachedDatabase = vDB
+InitNew PK(1)
+ID = PK(2)
+m.Day = vDay
+m.TimeSlot = vTimeSlot
+m.NumSlots = vNumSlots
+End Sub
+
+'EHT=None
 Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
 If schemaversion >= 1 Then
     CalendarYear = PK(1)
@@ -56,16 +66,6 @@ For a = 1 To PKCount - 2
     fh.WriteLong 0
 Next a
 Put #fh.FileNum, , m
-End Sub
-
-'EHT=None
-Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vDay As Date, vTimeSlot As Long, vNumSlots As Long)
-Set AttachedDatabase = vDB
-InitNew PK(1)
-ID = PK(2)
-m.Day = vDay
-m.TimeSlot = vTimeSlot
-m.NumSlots = vNumSlots
 End Sub
 
 

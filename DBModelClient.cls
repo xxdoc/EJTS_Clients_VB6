@@ -41,6 +41,18 @@ m.NewestYearFiled = NullLong
 End Sub
 
 'EHT=None
+Public Sub InitFromSampleData(vDB As CDatabase, PK() As Long, vFirst1 As String, vFirst2 As String, vLast As String, vEmail As String)
+Set AttachedDatabase = vDB
+InitNew
+ID = PK(1)
+PersonCount = 2
+m.Persons(0).First = vFirst1
+m.Persons(0).Last = vLast
+m.Persons(0).Email = vEmail
+m.Persons(1).First = vFirst2
+End Sub
+
+'EHT=None
 Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
 If schemaversion >= 1 Then
     ID = PK(1)
@@ -56,18 +68,6 @@ For a = 1 To PKCount - 1
     fh.WriteLong 0
 Next a
 Put #fh.FileNum, , m
-End Sub
-
-'EHT=None
-Public Sub TEMP_InitWithData(vDB As CDatabase, PK() As Long, vFirst1 As String, vFirst2 As String, vLast As String, vEmail As String)
-Set AttachedDatabase = vDB
-InitNew
-ID = PK(1)
-PersonCount = 2
-m.Persons(0).First = vFirst1
-m.Persons(0).Last = vLast
-m.Persons(0).Email = vEmail
-m.Persons(1).First = vFirst2
 End Sub
 
 

@@ -193,14 +193,14 @@ ElseIf vCreateIfNotExists Then
                     If a >= .CountInMemory Then Err.Raise 1, , "Too many items in table #" & tableindex
                 End With
                 Select Case tableindex      'CTAASBEF
-                Case tClients:              Set mClients(a) = New DBModelClient:                    mClients(a).TEMP_InitWithData Me, PK, s$(PKCount), s$(PKCount + 1), s$(PKCount + 2), s$(PKCount + 3)
-                Case tTaxReturns:           Set mTaxReturns(a) = New DBModelTaxReturn:              mTaxReturns(a).TEMP_InitWithData Me, PK, CLng(s$(PKCount)), CLng(s$(PKCount + 1))
-                Case tAppointments:         Set mAppointments(a) = New DBModelAppointment:          mAppointments(a).TEMP_InitWithData Me, PK, CDate(s$(PKCount)), CLng(s$(PKCount + 1)), CLng(s$(PKCount + 2))
-                Case tApptCliLinks:         Set mApptCliLinks(a) = New DBModelApptCliLink:          mApptCliLinks(a).TEMP_InitWithData Me, PK, CBool(s$(PKCount))
-                Case tSchedules:            Set mSchedules(a) = New DBModelSchedule:                mSchedules(a).TEMP_InitWithData Me, PK
-                Case tBookkeepingJobs:      Set mBookkeepingJobs(a) = New DBModelBookkeepingJob:    mBookkeepingJobs(a).TEMP_InitWithData Me, PK, s$(PKCount)
-                Case tExtraCharges:         Set mExtraCharges(a) = New DBModelExtraCharge:          mExtraCharges(a).TEMP_InitWithData Me, PK, s$(PKCount), CLng(PKCount + 1)
-                Case tFavoriteSearches:     Set mFavoriteSearches(a) = New DBModelFavoriteSearch:   mFavoriteSearches(a).TEMP_InitWithData Me, PK, s$(PKCount)
+                Case tClients:              Set mClients(a) = New DBModelClient:                    mClients(a).InitFromSampleData Me, PK, s$(PKCount), s$(PKCount + 1), s$(PKCount + 2), s$(PKCount + 3)
+                Case tTaxReturns:           Set mTaxReturns(a) = New DBModelTaxReturn:              mTaxReturns(a).InitFromSampleData Me, PK, CLng(s$(PKCount)), CLng(s$(PKCount + 1))
+                Case tAppointments:         Set mAppointments(a) = New DBModelAppointment:          mAppointments(a).InitFromSampleData Me, PK, CDate(s$(PKCount)), CLng(s$(PKCount + 1)), CLng(s$(PKCount + 2))
+                Case tApptCliLinks:         Set mApptCliLinks(a) = New DBModelApptCliLink:          mApptCliLinks(a).InitFromSampleData Me, PK, CBool(s$(PKCount))
+                Case tSchedules:            Set mSchedules(a) = New DBModelSchedule:                mSchedules(a).InitFromSampleData Me, PK
+                Case tBookkeepingJobs:      Set mBookkeepingJobs(a) = New DBModelBookkeepingJob:    mBookkeepingJobs(a).InitFromSampleData Me, PK, s$(PKCount)
+                Case tExtraCharges:         Set mExtraCharges(a) = New DBModelExtraCharge:          mExtraCharges(a).InitFromSampleData Me, PK, s$(PKCount), CLng(PKCount + 1)
+                Case tFavoriteSearches:     Set mFavoriteSearches(a) = New DBModelFavoriteSearch:   mFavoriteSearches(a).InitFromSampleData Me, PK, s$(PKCount)
                 Case Else:  Err.Raise 1, , FormatErrorMsg(errUnknownTable, tableindex)
                 End Select
                 a = a + 1
