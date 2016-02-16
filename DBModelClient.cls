@@ -54,7 +54,7 @@ End Sub
 
 'EHT=None
 Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
-If schemaversion >= 1 Then
+If schemaversion >= 2 Then
     ID = PK(1)
     Get #fh.FileNum, , m
 End If

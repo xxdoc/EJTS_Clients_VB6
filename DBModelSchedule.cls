@@ -35,7 +35,13 @@ Private m As typeCoreData_Schedule
 
 'EHT=None
 Public Sub InitNew(vCalendarYear As Long)
+Dim ed As Long
 CalendarYear = vCalendarYear
+m.StartDate = DateSerial(vCalendarYear, 1, 1)
+ed = DateSerial(vCalendarYear, 12, 31)
+m.DayCount = ed - m.StartDate + 1
+ReDim m.AppointmentIDs(m.DayCount - 1)
+ReDim m.Subtitles(m.DayCount - 1)
 End Sub
 
 'EHT=None
@@ -46,7 +52,7 @@ End Sub
 
 'EHT=None
 Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
-If schemaversion >= 1 Then
+If schemaversion >= 4 Then
     CalendarYear = PK(1)
     Get #fh.FileNum, , m
 End If

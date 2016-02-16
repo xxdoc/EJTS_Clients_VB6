@@ -49,7 +49,7 @@ End Sub
 
 'EHT=None
 Public Sub InitFromFile(fh As CMNMOD_CFileHandler, schemaversion As Long, PK() As Long)
-If schemaversion >= 1 Then
+If schemaversion >= 3 Then
     CalendarYear = PK(1)
     ID = PK(2)
     Get #fh.FileNum, , m

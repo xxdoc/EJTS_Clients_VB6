@@ -28,8 +28,8 @@ Private Const errInvalidPrimaryKey = "Cannot add new record, since it has an inv
 Private Const errDuplicateRecord = "Cannot add new record, since a record with the same primary key already exists."
 
 'Schema version
-Private Const LowestSupportedSchemaVersion As Long = 3
-Private Const LatestSchemaVersion As Long = 3
+Private Const LowestSupportedSchemaVersion As Long = 4
+Private Const LatestSchemaVersion As Long = 4
 
 'Database attributes (accessible through class properties)
 Private mDBFile As CMNMOD_CFileHandler
