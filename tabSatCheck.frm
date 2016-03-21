@@ -547,12 +547,13 @@ End Function
 Private Sub ITab_AfterTabShown()
 On Error GoTo ERR_HANDLER
 
-Dim a&, t&, defstate$
+Dim a&, t&, defstate$, ncthreshhold&
 Dim db_CompRet&, db_EF&, db_OthSt&, db_Inc&, db_IncExt&, db_SignificantNewClients&, db_Unpaid&, db_RelBefPmt&
 Dim eric_TotFiles&, eric_EF&, eric_OthSt&, eric_Inc&, eric_IncDoMi&
 Dim office_BB&, office_SAF&, office_ExtFolders&
 
 defstate$ = DB_GetSetting(ActiveDBInstance, "GLOBAL_DefaultState")
+ncthreshhold = DB_GetSetting(ActiveDBInstance, "Prep fee threshold - new client SAF")
 
 For a = 0 To ActiveDBInstance.Clients_Count - 1
     With ActiveDBInstance.Clients(a).c
@@ -567,7 +568,7 @@ For a = 0 To ActiveDBInstance.Clients_Count - 1
                 End If
             End If
             If Flag_IsSet(.Flags, NewClient) Then
-                If .PrepFee >= 90 Then
+                If .PrepFee >= ncthreshhold Then
                     db_SignificantNewClients = db_SignificantNewClients + 1
                 End If
             End If
