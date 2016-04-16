@@ -3373,32 +3373,6 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UpdateDOBandDODtext", Err
 End Sub
 
 'EHT=Standard
-Function CalculateAge(dt1&, dt2&) As Long
-On Error GoTo ERR_HANDLER
-
-Dim m1&, d1&, y1&
-Dim m2&, d2&, y2&
-y1 = Year(dt1): m1 = Month(dt1): d1 = Day(dt1)
-y2 = Year(dt2): m2 = Month(dt2): d2 = Day(dt2)
-If m2 > m1 Then
-    '2/28/2012 to 3/1/2015 = 3 yr old
-    '2/29/2012 to 3/1/2015 = 3 yr old
-    CalculateAge = y2 - y1
-ElseIf m2 = m1 Then
-    '2/28/2012 to 2/28/2015 = 3 yr old
-    '2/29/2012 to 2/28/2015 = 2 yr old
-    CalculateAge = (y2 - y1 - 1) - (d2 >= d1)   'Subtracting a boolean will add 1 if it's true
-Else
-    '2/28/2012 to 1/28/2015 = 2 yr old
-    '2/29/2012 to 1/31/2015 = 2 yr old
-    CalculateAge = (y2 - y1 - 1)
-End If
-
-Exit Function
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "CalculateAge", Err
-End Function
-
-'EHT=Standard
 Function IsCYFlagIndicatorSet(ActualFlag As ClientFlags, Optional ByVal IndIndex& = -1) As Boolean
 On Error GoTo ERR_HANDLER
 

@@ -863,6 +863,47 @@ Case "removexcell"
     SetChangedFlagAndIndication
     MsgBox b & " total xCELL extensions removed."
 
+Case "listbyage"
+    Dim tod As Long, pers As PersonStruct
+    tod = Date
+    Set fh = OpenFile(AppPath & "listbyage.csv", mLineByLine_Output)
+    fh.WriteLine "Client #,Individual,Date of Birth,Age as of " & Format(tod, "m/d/yyyy")
+    lstSort.Clear
+    For a = 0 To ActiveDBInstance.Clients_Count - 1
+        With ActiveDBInstance.Clients(a)
+            If (Len(.c.Person1.First) > 0) And (.c.Person1.DOB <> NullLong) And (.c.Person1.DOD = NullLong) Then
+                lstSort.AddItem Format(.c.Person1.DOB, "0000000000") & vbTab & .c.Person1.Last & ", " & .c.Person1.First
+                lstSort.ItemData(lstSort.NewIndex) = a
+            End If
+            If (Len(.c.Person2.First) > 0) And (.c.Person2.DOB <> NullLong) And (.c.Person2.DOD = NullLong) Then
+                t$ = .c.Person2.Last
+                If Len(t$) = 0 Then t$ = .c.Person1.Last
+                lstSort.AddItem Format(.c.Person2.DOB, "0000000000") & vbTab & t$ & ", " & .c.Person2.First
+                lstSort.ItemData(lstSort.NewIndex) = -a
+            End If
+        End With
+    Next a
+    For a = 0 To lstSort.ListCount - 1
+        b = lstSort.ItemData(a)
+        If b >= 0 Then
+            pers = ActiveDBInstance.Clients(b).c.Person1
+            t$ = pers.Last
+        Else
+            b = -b
+            pers = ActiveDBInstance.Clients(b).c.Person2
+            If Len(pers.Last) > 0 Then
+                t$ = pers.Last
+            Else
+                t$ = ActiveDBInstance.Clients(b).c.Person1.Last
+            End If
+        End If
+        t$ = t$ & ", " & pers.First
+        If Len(pers.Initial) > 0 Then t$ = t$ & " " & pers.Initial
+        fh.WriteLine b & ",""" & t$ & """," & Format(pers.DOB, "m/d/yyyy") & "," & CalculateAge(pers.DOB, tod)
+    Next a
+    fh.CloseFile
+    ShowInfoMsg "A list of all living individuals, sorted by current age, has been saved to """ & fh.FullPath & """"
+
 Case ""
 Case Else
     ShowErrorMsg "Unknown debug code!"
