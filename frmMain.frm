@@ -1437,7 +1437,16 @@ Else
     CHOS_NumMinutes = totalminutes
 
     'Actual slots to use, depending on the calculation above and possibly modified on the fly by the user
-    CHOS_NumSlots = CalcNumApptSlotsFromMinuteSum(minforslots)
+    'Examples if SETTING_????? == 40:
+    '    39 minutes = 1 slot
+    '    40 minutes = 1 slot
+    '    41 minutes = 2 slots
+    '    79 minutes = 2 slot
+    '    80 minutes = 2 slot
+    '    81 minutes = 3 slots
+    CHOS_NumSlots = Int((minforslots - 1) / 40) + 1
+    If CHOS_NumSlots = 0 Then CHOS_NumSlots = 1
+
     CHOS_NumSlotsBeforeOverride = CHOS_NumSlots
     CHOS_NumSlots_Overridden = False
 

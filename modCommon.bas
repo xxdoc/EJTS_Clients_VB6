@@ -464,12 +464,6 @@ End If
 End Sub
 
 'EHT=None
-Function CalcNumApptSlotsFromMinuteSum&(numminutes&)
-CalcNumApptSlotsFromMinuteSum = Int((numminutes - 1) / 40) + 1
-If CalcNumApptSlotsFromMinuteSum = 0 Then CalcNumApptSlotsFromMinuteSum = 1
-End Function
-
-'EHT=None
 Function CapatalizeFirstLetter(s$) As String
 CapatalizeFirstLetter = UCase$(Left$(s$, 1)) & LCase$(Mid$(s$, 2))
 End Function

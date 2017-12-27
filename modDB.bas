@@ -810,20 +810,10 @@ ElseIf n$ Like "_Statistics-LastView-*" Then
     DB_SetSetting LocalDBInstance, n$, "", sStr, DontCallSetChangedFlag
 ElseIf n$ Like "Bell curve for statistics tab, range * *" Then
     DB_SetSetting LocalDBInstance, n$, 0, sLng, DontCallSetChangedFlag
-
-
 ElseIf n$ = SETTING_FIRSTSLOTTIME Then
-    'Appointment_FirstSlotTime
-    '(DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24)
     DB_SetSetting LocalDBInstance, n$, 9, sDbl, DontCallSetChangedFlag
-
 ElseIf n$ = SETTING_SLOTLENGTH Then
-    'Appointment_SlotLength
-    '(DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440)
     DB_SetSetting LocalDBInstance, n$, 45, sLng, DontCallSetChangedFlag
-
-
-
 Else
     DB_SetDefaultSettingValue = False
 End If
@@ -1244,7 +1234,7 @@ End Function
 Function DB_GetTimeSlotTime(LocalDBInstance As EJTSClientsDB, ts&) As String
 DB_GetTimeSlotTime = Format$( _
         CDate((DB_GetSetting(LocalDBInstance, SETTING_FIRSTSLOTTIME) / 24) + _
-        (ts * (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440))), _
+        (ts * (DB_GetSetting(LocalDBInstance, SETTING_SLOTLENGTH) / 1440))), _
     "h:mm AM/PM")
 End Function
 
