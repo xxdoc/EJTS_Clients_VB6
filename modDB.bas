@@ -177,6 +177,7 @@ Public Type Setting_v05
 End Type
 Public Const SETTING_FIRSTSLOTTIME = "Appointment slots, first time (hours)"
 Public Const SETTING_SLOTLENGTH = "Appointment slots, length (minutes)"
+Public Const SETTING_SLOTBREAKPOINT = "Appointment slots, maximum SA (minutes)"
 
 Public Type EJTSClientsDB
     Clients() As Client
@@ -812,6 +813,8 @@ ElseIf n$ = SETTING_FIRSTSLOTTIME Then
     DB_SetSetting LocalDBInstance, n$, 9, sDbl, DontCallSetChangedFlag
 ElseIf n$ = SETTING_SLOTLENGTH Then
     DB_SetSetting LocalDBInstance, n$, 45, sLng, DontCallSetChangedFlag
+ElseIf n$ = SETTING_SLOTBREAKPOINT Then
+    DB_SetSetting LocalDBInstance, n$, 40, sLng, DontCallSetChangedFlag
 Else
     DB_SetDefaultSettingValue = False
 End If

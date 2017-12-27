@@ -587,6 +587,10 @@ If DB_Load(DataFilesPath & "EJTSClients" & FileToOpen_Year & ".dat", ActiveDBIns
 Else
     GoTo CLEANUP
 End If
+
+'Read a few settings that otherwise wouldn't get initialized right away
+DB_GetSetting ActiveDBInstance, SETTING_SLOTBREAKPOINT
+
 ClearChangedIndication
 DayTotal_Update
 HidePopupInfo
@@ -1414,7 +1418,7 @@ Else
                 'If client has no override set for minutes...
                 If .LastYear_MinutesToComplete = NullLong Then
                     'If no LY history and no NumSlots override set, then just assume it's a DA, like the new clients
-                    minforslots = minforslots + (2 * 40)
+                    minforslots = minforslots + (2 * DB_GetSetting(ActiveDBInstance, SETTING_SLOTBREAKPOINT))
                 Else
                     'LY has history, so use it...
                     minforslots = minforslots + .LastYear_MinutesToComplete
@@ -1425,7 +1429,7 @@ Else
                 End If
             Else
                 'Client has slot override, so calculate from there and ignore LY's minutes entirely
-                minforslots = minforslots + (.NumApptSlotsToUse * 40)
+                minforslots = minforslots + (.NumApptSlotsToUse * DB_GetSetting(ActiveDBInstance, SETTING_SLOTBREAKPOINT))
             End If
 
             'Regardless of all the above, we're still calculating total minutes to show on the appointment as a reference
@@ -1444,7 +1448,7 @@ Else
     '    79 minutes = 2 slot
     '    80 minutes = 2 slot
     '    81 minutes = 3 slots
-    CHOS_NumSlots = Int((minforslots - 1) / 40) + 1
+    CHOS_NumSlots = Int((minforslots - 1) / DB_GetSetting(ActiveDBInstance, SETTING_SLOTBREAKPOINT)) + 1
     If CHOS_NumSlots = 0 Then CHOS_NumSlots = 1
 
     CHOS_NumSlotsBeforeOverride = CHOS_NumSlots
