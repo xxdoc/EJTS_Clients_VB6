@@ -1329,7 +1329,7 @@ For a = 0 To ActiveDBInstance.Appointments_Count - 1
 
             'Draw appointment time (left)
             SetTextAlign pctScheduleHdc, TA_RIGHT
-            If fst + (.ApptTimeSlot * sl) = .ApptActualTime Then
+            If Round((fst + (.ApptTimeSlot * sl)) * 1440, 0) = Round(.ApptActualTime * 1440, 0) Then
                 'Time is on-slot
                 SelectObject pctScheduleHdc, FontTimesOnSlot
                 SetTextColor pctScheduleHdc, ColorTimeText_OnSlot
