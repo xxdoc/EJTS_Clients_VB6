@@ -555,38 +555,35 @@ Me.Show
 ShowPopupInfo "Loading Database", -1
 Me.Caption = FileToOpen_Year & " Tax Season" & " - " & DataFilesPath & " - " & Me.Tag
 Me.Tag = Me.Caption
-If DB_Load(DataFilesPath & "EJTSClients" & FileToOpen_Year & ".dat", ActiveDBInstance) Then
-    ActiveDBInstance.IsWriteable = Not FileToOpen_OpenReadOnly
+If Not DB_Load(DataFilesPath & "EJTSClients" & FileToOpen_Year & ".dat", ActiveDBInstance) Then GoTo CLEANUP
+ActiveDBInstance.IsWriteable = Not FileToOpen_OpenReadOnly
 
-    #If False Then
-        Dim sd As Date, ed As Date, b&
-        sd = ActiveDBInstance.ApptBitmap_StartDate
-        ed = ActiveDBInstance.ApptBitmap_StartDate + ActiveDBInstance.ApptBitmap_Count - 1
-        Dim nsd As Date, ned As Date, napptbm() As Long, nc&
-        nsd = DateSerial(Year(sd), 1, 1)
-        ned = DateSerial(Year(sd), 12, 31)
-        nc = ned - nsd + 1
-        ReDim napptbm(nc - 1, Appointment_NumSlotsUB)
-        For a = 0 To nc - 1
-            If ((nsd + a) < sd) Or ((nsd + a) > ed) Then
-                Debug.Print "" & a & " <- NEW"
-                For b = 0 To Appointment_NumSlotsUB
-                    napptbm(a, b) = -99999999
-                Next b
-            Else
-                Debug.Print "" & a & " <- " & (nsd + a - sd)
-                For b = 0 To Appointment_NumSlotsUB
-                    napptbm(a, b) = ActiveDBInstance.ApptBitmap(nsd + a - sd, b)
-                Next b
-            End If
-        Next a
-        ActiveDBInstance.ApptBitmap = napptbm
-        ActiveDBInstance.ApptBitmap_Count = nc
-        ActiveDBInstance.ApptBitmap_StartDate = nsd
-    #End If
-Else
-    GoTo CLEANUP
-End If
+#If False Then
+    Dim sd As Date, ed As Date, b&
+    sd = ActiveDBInstance.ApptBitmap_StartDate
+    ed = ActiveDBInstance.ApptBitmap_StartDate + ActiveDBInstance.ApptBitmap_Count - 1
+    Dim nsd As Date, ned As Date, napptbm() As Long, nc&
+    nsd = DateSerial(Year(sd), 1, 1)
+    ned = DateSerial(Year(sd), 12, 31)
+    nc = ned - nsd + 1
+    ReDim napptbm(nc - 1, Appointment_NumSlotsUB)
+    For a = 0 To nc - 1
+        If ((nsd + a) < sd) Or ((nsd + a) > ed) Then
+            Debug.Print "" & a & " <- NEW"
+            For b = 0 To Appointment_NumSlotsUB
+                napptbm(a, b) = -99999999
+            Next b
+        Else
+            Debug.Print "" & a & " <- " & (nsd + a - sd)
+            For b = 0 To Appointment_NumSlotsUB
+                napptbm(a, b) = ActiveDBInstance.ApptBitmap(nsd + a - sd, b)
+            Next b
+        End If
+    Next a
+    ActiveDBInstance.ApptBitmap = napptbm
+    ActiveDBInstance.ApptBitmap_Count = nc
+    ActiveDBInstance.ApptBitmap_StartDate = nsd
+#End If
 
 'Read a few settings that otherwise wouldn't get initialized right away
 DB_GetSetting ActiveDBInstance, SETTING_SLOTBREAKPOINT
