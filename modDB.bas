@@ -122,6 +122,7 @@ Public Type Appointment
     Notes As String
 End Type
 Public Const Appointment_DATAITEMUBOUND = 8 - 1
+
 Public Const Appointment_FirstSlotTime = 9 / 24
 Public Const Appointment_SlotLength = 0.75 / 24
 Public Const Appointment_NumSlots = 14
@@ -176,6 +177,8 @@ Public Type Setting_v05
     sName As String
     sValue As Variant
 End Type
+Public Const SETTING_FIRSTSLOTTIME = "Appointment slots, first time"
+Public Const SETTING_SLOTLENGTH = "Appointment slots, length (minutes)"
 
 Public Type EJTSClientsDB
     Clients() As Client
@@ -795,7 +798,7 @@ ElseIf n$ = "Schedule Template C starting date" Then
     DB_SetSetting LocalDBInstance, n$, DateSerial(Year(Date), 4, 15), sDate, DontCallSetChangedFlag
 ElseIf n$ Like "_SatCheck-Txt*" Then
     DB_SetSetting LocalDBInstance, n$, 0, sLng, DontCallSetChangedFlag
-ElseIf n$ Like "_SatCheck-LastDayOfTaxSeason" Then
+ElseIf n$ = "_SatCheck-LastDayOfTaxSeason" Then
     DB_SetSetting LocalDBInstance, n$, False, sBool, DontCallSetChangedFlag
 ElseIf n$ = "Prep fee threshold - receive organizer" Then
     DB_SetSetting LocalDBInstance, n$, 0, sLng, DontCallSetChangedFlag
@@ -809,6 +812,20 @@ ElseIf n$ Like "_Statistics-LastView-*" Then
     DB_SetSetting LocalDBInstance, n$, "", sStr, DontCallSetChangedFlag
 ElseIf n$ Like "Bell curve for statistics tab, range * *" Then
     DB_SetSetting LocalDBInstance, n$, 0, sLng, DontCallSetChangedFlag
+
+
+ElseIf n$ = SETTING_FIRSTSLOTTIME Then
+    'Appointment_FirstSlotTime
+    'DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME)
+    DB_SetSetting LocalDBInstance, n$, 9 / 24, sDbl, DontCallSetChangedFlag
+
+ElseIf n$ = SETTING_SLOTLENGTH Then
+    'Appointment_SlotLength
+    'DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH)
+    DB_SetSetting LocalDBInstance, n$, 45, sDbl, DontCallSetChangedFlag
+
+
+
 Else
     DB_SetDefaultSettingValue = False
 End If
