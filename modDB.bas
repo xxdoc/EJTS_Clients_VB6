@@ -165,6 +165,7 @@ Public Enum enumSettingType
     sLng
     sDate
     sBool
+    sDbl
 End Enum
 Public Type Setting
     sName As String
@@ -437,6 +438,7 @@ Else
             'Guess at the type
             Select Case VarType(tttse_v05(e).sValue)
             Case 3, 2:    tttse(e).sType = sLng
+            Case 5, 4:    tttse(e).sType = sDbl
             Case 8:     tttse(e).sType = sStr
             Case Else
                 Err.Raise 1, , "Unknown type"
@@ -680,6 +682,16 @@ Case sLng:
     Else
         s.sValue = CLng(v)
     End If
+Case sDbl:
+    If VarType(v) = vbString Then
+        If Trim$(LCase$(v)) = "null" Then
+            s.sValue = NullDouble
+        Else
+            s.sValue = Val(Trim$(Replace$(Replace$(v, "$", ""), ",", "")))   'Val already returns a Double
+        End If
+    Else
+        s.sValue = CDbl(v)
+    End If
 Case sDate:
     If VarType(v) = vbString Then
         If IsDate(Trim$(v)) Then
@@ -813,6 +825,12 @@ With s
         DB_FormatSettingForScreen = Format(.sValue, "m/d/yyyy")
     Case sLng:
         If .sValue = NullLong Then
+            DB_FormatSettingForScreen = "null"
+        Else
+            DB_FormatSettingForScreen = .sValue
+        End If
+    Case sDbl:
+        If .sValue = NullDouble Then
             DB_FormatSettingForScreen = "null"
         Else
             DB_FormatSettingForScreen = .sValue

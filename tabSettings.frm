@@ -381,7 +381,7 @@ End Sub
 Private Function SettingToListboxLine(s As Setting) As String
 On Error GoTo ERR_HANDLER
 
-SettingToListboxLine = s.sName & vbTab & Choose(s.sType + 1, "Str", "Num", "Date", "T/F") & vbTab & DB_FormatSettingForScreen(s)
+SettingToListboxLine = s.sName & vbTab & Choose(s.sType + 1, "Str", "Num", "Date", "T/F", "Dbl") & vbTab & DB_FormatSettingForScreen(s)
 
 Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "SettingToListboxLine", Err

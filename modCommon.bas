@@ -448,6 +448,7 @@ Public Enum ScheduleShapeStyle
 End Enum
 
 Public Const NullLong = &H80000000      '-2147483648
+Public Const NullDouble = -1.79769313486231E+308
 
 Private MouseNullZoneRef As POINTAPI
 Private MouseNullZonePixels&
