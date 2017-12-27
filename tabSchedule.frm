@@ -726,7 +726,7 @@ If DB_SlotsIsAvail(ActiveDBInstance, ClickedDate, ClickedTimeslot, 1, -1) Then
         .ID = DB_GetNewAppointmentID(ActiveDBInstance)
         .ApptDate = ClickedDate
         .ApptTimeSlot = ClickedTimeslot
-        .ApptActualTime = Appointment_FirstSlotTime + (.ApptTimeSlot * Appointment_SlotLength)
+        .ApptActualTime = (DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24) + (.ApptTimeSlot * (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440))
         .NumSlots = 1
         .Notes = ""
     End With
@@ -824,7 +824,7 @@ If ClickedTimeslot >= 0 Then
                 DoubleClickAllowed = True
             ElseIf Button = vbRightButton Then
                 'Show Slot menu
-                menSlot_Title.Caption = "=== " & DB_GetTimeSlotTime(ClickedTimeslot) & " ==="
+                menSlot_Title.Caption = "=== " & DB_GetTimeSlotTime(ActiveDBInstance, ClickedTimeslot) & " ==="
                 menSlotMarkDefault.Checked = (ClickedApptIndex = Slot_DefaultAccordingToTemplate)
                 menSlotMarkDefault.Enabled = (ActiveDBInstance.IsWriteable)
                 menSlotMarkAvailable.Checked = (ClickedApptIndex = Slot_Available)
@@ -920,7 +920,7 @@ If ClickedTimeslot >= 0 Then
                 .ID = DB_GetNewAppointmentID(ActiveDBInstance)
                 .ApptDate = ClickedDate
                 .ApptTimeSlot = ClickedTimeslot
-                .ApptActualTime = Appointment_FirstSlotTime + (.ApptTimeSlot * Appointment_SlotLength)
+                .ApptActualTime = (DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24) + (.ApptTimeSlot * (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440))
                 .NumSlots = frmMain.CHOS_NumSlots
                 t$ = FormatApptTime$(.ApptDate, .ApptActualTime)
                 .ClientID_Count = frmMain.CHOS_lstClients.ListCount
@@ -974,7 +974,7 @@ If ClickedTimeslot >= 0 Then
                 If moveexistingappt = Style_Copy Or moveexistingappt = Style_CopyForcedWithCtrl Then .ID = DB_GetNewAppointmentID(ActiveDBInstance)
                 .ApptDate = ClickedDate
                 .ApptTimeSlot = ClickedTimeslot
-                .ApptActualTime = Appointment_FirstSlotTime + (.ApptTimeSlot * Appointment_SlotLength)
+                .ApptActualTime = (DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24) + (.ApptTimeSlot * (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440))
                 .Flags = Flag_Remove(.Flags, DidntHappen)
                 t$ = FormatApptTime$(.ApptDate, .ApptActualTime)
                 For b = 0 To .ClientID_Count - 1
@@ -1223,6 +1223,9 @@ Dim a&, b&, c&, cindex&, tx&, ty&, t$, ts&
 Dim scheduletemplaterange&
 Dim CurCPDay&, CurCPAppt&
 Dim r As RECT
+Dim fst#, sl#
+fst = (DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24)
+sl = (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440)
 
 If Not DB_DayWithinBitmapRange(ActiveDBInstance, cd) Then Exit Sub
 
@@ -1297,7 +1300,7 @@ For ts = 0 To Appointment_NumSlotsUB
         'Normal slot, time on left side, if empty
         SetTextAlign pctScheduleHdc, TA_RIGHT
         SetTextColor pctScheduleHdc, ColorTimeText_Empty
-        t$ = Format$(CDate((Appointment_FirstSlotTime + (ts * Appointment_SlotLength))), "h:mma/p")
+        t$ = Format$(CDate((fst + (ts * sl))), "h:mma/p")
         TextOut pctScheduleHdc, cx + DayTimesOffsetX, ty, t$, Len(t$)
     End If
 Next ts
@@ -1326,7 +1329,7 @@ For a = 0 To ActiveDBInstance.Appointments_Count - 1
 
             'Draw appointment time (left)
             SetTextAlign pctScheduleHdc, TA_RIGHT
-            If Appointment_FirstSlotTime + (.ApptTimeSlot * Appointment_SlotLength) = .ApptActualTime Then
+            If fst + (.ApptTimeSlot * sl) = .ApptActualTime Then
                 'Time is on-slot
                 SelectObject pctScheduleHdc, FontTimesOnSlot
                 SetTextColor pctScheduleHdc, ColorTimeText_OnSlot
@@ -1639,7 +1642,7 @@ Else
         imgCurTime.Visible = False
     Else
         tx = ScheduleDayPositions(TodaysDayIndex).Left
-        ty = DayFirstSlotOffsetY + ((nt - Appointment_FirstSlotTime) / Appointment_SlotLength * DayApptSlotHeight)
+        ty = DayFirstSlotOffsetY + ((nt - (DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24)) / (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440) * DayApptSlotHeight)
         If (ty < 0) Or (ty > DayHeight) Then
             imgCurTime.Visible = False
         Else

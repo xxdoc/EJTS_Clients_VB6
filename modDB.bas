@@ -123,8 +123,6 @@ Public Type Appointment
 End Type
 Public Const Appointment_DATAITEMUBOUND = 8 - 1
 
-Public Const Appointment_FirstSlotTime = 9 / 24
-Public Const Appointment_SlotLength = 0.75 / 24
 Public Const Appointment_NumSlots = 14
 Public Const Appointment_NumSlotsUB = Appointment_NumSlots - 1
 Public Const Slot_DefaultAccordingToTemplate = -100
@@ -177,7 +175,7 @@ Public Type Setting_v05
     sName As String
     sValue As Variant
 End Type
-Public Const SETTING_FIRSTSLOTTIME = "Appointment slots, first time"
+Public Const SETTING_FIRSTSLOTTIME = "Appointment slots, first time (hours)"
 Public Const SETTING_SLOTLENGTH = "Appointment slots, length (minutes)"
 
 Public Type EJTSClientsDB
@@ -816,13 +814,13 @@ ElseIf n$ Like "Bell curve for statistics tab, range * *" Then
 
 ElseIf n$ = SETTING_FIRSTSLOTTIME Then
     'Appointment_FirstSlotTime
-    'DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME)
-    DB_SetSetting LocalDBInstance, n$, 9 / 24, sDbl, DontCallSetChangedFlag
+    '(DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24)
+    DB_SetSetting LocalDBInstance, n$, 9, sDbl, DontCallSetChangedFlag
 
 ElseIf n$ = SETTING_SLOTLENGTH Then
     'Appointment_SlotLength
-    'DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH)
-    DB_SetSetting LocalDBInstance, n$, 45, sDbl, DontCallSetChangedFlag
+    '(DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440)
+    DB_SetSetting LocalDBInstance, n$, 45, sLng, DontCallSetChangedFlag
 
 
 
@@ -1243,8 +1241,11 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_FindNextAvailableSlot", Err
 End Function
 
 'EHT=None
-Function DB_GetTimeSlotTime(ts&) As String
-DB_GetTimeSlotTime = Format$(CDate(Appointment_FirstSlotTime + (ts * Appointment_SlotLength)), "h:mm AM/PM")
+Function DB_GetTimeSlotTime(LocalDBInstance As EJTSClientsDB, ts&) As String
+DB_GetTimeSlotTime = Format$( _
+        CDate((DB_GetSetting(LocalDBInstance, SETTING_FIRSTSLOTTIME) / 24) + _
+        (ts * (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440))), _
+    "h:mm AM/PM")
 End Function
 
 'EHT=Standard

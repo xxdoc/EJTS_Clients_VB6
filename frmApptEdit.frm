@@ -439,7 +439,7 @@ With ActiveDBInstance.Appointments(aindex)
     FieldToTextbox txtField(fNumSlots), .NumSlots
 
     FieldToTextbox txtField(fTimeSlot), .ApptTimeSlot
-    'FieldToTextbox txtField(fTimeSlot), Appointment_FirstSlotTime + (.ApptTimeSlot * Appointment_SlotLength)
+    'FieldToTextbox txtField(fTimeSlot), (DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24) + (.ApptTimeSlot * (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440))
 
     FieldToTextbox txtField(fDay), .ApptDate
 
@@ -536,7 +536,7 @@ With tempappt
     End If
 
     FieldFromTextbox txtField(fTimeSlot), .ApptTimeSlot
-    '.ApptTimeSlot = (CDate(txtField(fTimeSlot)) - Appointment_FirstSlotTime) / Appointment_SlotLength
+    '.ApptTimeSlot = (CDate(txtField(fTimeSlot)) - (DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24)) / (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440)
 '    If <outside timeslot range> Then
 '        ShowErrorMsg "Time slot is invalid"
 '        SetFocusWithoutErr txtField(fTimeSlot)
@@ -831,11 +831,11 @@ On Error GoTo ERR_HANDLER
 '    'Custom handler to round to nearest slot time
 '    Dim ts&
 '    If IsDate(txtField(fTimeSlot).Text) Then
-'        ts = (CDate(txtField(fTimeSlot).Text) - Appointment_FirstSlotTime) / Appointment_SlotLength
+'        ts = (CDate(txtField(fTimeSlot).Text) - (DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24)) / (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440)
 '        If (ts < 0) Or (ts > Appointment_NumSlotsUB) Then
 '            txtField(fTimeSlot).Text = ""
 '        Else
-'            FieldToTextbox txtField(fTimeSlot), Appointment_FirstSlotTime + (ts * Appointment_SlotLength)
+'            FieldToTextbox txtField(fTimeSlot), (DB_GetSetting(ActiveDBInstance, SETTING_FIRSTSLOTTIME) / 24) + (ts * (DB_GetSetting(ActiveDBInstance, SETTING_SLOTLENGTH) / 1440))
 '        End If
 '    Else
 '        txtField(fTimeSlot).Text = ""
