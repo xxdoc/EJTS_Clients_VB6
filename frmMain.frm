@@ -1401,7 +1401,6 @@ End Sub
 'EHT=Standard
 Public Sub CHOS_CalculateTotal()
 On Error GoTo ERR_HANDLER
-
 Dim cclc&, i&, cindex&, totalminutes&, minforslots&
 cclc = CHOS_lstClients.ListCount
 If cclc = 0 Then
@@ -1412,28 +1411,36 @@ Else
         cindex = DB_FindClientIndex(ActiveDBInstance, CHOS_lstClients.ItemData(i))
         With ActiveDBInstance.Clients(cindex).c
             If .NumApptSlotsToUse = 0 Then
+                'If client has no override set for minutes...
                 If .LastYear_MinutesToComplete = NullLong Then
                     'If no LY history and no NumSlots override set, then just assume it's a DA, like the new clients
                     minforslots = minforslots + (2 * 40)
                 Else
+                    'LY has history, so use it...
+                    minforslots = minforslots + .LastYear_MinutesToComplete
                     If Flag_IsSet(.LastYear_Flags, DroppedOff) Or Flag_IsSet(.LastYear_Flags, MailedIn) Then
                         'DO/MI take a bit longer when done during an appointment, so add an extra 10 min for the calculation
-                        minforslots = minforslots + .LastYear_MinutesToComplete + 10
-                    Else
-                        minforslots = minforslots + .LastYear_MinutesToComplete
+                        minforslots = minforslots + 10
                     End If
                 End If
             Else
+                'Client has slot override, so calculate from there and ignore LY's minutes entirely
                 minforslots = minforslots + (.NumApptSlotsToUse * 40)
             End If
 
+            'Regardless of all the above, we're still calculating total minutes to show on the appointment as a reference
             If .LastYear_MinutesToComplete <> NullLong Then totalminutes = totalminutes + .LastYear_MinutesToComplete
         End With
     Next i
+
+    'Total minutes to show on appointment
     CHOS_NumMinutes = totalminutes
+
+    'Actual slots to use, depending on the calculation above and possibly modified on the fly by the user
     CHOS_NumSlots = CalcNumApptSlotsFromMinuteSum(minforslots)
     CHOS_NumSlotsBeforeOverride = CHOS_NumSlots
     CHOS_NumSlots_Overridden = False
+
     CHOS_UpdateTotal
     tabSchedule.ChangeScheduleMode sCreate
 End If
