@@ -484,7 +484,7 @@ TempDBInstance.Loaded = True
 TempDBInstance.IsWriteable = False
 TempDBInstance.FullPath_Log = DB_GenerateLogfileName(DBFile$)
 TempDBInstance.Changed = False
-LocalDBInstance = TempDBInstance
+LocalDBInstance = TempDBInstance    ' This does copy the actual data, rather than copy the pointer to the data as in other languages
 
 DB_Load = True
 
@@ -726,11 +726,9 @@ If found Then
     Else
         'If we're read-only, then the setting will only persist in the current session
         '  This is a better option than preventing settings from even being changed
-        If Not DontCallSetChangedFlag Then
-            If LocalDBInstance.IsWriteable Then
-                If LocalDBInstance.Settings(a).sName <> s.sName Or LocalDBInstance.Settings(a).sType <> s.sType Or LocalDBInstance.Settings(a).sValue <> s.sValue Then
-                    frmMain.SetChangedFlagAndIndication
-                End If
+        If (VarPtr(ActiveDBInstance) = VarPtr(LocalDBInstance)) And (Not DontCallSetChangedFlag) And LocalDBInstance.IsWriteable Then
+            If LocalDBInstance.Settings(a).sName <> s.sName Or LocalDBInstance.Settings(a).sType <> s.sType Or LocalDBInstance.Settings(a).sValue <> s.sValue Then
+                frmMain.SetChangedFlagAndIndication     ' CAUTION: this interacts with ActiveDBInstance instead of LocalDBInstance
             End If
         End If
         LocalDBInstance.Settings(a) = s
@@ -748,8 +746,8 @@ Else
         LocalDBInstance.Settings_Count = LocalDBInstance.Settings_Count + 1
         'If we're read-only, then the setting will only persist in the current session
         '  This is a better option than preventing settings from even being changed
-        If Not DontCallSetChangedFlag Then
-            If LocalDBInstance.IsWriteable Then frmMain.SetChangedFlagAndIndication
+        If (VarPtr(ActiveDBInstance) = VarPtr(LocalDBInstance)) And (Not DontCallSetChangedFlag) And LocalDBInstance.IsWriteable Then
+            frmMain.SetChangedFlagAndIndication         ' CAUTION: this interacts with ActiveDBInstance instead of LocalDBInstance
         End If
     End If
 End If
