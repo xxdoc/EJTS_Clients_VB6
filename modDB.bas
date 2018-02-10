@@ -209,6 +209,8 @@ Public Type EJTSClientsDB
     FullPath_DB As String
     FullPath_Log As String
     MakeBakOnNextSave As String
+
+    ScheduleTemplate(1 To 3, 6, Appointment_NumSlotsUB) As Long     '3D array; not saved to database file
 End Type
 
 'EHT=Cleanup1

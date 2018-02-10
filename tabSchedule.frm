@@ -221,7 +221,6 @@ Private DayApptSlotHeight&    '12 for KNW, 17 for all others
 Private Const DayWidth = 320
 Private DayHeight&            'DayFirstSlotOffsetY + (DayApptSlotHeight * Appointment_NumSlots) + 1 + DayMarginBottom + 1
 Private LastShapeStyle As ScheduleShapeStyle
-Private ScheduleTemplate(1 To 3, 6, Appointment_NumSlotsUB) As Long     '3D array
 Private lastMouseMoveX!
 Private lastMouseMoveY!
 
@@ -1280,7 +1279,7 @@ For ts = 0 To Appointment_NumSlotsUB
     ty = cy + DayFirstSlotOffsetY + (ts * DayApptSlotHeight)
     If b = Slot_DefaultAccordingToTemplate Then
         'Lookup the schedule template in the settings for that day and slot
-        b = ScheduleTemplate(scheduletemplaterange, cd - ViewStartDate, ts)
+        b = ActiveDBInstance.ScheduleTemplate(scheduletemplaterange, cd - ViewStartDate, ts)
     End If
     Select Case b
     Case Slot_Reserved
@@ -1429,11 +1428,11 @@ For r = 1 To 3
         For ts = 1 To Appointment_NumSlots
             Select Case Mid$(s$, ts, 1)
             Case "R"
-                ScheduleTemplate(r, wd, ts - 1) = Slot_Reserved
+                ActiveDBInstance.ScheduleTemplate(r, wd, ts - 1) = Slot_Reserved
             Case "M"
-                ScheduleTemplate(r, wd, ts - 1) = Slot_MealBreak
+                ActiveDBInstance.ScheduleTemplate(r, wd, ts - 1) = Slot_MealBreak
             Case Else  ' "A" or anything incorrect
-                ScheduleTemplate(r, wd, ts - 1) = Slot_Available
+                ActiveDBInstance.ScheduleTemplate(r, wd, ts - 1) = Slot_Available
             End Select
         Next ts
     Next wd
