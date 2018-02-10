@@ -572,7 +572,7 @@ With tempappt
     End If
 
     'Update bitmap
-    If DB_SlotsIsAvail(ActiveDBInstance, .ApptDate, .ApptTimeSlot, .NumSlots, .ID) Then
+    If DB_SlotsHaveNoAppointments(ActiveDBInstance, .ApptDate, .ApptTimeSlot, .NumSlots, .ID) Then
         'Clear old position
         DB_SlotsClear ActiveDBInstance, ActiveDBInstance.Appointments(aindex).ApptDate, ActiveDBInstance.Appointments(aindex).ApptTimeSlot, ActiveDBInstance.Appointments(aindex).NumSlots
         'Put appointment into new position

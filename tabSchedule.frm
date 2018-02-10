@@ -717,7 +717,7 @@ On Error GoTo ERR_HANDLER
 
 If Not menSlotCreateNonClient.Enabled Then Exit Sub
 
-If DB_SlotsIsAvail(ActiveDBInstance, ClickedDate, ClickedTimeslot, 1, -1) Then
+If DB_SlotsHaveNoAppointments(ActiveDBInstance, ClickedDate, ClickedTimeslot, 1, -1) Then
     'Create appointment
     Dim a As Appointment, aindex&, frm As frmApptEdit
     Set frm = New frmApptEdit
@@ -906,7 +906,7 @@ If ClickedTimeslot >= 0 Then
     Case sCreate
         ClickedApptIndex = -1
         If Not ActiveDBInstance.IsWriteable Then Exit Sub
-        If DB_SlotsIsAvail(ActiveDBInstance, ClickedDate, ClickedTimeslot, frmMain.CHOS_NumSlots, -1) Then
+        If DB_SlotsHaveNoAppointments(ActiveDBInstance, ClickedDate, ClickedTimeslot, frmMain.CHOS_NumSlots, -1) Then
             If ClickedDate = Date Then
                 If MsgBox("Adding appointments to current day is not allowed! Continue anyway?", vbCritical Or vbYesNo Or vbDefaultButton2) = vbNo Then
                     Exit Sub
@@ -964,7 +964,7 @@ If ClickedTimeslot >= 0 Then
             'But if copying, overlap is prohibited
             abr = -1
         End If
-        If DB_SlotsIsAvail(ActiveDBInstance, ClickedDate, ClickedTimeslot, ActiveDBInstance.Appointments(ClickedApptIndex).NumSlots, abr) Then
+        If DB_SlotsHaveNoAppointments(ActiveDBInstance, ClickedDate, ClickedTimeslot, ActiveDBInstance.Appointments(ClickedApptIndex).NumSlots, abr) Then
             Dim oldat$
 
             'Create new appt structure
@@ -1073,7 +1073,7 @@ Else
             HideShape
             Exit Sub
         Else
-            If DB_SlotsIsAvail(ActiveDBInstance, moDate, moTimeSlot, frmMain.CHOS_NumSlots, -1) Then
+            If DB_SlotsHaveNoAppointments(ActiveDBInstance, moDate, moTimeSlot, frmMain.CHOS_NumSlots, -1) Then
                 ns = frmMain.CHOS_NumSlots
                 MoveShapeAndSetStyle moDayIndex, moTimeSlot, ns, Style_New
             Else
@@ -1095,7 +1095,7 @@ Else
                 'But if copying, overlap is prohibited
                 abr = -1
             End If
-            If DB_SlotsIsAvail(ActiveDBInstance, moDate, moTimeSlot, a.NumSlots, abr) Then
+            If DB_SlotsHaveNoAppointments(ActiveDBInstance, moDate, moTimeSlot, a.NumSlots, abr) Then
                 ns = a.NumSlots
                 If moveexistingappt = Style_MoveAndCtrlCopy Then
                     'This is a special situation, because if the user is hilighting a slot that
@@ -1103,7 +1103,7 @@ Else
                     '  determine this ahead of time. If Copy would not be allowed in this position
                     '  if the user hits Ctrl, then it's better to change Style_MoveAndCtrlCopy to
                     '  Style_Move to prevent the user from even hitting Ctrl in the first place.
-                    If DB_SlotsIsAvail(ActiveDBInstance, moDate, moTimeSlot, a.NumSlots, -1) Then
+                    If DB_SlotsHaveNoAppointments(ActiveDBInstance, moDate, moTimeSlot, a.NumSlots, -1) Then
                         'Slots are wide open, so we can continue with Style_MoveAndCtrlCopy
                         MoveShapeAndSetStyle moDayIndex, moTimeSlot, ns, moveexistingappt
                     Else

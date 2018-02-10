@@ -1183,8 +1183,9 @@ Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotFill", Err
 End Sub
 
+'Returns true if the slots do not currently have an appointment (meals and reserved are still considered available)
 'EHT=Standard
-Function DB_SlotsIsAvail(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&, NumSlots&, IgnoreApptID&) As Boolean
+Function DB_SlotsHaveNoAppointments(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&, NumSlots&, IgnoreApptID&) As Boolean
 On Error GoTo ERR_HANDLER
 
 Dim a&, ub&, i&
@@ -1201,10 +1202,10 @@ For a = TimeSlot To ub
         End If
     End If
 Next a
-DB_SlotsIsAvail = True
+DB_SlotsHaveNoAppointments = True
 
 Exit Function
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsIsAvail", Err
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsHaveNoAppointments", Err
 End Function
 
 'EHT=Standard
