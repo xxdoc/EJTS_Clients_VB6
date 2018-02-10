@@ -1,7 +1,6 @@
 Type=Exe
-Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\..\..\Windows\SysWOW64\stdole2.tlb#OLE Automation
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWOW64\stdole2.tlb#OLE Automation
 Reference=*\G{F1CE5FEC-CB34-4AE2-9399-392AE405CCBB}#1.0#0#SubClassingForVB.dll#SubClassingForVB
-Object={831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.1#0; mscomctl.OCX
 Reference=*\G{00995812-9105-11D0-A754-00A0C91110C3}#1.0#0#OLEGUIDS.TLB#Ole Guid and interface definitions
 Module=modMain; modMain.bas
 Module=modCommon; modCommon.bas
@@ -38,6 +37,7 @@ Form=tabUnpaid.frm
 Form=tabMailingList.frm
 Form=frmChangeTabOrder.frm
 Class=CGlobalSettings; CGlobalSettings.cls
+Object={831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0; MSCOMCTL.OCX
 ResFile32="XP.manifest.res"
 IconForm="frmMain"
 Startup="Sub Main"

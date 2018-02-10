@@ -1,11 +1,11 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.1#0"; "mscomctl.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form frmMain 
    Caption         =   "EJTS Clients"
    ClientHeight    =   7845
    ClientLeft      =   60
    ClientTop       =   450
-   ClientWidth     =   15120
+   ClientWidth     =   20055
    BeginProperty Font 
       Name            =   "Arial"
       Size            =   9.75
@@ -19,7 +19,7 @@ Begin VB.Form frmMain
    LinkTopic       =   "Form1"
    ScaleHeight     =   523
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1008
+   ScaleWidth      =   1337
    WindowState     =   2  'Maximized
    Begin VB.ListBox lstSort 
       Height          =   735
@@ -131,7 +131,7 @@ Begin VB.Form frmMain
    Begin VB.CommandButton btnSave 
       Caption         =   "&Save DB"
       Height          =   615
-      Left            =   13680
+      Left            =   18360
       TabIndex        =   1
       TabStop         =   0   'False
       Top             =   120
@@ -140,7 +140,7 @@ Begin VB.Form frmMain
    Begin VB.CommandButton btnNewClient 
       Caption         =   "New Client..."
       Height          =   615
-      Left            =   13440
+      Left            =   18120
       TabIndex        =   5
       TabStop         =   0   'False
       Top             =   960
@@ -172,7 +172,7 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       Height          =   405
-      Left            =   9720
+      Left            =   14400
       Style           =   2  'Dropdown List
       TabIndex        =   4
       TabStop         =   0   'False
@@ -185,8 +185,8 @@ Begin VB.Form frmMain
       TabIndex        =   2
       TabStop         =   0   'False
       Top             =   1680
-      Width           =   16575
-      _ExtentX        =   29236
+      Width           =   19695
+      _ExtentX        =   34740
       _ExtentY        =   1085
       MultiRow        =   -1  'True
       TabFixedHeight  =   661
@@ -251,7 +251,75 @@ Begin VB.Form frmMain
       EndProperty
    End
    Begin VB.Label DTOT_lblDayTotal 
-      Alignment       =   2  'Center
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   1  'Fixed Single
+      Caption         =   "Available: "
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Index           =   4
+      Left            =   9840
+      TabIndex        =   22
+      ToolTipText     =   "Click to recalculate"
+      Top             =   840
+      Width           =   3855
+   End
+   Begin VB.Label DTOT_lblDayTotal 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   1  'Fixed Single
+      Caption         =   "Used: "
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Index           =   3
+      Left            =   9840
+      TabIndex        =   21
+      ToolTipText     =   "Click to recalculate"
+      Top             =   480
+      Width           =   3855
+   End
+   Begin VB.Label DTOT_lblDayTotal 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   1  'Fixed Single
+      Caption         =   "Tax Season Appointments: 0"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Index           =   2
+      Left            =   9840
+      TabIndex        =   20
+      ToolTipText     =   "Click to recalculate"
+      Top             =   120
+      Width           =   4455
+   End
+   Begin VB.Label DTOT_lblDayTotal 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single
@@ -268,7 +336,7 @@ Begin VB.Form frmMain
       ForeColor       =   &H80000008&
       Height          =   375
       Index           =   1
-      Left            =   9960
+      Left            =   14400
       TabIndex        =   15
       ToolTipText     =   "Click to recalculate"
       Top             =   480
@@ -288,7 +356,7 @@ Begin VB.Form frmMain
       EndProperty
       ForeColor       =   &H00FF0000&
       Height          =   255
-      Left            =   11880
+      Left            =   16560
       MouseIcon       =   "frmMain.frx":57E2
       MousePointer    =   99  'Custom
       TabIndex        =   16
@@ -328,13 +396,12 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       Height          =   255
-      Left            =   9720
+      Left            =   14400
       TabIndex        =   14
       Top             =   960
       Width           =   1695
    End
    Begin VB.Label DTOT_lblDayTotal 
-      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single
@@ -351,7 +418,7 @@ Begin VB.Form frmMain
       ForeColor       =   &H80000008&
       Height          =   375
       Index           =   0
-      Left            =   9960
+      Left            =   14400
       TabIndex        =   13
       ToolTipText     =   "Click to recalculate"
       Top             =   120
