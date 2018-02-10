@@ -211,6 +211,8 @@ Public Type EJTSClientsDB
     MakeBakOnNextSave As String
 
     ScheduleTemplate(1 To 3, 6, Appointment_NumSlotsUB) As Long     '3D array; not saved to database file
+    ScheduleTemplateBreakpoint1 As Long
+    ScheduleTemplateBreakpoint2 As Long
 End Type
 
 'EHT=Cleanup1
@@ -1181,6 +1183,34 @@ LocalDBInstance.ApptBitmap(Day - LocalDBInstance.ApptBitmap_StartDate, TimeSlot)
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotFill", Err
+End Sub
+
+'EHT=Standard
+Sub DB_ExtractScheduleTemplateFromSettings(LocalDBInstance As EJTSClientsDB)
+On Error GoTo ERR_HANDLER
+
+Dim r&, wd&, ts&, s$
+For r = 1 To 3
+    For wd = 0 To 6
+        s$ = UCase$(DB_GetSetting(LocalDBInstance, "Schedule Template " & Chr(64 + r) & (wd + 1) & " (" & WeekdayName(wd + 1, False, vbMonday) & ")"))
+        For ts = 1 To Appointment_NumSlots
+            Select Case Mid$(s$, ts, 1)
+            Case "R"
+                LocalDBInstance.ScheduleTemplate(r, wd, ts - 1) = Slot_Reserved
+            Case "M"
+                LocalDBInstance.ScheduleTemplate(r, wd, ts - 1) = Slot_MealBreak
+            Case Else  ' "A" or anything incorrect
+                LocalDBInstance.ScheduleTemplate(r, wd, ts - 1) = Slot_Available
+            End Select
+        Next ts
+    Next wd
+Next r
+
+LocalDBInstance.ScheduleTemplateBreakpoint1 = DB_GetSetting(LocalDBInstance, "Schedule Template B starting date")
+LocalDBInstance.ScheduleTemplateBreakpoint2 = DB_GetSetting(LocalDBInstance, "Schedule Template C starting date")
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_ExtractScheduleTemplateFromSettings", Err
 End Sub
 
 'Returns true if the slots do not currently have an appointment (meals and reserved are still considered available)

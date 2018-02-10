@@ -1199,7 +1199,7 @@ If Not ActiveDBInstance.Loaded Then Exit Sub
 
 Dim a&, todaysdate&
 
-ExtractScheduleTemplate
+DB_ExtractScheduleTemplateFromSettings ActiveDBInstance
 
 pctSchedule.Cls
 pctScheduleHdc = pctSchedule.hdc
@@ -1415,31 +1415,6 @@ Next a
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DrawScheduleDay", Err
-End Sub
-
-'EHT=Standard
-Sub ExtractScheduleTemplate()
-On Error GoTo ERR_HANDLER
-
-Dim r&, wd&, ts&, s$
-For r = 1 To 3
-    For wd = 0 To 6
-        s$ = UCase$(DB_GetSetting(ActiveDBInstance, "Schedule Template " & Chr(64 + r) & (wd + 1) & " (" & WeekdayName(wd + 1, False, vbMonday) & ")"))
-        For ts = 1 To Appointment_NumSlots
-            Select Case Mid$(s$, ts, 1)
-            Case "R"
-                ActiveDBInstance.ScheduleTemplate(r, wd, ts - 1) = Slot_Reserved
-            Case "M"
-                ActiveDBInstance.ScheduleTemplate(r, wd, ts - 1) = Slot_MealBreak
-            Case Else  ' "A" or anything incorrect
-                ActiveDBInstance.ScheduleTemplate(r, wd, ts - 1) = Slot_Available
-            End Select
-        Next ts
-    Next wd
-Next r
-
-Exit Sub
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "ExtractScheduleTemplate", Err
 End Sub
 
 'EHT=Standard
