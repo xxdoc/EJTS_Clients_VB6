@@ -21,17 +21,6 @@ Begin VB.Form frmMain
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1337
    WindowState     =   2  'Maximized
-   Begin VB.ListBox lstSort 
-      Height          =   735
-      IntegralHeight  =   0   'False
-      Left            =   1560
-      Sorted          =   -1  'True
-      TabIndex        =   19
-      TabStop         =   0   'False
-      Top             =   2880
-      Visible         =   0   'False
-      Width           =   1215
-   End
    Begin VB.PictureBox pctSecondFocus 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -267,7 +256,7 @@ Begin VB.Form frmMain
       Height          =   375
       Index           =   3
       Left            =   9840
-      TabIndex        =   23
+      TabIndex        =   22
       ToolTipText     =   "Click to recalculate"
       Top             =   480
       Width           =   4455
@@ -289,7 +278,7 @@ Begin VB.Form frmMain
       Height          =   375
       Index           =   5
       Left            =   9840
-      TabIndex        =   22
+      TabIndex        =   21
       ToolTipText     =   "Click to recalculate"
       Top             =   1200
       Width           =   4455
@@ -311,7 +300,7 @@ Begin VB.Form frmMain
       Height          =   375
       Index           =   4
       Left            =   9840
-      TabIndex        =   21
+      TabIndex        =   20
       ToolTipText     =   "Click to recalculate"
       Top             =   840
       Width           =   4455
@@ -334,7 +323,7 @@ Begin VB.Form frmMain
       Height          =   375
       Index           =   2
       Left            =   9840
-      TabIndex        =   20
+      TabIndex        =   19
       ToolTipText     =   "Click to recalculate"
       Top             =   120
       Width           =   4455
@@ -819,188 +808,6 @@ On Error GoTo ERR_HANDLER
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_KeyPress", Err
-End Sub
-
-'EHT=Standard
-Private Sub Form_DblClick()
-On Error GoTo ERR_HANDLER
-
-If Not ActiveDBInstance.IsWriteable Then
-    ShowErrorMsg "Not available in read-only mode!"
-    Exit Sub
-End If
-
-Dim a&, b&, t$
-
-'If DEBUGMODE Then
-'    a = Val(InputBox("Enter number (1296,1304,1127):"))
-'    If a > 0 Then tabSearch.lstResults_KeyDown vbKeyReturn, CInt(a)
-'    Exit Sub
-'End If
-
-Select Case LCase$(InputBox("Enter debug code:"))
-Case "copyfees"
-    lstSort.Clear
-    For a = 0 To ActiveDBInstance.Clients_Count - 1
-        With ActiveDBInstance.Clients(a)
-            If Flag_IsSet(.c.Flags, CompletedReturn) Then
-                lstSort.AddItem FormatClientName(fPullFiles, .c)
-                lstSort.ItemData(lstSort.NewIndex) = a
-            End If
-        End With
-    Next a
-    t$ = "ID" & vbTab & "Name" & vbTab & "LYFee" & vbTab & "CYFee" & vbTab & "CYOwed" & vbCrLf
-    For a = 0 To lstSort.ListCount - 1
-        With ActiveDBInstance.Clients(lstSort.ItemData(a))
-            t$ = t$ & .c.ID & vbTab & FormatClientName(fSearchResults, .c) & vbTab & FieldToString(.c.LastYear_PrepFee, mDollarOrNULL) & vbTab & FieldToString(.c.PrepFee, mDollarOrNULL) & vbTab & FieldToString(.c.MoneyOwed, mDollarOrNULL) & vbCrLf
-        End With
-    Next a
-    Clipboard.Clear
-    Clipboard.SetText t$
-    MsgBox "Data copied to the clipboard.", vbInformation
-
-Case "dateofdeath"
-    lstSort.Clear
-    For a = 0 To ActiveDBInstance.Clients_Count - 1
-        With ActiveDBInstance.Clients(a)
-            lstSort.AddItem FormatClientName(fPullFiles, .c)
-            lstSort.ItemData(lstSort.NewIndex) = a
-        End With
-    Next a
-    For a = 0 To lstSort.ListCount - 1
-        With ActiveDBInstance.Clients(lstSort.ItemData(a))
-            If (.c.Person1.DOD <> NullLong) Or (.c.Person2.DOD <> NullLong) Then
-                t$ = t$ & .c.ID & vbTab & .c.Person1.Last & vbTab & .c.Person1.First & vbTab & .c.Person2.First & vbTab & IIf(.c.Person1.DOD = NullLong, "", "D") & vbTab & IIf(.c.Person2.DOD = NullLong, "", "D") & vbTab & FormatClientName(fSearchResults, .c) & vbCrLf
-            End If
-        End With
-    Next a
-    Clipboard.Clear
-    Clipboard.SetText t$
-
-Case "ranges"
-    Dim fh As CMNMOD_CFileHandler
-    Dim l$()
-    Dim cindex&
-    Set fh = OpenFile("C:\0Kenneth\Programming\Visual Basic\Programs\EJTSClients\From Dad\newest oldest.txt", mLineByLine_Input)
-    Do Until fh.EndOfFile
-        t$ = fh.ReadLine
-        l$ = Split(t$, vbTab)
-        a = Val(l$(0))
-        cindex = DB_FindClientIndex(ActiveDBInstance, a)
-        If cindex >= 0 Then
-            With ActiveDBInstance.Clients(cindex).c
-                a = Val(l$(1))
-                If a = 9900 Then a = NullLong
-                If .OldestYearFiled = 9900 Then .OldestYearFiled = NullLong
-                If .OldestYearFiled <> NullLong Then
-                    If .OldestYearFiled <> a Then Stop
-                End If
-                .OldestYearFiled = a
-
-                a = Val(l$(2))
-                If a = 9900 Then a = NullLong
-                If .NewestYearFiled = 9900 Then .NewestYearFiled = NullLong
-                If .NewestYearFiled <> NullLong Then
-                    If .NewestYearFiled <> a Then Stop
-                End If
-                .NewestYearFiled = a
-            End With
-        Else
-            Stop
-        End If
-    Loop
-    fh.CloseFile
-    Stop
-
-Case "copynames"
-    lstSort.Clear
-    For a = 0 To ActiveDBInstance.Clients_Count - 1
-        With ActiveDBInstance.Clients(a)
-            lstSort.AddItem FormatClientName(fPullFiles, .c)
-            lstSort.ItemData(lstSort.NewIndex) = a
-        End With
-    Next a
-    For a = 0 To lstSort.ListCount - 1
-        With ActiveDBInstance.Clients(lstSort.ItemData(a))
-            t$ = t$ & .c.ID & vbTab & FormatClientName(fPullFiles, .c) & vbTab & FieldToString(.c.OldestYearFiled, mYearOrNULL) & vbTab & FieldToString(.c.NewestYearFiled, mYearOrNULL) & vbCrLf
-        End With
-    Next a
-    Clipboard.Clear
-    Clipboard.SetText t$
-
-Case "fixnamecase"
-    For a = 0 To ActiveDBInstance.Clients_Count - 1
-        With ActiveDBInstance.Clients(a)
-            .c.Person1.Email = LCase(.c.Person1.Email)
-            .c.Person2.Email = LCase(.c.Person2.Email)
-        End With
-    Next a
-    SetChangedFlagAndIndication
-
-Case "removexcell"
-    For a = 0 To ActiveDBInstance.Clients_Count - 1
-        With ActiveDBInstance.Clients(a)
-            If LCase$(Right$(.c.Person1.Phone, 5)) = "xcell" Then
-                .c.Person1.Phone = Left$(.c.Person1.Phone, Len(.c.Person1.Phone) - 5)
-                b = b + 1
-            End If
-            If LCase$(Right$(.c.Person2.Phone, 5)) = "xcell" Then
-                .c.Person2.Phone = Left$(.c.Person2.Phone, Len(.c.Person2.Phone) - 5)
-                b = b + 1
-            End If
-        End With
-    Next a
-    SetChangedFlagAndIndication
-    MsgBox b & " total xCELL extensions removed."
-
-Case "listbyage"
-    Dim tod As Long, pers As PersonStruct
-    tod = Date
-    Set fh = OpenFile(AppPath & "listbyage.csv", mLineByLine_Output)
-    fh.WriteLine "Client #,Individual,Date of Birth,Age as of " & Format(tod, "m/d/yyyy")
-    lstSort.Clear
-    For a = 0 To ActiveDBInstance.Clients_Count - 1
-        With ActiveDBInstance.Clients(a)
-            If (Len(.c.Person1.First) > 0) And (.c.Person1.DOB <> NullLong) And (.c.Person1.DOD = NullLong) Then
-                lstSort.AddItem Format(.c.Person1.DOB, "0000000000") & vbTab & .c.Person1.Last & ", " & .c.Person1.First
-                lstSort.ItemData(lstSort.NewIndex) = a
-            End If
-            If (Len(.c.Person2.First) > 0) And (.c.Person2.DOB <> NullLong) And (.c.Person2.DOD = NullLong) Then
-                t$ = .c.Person2.Last
-                If Len(t$) = 0 Then t$ = .c.Person1.Last
-                lstSort.AddItem Format(.c.Person2.DOB, "0000000000") & vbTab & t$ & ", " & .c.Person2.First
-                lstSort.ItemData(lstSort.NewIndex) = -a
-            End If
-        End With
-    Next a
-    For a = 0 To lstSort.ListCount - 1
-        b = lstSort.ItemData(a)
-        If b >= 0 Then
-            pers = ActiveDBInstance.Clients(b).c.Person1
-            t$ = pers.Last
-        Else
-            b = -b
-            pers = ActiveDBInstance.Clients(b).c.Person2
-            If Len(pers.Last) > 0 Then
-                t$ = pers.Last
-            Else
-                t$ = ActiveDBInstance.Clients(b).c.Person1.Last
-            End If
-        End If
-        t$ = t$ & ", " & pers.First
-        If Len(pers.Initial) > 0 Then t$ = t$ & " " & pers.Initial
-        fh.WriteLine b & ",""" & t$ & """," & Format(pers.DOB, "m/d/yyyy") & "," & CalculateAge(pers.DOB, tod)
-    Next a
-    fh.CloseFile
-    ShowInfoMsg "A list of all living individuals, sorted by current age, has been saved to """ & fh.FullPath & """"
-
-Case ""
-Case Else
-    ShowErrorMsg "Unknown debug code!"
-End Select
-
-Exit Sub
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "Form_DblClick", Err
 End Sub
 
 'EHT=Cleanup2

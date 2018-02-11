@@ -21,6 +21,98 @@ Begin VB.Form tabSettings
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   895
    ShowInTaskbar   =   0   'False
+   Begin VB.ListBox lstSort 
+      Height          =   735
+      IntegralHeight  =   0   'False
+      Left            =   10320
+      Sorted          =   -1  'True
+      TabIndex        =   14
+      TabStop         =   0   'False
+      Top             =   1920
+      Visible         =   0   'False
+      Width           =   1215
+   End
+   Begin VB.PictureBox pctDebugActions 
+      BorderStyle     =   0  'None
+      Height          =   855
+      Left            =   360
+      ScaleHeight     =   855
+      ScaleWidth      =   12015
+      TabIndex        =   5
+      Top             =   4320
+      Width           =   12015
+      Begin VB.CommandButton btnDebugCode 
+         Caption         =   "listbyage"
+         Height          =   495
+         Index           =   6
+         Left            =   7800
+         TabIndex        =   12
+         Top             =   360
+         Width           =   1095
+      End
+      Begin VB.CommandButton btnDebugCode 
+         Caption         =   "removexcell"
+         Height          =   495
+         Index           =   5
+         Left            =   6360
+         TabIndex        =   11
+         Top             =   360
+         Width           =   1335
+      End
+      Begin VB.CommandButton btnDebugCode 
+         Caption         =   "fixnamecase"
+         Height          =   495
+         Index           =   4
+         Left            =   4920
+         TabIndex        =   10
+         Top             =   360
+         Width           =   1335
+      End
+      Begin VB.CommandButton btnDebugCode 
+         Caption         =   "copynames"
+         Height          =   495
+         Index           =   3
+         Left            =   3480
+         TabIndex        =   9
+         Top             =   360
+         Width           =   1335
+      End
+      Begin VB.CommandButton btnDebugCode 
+         Caption         =   "ranges"
+         Height          =   495
+         Index           =   2
+         Left            =   2520
+         TabIndex        =   8
+         Top             =   360
+         Width           =   855
+      End
+      Begin VB.CommandButton btnDebugCode 
+         Caption         =   "dateofdeath"
+         Height          =   495
+         Index           =   1
+         Left            =   1200
+         TabIndex        =   7
+         Top             =   360
+         Width           =   1215
+      End
+      Begin VB.CommandButton btnDebugCode 
+         Caption         =   "copyfees"
+         Height          =   495
+         Index           =   0
+         Left            =   0
+         TabIndex        =   6
+         Top             =   360
+         Width           =   1095
+      End
+      Begin VB.Label Label1 
+         Caption         =   "Debug Actions (each button will show a confirmation message first, explaining what it does):"
+         Height          =   255
+         Left            =   0
+         TabIndex        =   13
+         Top             =   0
+         Width           =   9375
+      End
+   End
    Begin VB.TextBox txtEdit 
       Appearance      =   0  'Flat
       BackColor       =   &H00FFE1C4&
@@ -110,6 +202,196 @@ Private EditingList As Integer          '0 is Global, 1 is Specific
 Private EditingListIndex As Integer     'Index in the on-screen listbox
 Private EditingSettingName As String
 Private TextboxLeftOffset As Long
+
+'EHT=Standard
+Private Sub btnDebugCode_Click(Index As Integer)
+On Error GoTo ERR_HANDLER
+
+If Not ActiveDBInstance.IsWriteable Then
+    ShowErrorMsg "Not available in read-only mode!"
+    Exit Sub
+End If
+
+Dim a&, b&, t$
+
+Const WILL_CHANGE = vbCrLf & vbCrLf & "This WILL CHANGE the database. Cancel if you do not know what this function is for."
+Const WILL_NOT_CHANGE = vbCrLf & vbCrLf & "The database will not be modified."
+
+Select Case btnDebugCode(Index).Caption
+Case "copyfees"
+    If MsgBox("This will copy to the clipboard a sorted list of all clients with the CompletedReturn flag set, along with their last year's prep fees, current year's prep fees, and amount owed." & WILL_NOT_CHANGE, vbQuestion Or vbOKCancel) = vbCancel Then Exit Sub
+    
+    lstSort.Clear
+    For a = 0 To ActiveDBInstance.Clients_Count - 1
+        With ActiveDBInstance.Clients(a)
+            If Flag_IsSet(.c.Flags, CompletedReturn) Then
+                lstSort.AddItem FormatClientName(fPullFiles, .c)
+                lstSort.ItemData(lstSort.NewIndex) = a
+            End If
+        End With
+    Next a
+    t$ = "ID" & vbTab & "Name" & vbTab & "LYFee" & vbTab & "CYFee" & vbTab & "CYOwed" & vbCrLf
+    For a = 0 To lstSort.ListCount - 1
+        With ActiveDBInstance.Clients(lstSort.ItemData(a))
+            t$ = t$ & .c.ID & vbTab & FormatClientName(fSearchResults, .c) & vbTab & FieldToString(.c.LastYear_PrepFee, mDollarOrNULL) & vbTab & FieldToString(.c.PrepFee, mDollarOrNULL) & vbTab & FieldToString(.c.MoneyOwed, mDollarOrNULL) & vbCrLf
+        End With
+    Next a
+    Clipboard.Clear
+    Clipboard.SetText t$
+    MsgBox "Data copied to the clipboard.", vbInformation
+
+Case "dateofdeath"
+    If MsgBox("This will copy to the clipboard a sorted list of all client entries where one or both of the people have died, along with the dates of death." & WILL_NOT_CHANGE, vbQuestion Or vbOKCancel) = vbCancel Then Exit Sub
+    
+    lstSort.Clear
+    For a = 0 To ActiveDBInstance.Clients_Count - 1
+        With ActiveDBInstance.Clients(a)
+            lstSort.AddItem FormatClientName(fPullFiles, .c)
+            lstSort.ItemData(lstSort.NewIndex) = a
+        End With
+    Next a
+    For a = 0 To lstSort.ListCount - 1
+        With ActiveDBInstance.Clients(lstSort.ItemData(a))
+            If (.c.Person1.DOD <> NullLong) Or (.c.Person2.DOD <> NullLong) Then
+                t$ = t$ & .c.ID & vbTab & .c.Person1.Last & vbTab & .c.Person1.First & vbTab & .c.Person2.First & vbTab & IIf(.c.Person1.DOD = NullLong, "", "D") & vbTab & IIf(.c.Person2.DOD = NullLong, "", "D") & vbTab & FormatClientName(fSearchResults, .c) & vbCrLf
+            End If
+        End With
+    Next a
+    Clipboard.Clear
+    Clipboard.SetText t$
+
+Case "ranges"
+    If MsgBox("This loads a text file named ""newest oldest.txt"" and initializes each of the mentioned clients with the OldestYearFiled and NewestYearFiled information." & WILL_CHANGE, vbQuestion Or vbOKCancel) = vbCancel Then Exit Sub
+    
+    Dim fh As CMNMOD_CFileHandler
+    Dim l$()
+    Dim cindex&
+    Set fh = OpenFile("newest oldest.txt", mLineByLine_Input)
+    Do Until fh.EndOfFile
+        t$ = fh.ReadLine
+        l$ = Split(t$, vbTab)
+        a = Val(l$(0))
+        cindex = DB_FindClientIndex(ActiveDBInstance, a)
+        If cindex >= 0 Then
+            With ActiveDBInstance.Clients(cindex).c
+                a = Val(l$(1))
+                If a = 9900 Then a = NullLong
+                If .OldestYearFiled = 9900 Then .OldestYearFiled = NullLong
+                If .OldestYearFiled <> NullLong Then
+                    If .OldestYearFiled <> a Then Stop
+                End If
+                .OldestYearFiled = a
+
+                a = Val(l$(2))
+                If a = 9900 Then a = NullLong
+                If .NewestYearFiled = 9900 Then .NewestYearFiled = NullLong
+                If .NewestYearFiled <> NullLong Then
+                    If .NewestYearFiled <> a Then Stop
+                End If
+                .NewestYearFiled = a
+            End With
+        Else
+            Stop
+        End If
+    Loop
+    fh.CloseFile
+    Stop
+
+Case "copynames"
+    If MsgBox("This will copy to the clipboard a sorted list of all client entries, along with their OldestYearFiled and NewestYearFiled information." & WILL_NOT_CHANGE, vbQuestion Or vbOKCancel) = vbCancel Then Exit Sub
+    
+    lstSort.Clear
+    For a = 0 To ActiveDBInstance.Clients_Count - 1
+        With ActiveDBInstance.Clients(a)
+            lstSort.AddItem FormatClientName(fPullFiles, .c)
+            lstSort.ItemData(lstSort.NewIndex) = a
+        End With
+    Next a
+    For a = 0 To lstSort.ListCount - 1
+        With ActiveDBInstance.Clients(lstSort.ItemData(a))
+            t$ = t$ & .c.ID & vbTab & FormatClientName(fPullFiles, .c) & vbTab & FieldToString(.c.OldestYearFiled, mYearOrNULL) & vbTab & FieldToString(.c.NewestYearFiled, mYearOrNULL) & vbCrLf
+        End With
+    Next a
+    Clipboard.Clear
+    Clipboard.SetText t$
+
+Case "fixnamecase"
+    If MsgBox("This will change every email in the database to lowercase." & WILL_CHANGE, vbQuestion Or vbOKCancel) = vbCancel Then Exit Sub
+    
+    For a = 0 To ActiveDBInstance.Clients_Count - 1
+        With ActiveDBInstance.Clients(a)
+            .c.Person1.Email = LCase(.c.Person1.Email)
+            .c.Person2.Email = LCase(.c.Person2.Email)
+        End With
+    Next a
+    frmMain.SetChangedFlagAndIndication
+
+Case "removexcell"
+    If MsgBox("This will remove any xCELL suffix from every phone number in the database, while leaving other extensions (x1234)." & WILL_CHANGE, vbQuestion Or vbOKCancel) = vbCancel Then Exit Sub
+    
+    For a = 0 To ActiveDBInstance.Clients_Count - 1
+        With ActiveDBInstance.Clients(a)
+            If LCase$(Right$(.c.Person1.Phone, 5)) = "xcell" Then
+                .c.Person1.Phone = Left$(.c.Person1.Phone, Len(.c.Person1.Phone) - 5)
+                b = b + 1
+            End If
+            If LCase$(Right$(.c.Person2.Phone, 5)) = "xcell" Then
+                .c.Person2.Phone = Left$(.c.Person2.Phone, Len(.c.Person2.Phone) - 5)
+                b = b + 1
+            End If
+        End With
+    Next a
+    frmMain.SetChangedFlagAndIndication
+    MsgBox b & " total xCELL extensions removed."
+
+Case "listbyage"
+    If MsgBox("Creates a ""listbyage.csv"" with a list of all living individuals, sorted by current age." & WILL_NOT_CHANGE, vbQuestion Or vbOKCancel) = vbCancel Then Exit Sub
+    
+    Dim tod As Long, pers As PersonStruct
+    tod = Date
+    Set fh = OpenFile(AppPath & "listbyage.csv", mLineByLine_Output)
+    fh.WriteLine "Client #,Individual,Date of Birth,Age as of " & Format(tod, "m/d/yyyy")
+    lstSort.Clear
+    For a = 0 To ActiveDBInstance.Clients_Count - 1
+        With ActiveDBInstance.Clients(a)
+            If (Len(.c.Person1.First) > 0) And (.c.Person1.DOB <> NullLong) And (.c.Person1.DOD = NullLong) Then
+                lstSort.AddItem Format(.c.Person1.DOB, "0000000000") & vbTab & .c.Person1.Last & ", " & .c.Person1.First
+                lstSort.ItemData(lstSort.NewIndex) = a
+            End If
+            If (Len(.c.Person2.First) > 0) And (.c.Person2.DOB <> NullLong) And (.c.Person2.DOD = NullLong) Then
+                t$ = .c.Person2.Last
+                If Len(t$) = 0 Then t$ = .c.Person1.Last
+                lstSort.AddItem Format(.c.Person2.DOB, "0000000000") & vbTab & t$ & ", " & .c.Person2.First
+                lstSort.ItemData(lstSort.NewIndex) = -a
+            End If
+        End With
+    Next a
+    For a = 0 To lstSort.ListCount - 1
+        b = lstSort.ItemData(a)
+        If b >= 0 Then
+            pers = ActiveDBInstance.Clients(b).c.Person1
+            t$ = pers.Last
+        Else
+            b = -b
+            pers = ActiveDBInstance.Clients(b).c.Person2
+            If Len(pers.Last) > 0 Then
+                t$ = pers.Last
+            Else
+                t$ = ActiveDBInstance.Clients(b).c.Person1.Last
+            End If
+        End If
+        t$ = t$ & ", " & pers.First
+        If Len(pers.Initial) > 0 Then t$ = t$ & " " & pers.Initial
+        fh.WriteLine b & ",""" & t$ & """," & Format(pers.DOB, "m/d/yyyy") & "," & CalculateAge(pers.DOB, tod)
+    Next a
+    fh.CloseFile
+    ShowInfoMsg "A list of all living individuals, sorted by current age, has been saved to """ & fh.FullPath & """"
+
+End Select
+
+Exit Sub
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "btnDebugCode_Click", Err
+End Sub
 
 'EHT=None
 Private Sub Form_Load()
@@ -225,7 +507,9 @@ Dim l&, t&, w&, h&
 l = 0
 w = (Me.ScaleWidth - 16) / 2
 t = lblTitle(0).Height + 8
-h = Me.ScaleHeight - t
+h = Me.ScaleHeight - t - pctDebugActions.Height - 8
+
+pctDebugActions.Move 0, Me.ScaleHeight - pctDebugActions.Height, w
 
 lblTitle(0).Move l, 0, w
 lstSettings(0).Move l, t, w, h
