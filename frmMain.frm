@@ -254,30 +254,6 @@ Begin VB.Form frmMain
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single
-      Caption         =   "Available: "
-      BeginProperty Font 
-         Name            =   "Arial"
-         Size            =   14.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Index           =   4
-      Left            =   9840
-      TabIndex        =   22
-      ToolTipText     =   "Click to recalculate"
-      Top             =   840
-      Width           =   3855
-   End
-   Begin VB.Label DTOT_lblDayTotal 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   1  'Fixed Single
-      Caption         =   "Used: "
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   14.25
@@ -291,16 +267,59 @@ Begin VB.Form frmMain
       Height          =   375
       Index           =   3
       Left            =   9840
-      TabIndex        =   21
+      TabIndex        =   23
       ToolTipText     =   "Click to recalculate"
       Top             =   480
-      Width           =   3855
+      Width           =   4455
    End
    Begin VB.Label DTOT_lblDayTotal 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single
-      Caption         =   "Tax Season Appointments: 0"
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Index           =   5
+      Left            =   9840
+      TabIndex        =   22
+      ToolTipText     =   "Click to recalculate"
+      Top             =   1200
+      Width           =   4455
+   End
+   Begin VB.Label DTOT_lblDayTotal 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   1  'Fixed Single
+      BeginProperty Font 
+         Name            =   "Arial"
+         Size            =   14.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H80000008&
+      Height          =   375
+      Index           =   4
+      Left            =   9840
+      TabIndex        =   21
+      ToolTipText     =   "Click to recalculate"
+      Top             =   840
+      Width           =   4455
+   End
+   Begin VB.Label DTOT_lblDayTotal 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   1  'Fixed Single
       BeginProperty Font 
          Name            =   "Arial"
          Size            =   14.25
@@ -320,6 +339,7 @@ Begin VB.Form frmMain
       Width           =   4455
    End
    Begin VB.Label DTOT_lblDayTotal 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single
@@ -340,7 +360,7 @@ Begin VB.Form frmMain
       TabIndex        =   15
       ToolTipText     =   "Click to recalculate"
       Top             =   480
-      Width           =   3135
+      Width           =   3615
    End
    Begin VB.Label SRCH_lblSpecialSearchEdit 
       BackStyle       =   0  'Transparent
@@ -402,6 +422,7 @@ Begin VB.Form frmMain
       Width           =   1695
    End
    Begin VB.Label DTOT_lblDayTotal 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single
@@ -422,7 +443,7 @@ Begin VB.Form frmMain
       TabIndex        =   13
       ToolTipText     =   "Click to recalculate"
       Top             =   120
-      Width           =   3135
+      Width           =   3615
    End
    Begin VB.Label CHOS_lblApptInfo 
       Alignment       =   1  'Right Justify
@@ -1369,7 +1390,8 @@ End Sub
 Sub DayTotal_Update()
 On Error GoTo ERR_HANDLER
 
-Dim a&, cd&, tot&, numappt&, t$
+Dim a&, b&, cd&, ts&, tot&, numappt&, t$
+Dim totalslots&, usedslots&, usedclients&, availslots&, lid&, st&
 
 t$ = "*" & Format$(Date, "yyyy-mm-dd") & "????????Scheduled?appt:*"
 cd = CLng(Date)
@@ -1386,9 +1408,33 @@ For a = 0 To ActiveDBInstance.ExtraCharges_Count - 1
         If ActiveDBInstance.ExtraCharges(a).PrepFee <> NullLong Then tot = tot + ActiveDBInstance.ExtraCharges(a).PrepFee
     End If
 Next a
-
 DTOT_lblDayTotal(0).Caption = "Daily Total: " & FieldToString(tot, mDollar)
 DTOT_lblDayTotal(1).Caption = "Appts Made Today: " & FieldToString(numappt, mNumber)
+
+numappt = 0
+lid = -1
+st = CLng(Date) - ActiveDBInstance.ApptBitmap_StartDate
+For cd = (ActiveDBInstance.ScheduleTemplateBreakpoint1 - ActiveDBInstance.ApptBitmap_StartDate) To (ActiveDBInstance.ScheduleTemplateBreakpoint2 - ActiveDBInstance.ApptBitmap_StartDate - 1)
+    For ts = 0 To Appointment_NumSlotsUB
+        a = DB_GetIDAtSlot(ActiveDBInstance, ActiveDBInstance.ApptBitmap_StartDate + cd, ts)
+        If a >= 0 Then
+            totalslots = totalslots + 1
+            usedslots = usedslots + 1
+            If a <> lid Then
+                usedclients = usedclients + 1
+                lid = a
+            End If
+        ElseIf a = Slot_Available Then
+            totalslots = totalslots + 1
+            If cd > st Then availslots = availslots + 1
+        ElseIf a = Slot_MealBreak Or a = Slot_Reserved Then
+        End If
+    Next ts
+Next cd
+DTOT_lblDayTotal(2).Caption = "Season " & FieldToString(ActiveDBInstance.ScheduleTemplateBreakpoint1, mDateAsLong) & " - " & FieldToString(ActiveDBInstance.ScheduleTemplateBreakpoint2 - 1, mDateAsLong)
+DTOT_lblDayTotal(3).Caption = "Total slots for season: " & FieldToString(totalslots, mNumber)
+DTOT_lblDayTotal(4).Caption = FieldToString(usedslots, mNumber) & " slots used by " & FieldToString(usedclients, mNumber) & " appointments"
+DTOT_lblDayTotal(5).Caption = FieldToString(availslots, mNumber) & " slots available after today"
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DayTotal_Update", Err

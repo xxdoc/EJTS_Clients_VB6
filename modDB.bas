@@ -1214,6 +1214,7 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_ExtractScheduleTemplateFromSettings", 
 End Sub
 
 'Returns true if the slots do not currently have an appointment (meals and reserved are still considered available)
+'This function also verifies that the new appointment would fit entirely within the calendar range
 'EHT=Standard
 Function DB_SlotsHaveNoAppointments(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&, NumSlots&, IgnoreApptID&) As Boolean
 On Error GoTo ERR_HANDLER
@@ -1236,6 +1237,25 @@ DB_SlotsHaveNoAppointments = True
 
 Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsHaveNoAppointments", Err
+End Function
+
+'Returns the number stored in the slot, but also takes into account the meals and reserved items coming from the template instead of specifically defined
+'Does NOT perform any extent checking
+'EHT=Standard
+Function DB_GetIDAtSlot(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&) As Long
+Dim scheduletemplaterange&
+DB_GetIDAtSlot = LocalDBInstance.ApptBitmap(Day - LocalDBInstance.ApptBitmap_StartDate, TimeSlot)
+If DB_GetIDAtSlot = Slot_DefaultAccordingToTemplate Then
+    'If necessary, lookup the schedule template in the settings for that day and slot
+    If Day < LocalDBInstance.ScheduleTemplateBreakpoint1 Then
+        scheduletemplaterange = 1
+    ElseIf Day >= LocalDBInstance.ScheduleTemplateBreakpoint2 Then
+        scheduletemplaterange = 3
+    Else
+        scheduletemplaterange = 2
+    End If
+    DB_GetIDAtSlot = LocalDBInstance.ScheduleTemplate(scheduletemplaterange, Weekday(Day, vbMonday) - 1, TimeSlot)
+End If
 End Function
 
 'EHT=Standard

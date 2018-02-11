@@ -624,14 +624,12 @@ Case "e"    'Edit
     Dim frme As frmClientEditPost
     Set frme = New frmClientEditPost
     If frme.Form_Show(cID, fEdit) Then  'This will mark changed if necessary
-        frmMain.DayTotal_Update
         DrawSchedule
     End If
 Case "p"    'Post
     Dim frmp As frmClientEditPost
     Set frmp = New frmClientEditPost
     If frmp.Form_Show(cID, fPost) Then      'This will mark changed if necessary
-        frmMain.DayTotal_Update
         DrawSchedule
     End If
 Case "i"    'Mark incomplete
@@ -762,7 +760,6 @@ If DoubleClickAllowed Then
             Dim frme As frmClientEditPost
             Set frme = New frmClientEditPost
             If frme.Form_Show(ActiveDBInstance.Appointments(ClickedApptIndex).ClientIDs(0), fEdit) Then   'This will mark changed if necessary
-                frmMain.DayTotal_Update
                 DrawSchedule
             End If
         Else
@@ -943,7 +940,6 @@ If ClickedTimeslot >= 0 Then
                 aindex = DB_AddAppointment(ActiveDBInstance, a)
 
                 DB_SlotsFill ActiveDBInstance, .ApptDate, .ApptTimeSlot, .NumSlots, aindex
-                frmMain.DayTotal_Update
                 frmMain.SetChangedFlagAndIndication
                 ChangeScheduleMode sView
                 frmMain.CHOS_Clear
@@ -1209,6 +1205,7 @@ For a = 0 To 6
 Next a
 
 MoveRedArrow Time
+frmMain.DayTotal_Update
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DrawSchedule", Err
@@ -1236,14 +1233,6 @@ Case todaysdate
 Case Is > todaysdate
     CurCPDay = 2
 End Select
-
-If cd < DB_GetSetting(ActiveDBInstance, "Schedule Template B starting date") Then
-    scheduletemplaterange = 1
-ElseIf cd >= DB_GetSetting(ActiveDBInstance, "Schedule Template C starting date") Then
-    scheduletemplaterange = 3
-Else
-    scheduletemplaterange = 2
-End If
 
 'Title background
 pctSchedule.Line (cx, cy)-(cx + DayWidth - 1, cy + DayTitleHeight - 1), ColorProfilesDay(CurCPDay, 1), BF
@@ -1275,12 +1264,9 @@ TextOut pctScheduleHdc, cx + (DayWidth / 2), cy + 23, t$, Len(t$)
 'Draw time slots
 SelectObject pctScheduleHdc, FontTimesOnSlot
 For ts = 0 To Appointment_NumSlotsUB
-    b = ActiveDBInstance.ApptBitmap(cd - ActiveDBInstance.ApptBitmap_StartDate, ts)
     ty = cy + DayFirstSlotOffsetY + (ts * DayApptSlotHeight)
-    If b = Slot_DefaultAccordingToTemplate Then
-        'Lookup the schedule template in the settings for that day and slot
-        b = ActiveDBInstance.ScheduleTemplate(scheduletemplaterange, cd - ViewStartDate, ts)
-    End If
+
+    b = DB_GetIDAtSlot(ActiveDBInstance, cd, ts)
     Select Case b
     Case Slot_Reserved
         pctSchedule.FillStyle = FillStyleConstants.vbDownwardDiagonal
@@ -1295,6 +1281,7 @@ For ts = 0 To Appointment_NumSlotsUB
         t$ = "MEAL BREAK"
         TextOut pctScheduleHdc, cx + DayApptsOffsetX + ((DayWidth - DayApptsOffsetX - DayMarginRight) / 2), ty + 1, t$, Len(t$)
     End Select
+
     If b < 0 Then
         'Normal slot, time on left side, if empty
         SetTextAlign pctScheduleHdc, TA_RIGHT
