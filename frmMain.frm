@@ -317,6 +317,7 @@ Begin VB.Form frmMain
       Width           =   4455
    End
    Begin VB.Label DTOT_lblDayTotal 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single

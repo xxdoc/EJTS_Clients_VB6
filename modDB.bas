@@ -1243,6 +1243,8 @@ End Function
 'Does NOT perform any extent checking
 'EHT=Standard
 Function DB_GetIDAtSlot(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&) As Long
+On Error GoTo ERR_HANDLER
+
 Dim scheduletemplaterange&
 DB_GetIDAtSlot = LocalDBInstance.ApptBitmap(Day - LocalDBInstance.ApptBitmap_StartDate, TimeSlot)
 If DB_GetIDAtSlot = Slot_DefaultAccordingToTemplate Then
@@ -1256,6 +1258,9 @@ If DB_GetIDAtSlot = Slot_DefaultAccordingToTemplate Then
     End If
     DB_GetIDAtSlot = LocalDBInstance.ScheduleTemplate(scheduletemplaterange, Weekday(Day, vbMonday) - 1, TimeSlot)
 End If
+
+Exit Function
+ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsHaveNoAppointments", Err
 End Function
 
 'EHT=Standard
