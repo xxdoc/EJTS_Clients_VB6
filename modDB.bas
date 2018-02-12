@@ -1239,28 +1239,15 @@ Exit Function
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsHaveNoAppointments", Err
 End Function
 
-'Returns the number stored in the slot, but also takes into account the meals and reserved items coming from the template instead of specifically defined
-'Does NOT perform any extent checking
-'EHT=Standard
-Function DB_GetIDAtSlot(LocalDBInstance As EJTSClientsDB, Day&, TimeSlot&) As Long
-On Error GoTo ERR_HANDLER
-
-Dim scheduletemplaterange&
-DB_GetIDAtSlot = LocalDBInstance.ApptBitmap(Day - LocalDBInstance.ApptBitmap_StartDate, TimeSlot)
-If DB_GetIDAtSlot = Slot_DefaultAccordingToTemplate Then
-    'If necessary, lookup the schedule template in the settings for that day and slot
-    If Day < LocalDBInstance.ScheduleTemplateBreakpoint1 Then
-        scheduletemplaterange = 1
-    ElseIf Day >= LocalDBInstance.ScheduleTemplateBreakpoint2 Then
-        scheduletemplaterange = 3
-    Else
-        scheduletemplaterange = 2
-    End If
-    DB_GetIDAtSlot = LocalDBInstance.ScheduleTemplate(scheduletemplaterange, Weekday(Day, vbMonday) - 1, TimeSlot)
+'EHT=None
+Function DB_GetScheduleTemplateRange(LocalDBInstance As EJTSClientsDB, Day&) As Long
+If Day < LocalDBInstance.ScheduleTemplateBreakpoint1 Then
+    DB_GetScheduleTemplateRange = 1
+ElseIf Day >= LocalDBInstance.ScheduleTemplateBreakpoint2 Then
+    DB_GetScheduleTemplateRange = 3
+Else
+    DB_GetScheduleTemplateRange = 2
 End If
-
-Exit Function
-ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DB_SlotsHaveNoAppointments", Err
 End Function
 
 'EHT=Standard

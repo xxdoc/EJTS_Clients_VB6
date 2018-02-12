@@ -240,6 +240,7 @@ Begin VB.Form frmMain
       EndProperty
    End
    Begin VB.Label DTOT_lblDayTotal 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single
@@ -262,6 +263,7 @@ Begin VB.Form frmMain
       Width           =   4455
    End
    Begin VB.Label DTOT_lblDayTotal 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single
@@ -284,6 +286,7 @@ Begin VB.Form frmMain
       Width           =   4455
    End
    Begin VB.Label DTOT_lblDayTotal 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   1  'Fixed Single
@@ -1198,11 +1201,12 @@ End Sub
 Sub DayTotal_Update()
 On Error GoTo ERR_HANDLER
 
-Dim a&, b&, cd&, ts&, tot&, numappt&, t$
-Dim totalslots&, usedslots&, usedclients&, availslots&, lid&, st&
+Dim a&, b&, today&, tot&, numappt&, t$
+Dim totalslots&, usedslots&, availslotsaftertoday&, cd&, ts&, bm&
+
+today = CLng(Date)
 
 t$ = "*" & Format$(Date, "yyyy-mm-dd") & "????????Scheduled?appt:*"
-cd = CLng(Date)
 For a = 0 To ActiveDBInstance.Clients_Count - 1
     'Daily total
     If ActiveDBInstance.Clients(a).c.CompletionDate = cd Then
@@ -1220,29 +1224,27 @@ DTOT_lblDayTotal(0).Caption = "Daily Total: " & FieldToString(tot, mDollar)
 DTOT_lblDayTotal(1).Caption = "Appts Made Today: " & FieldToString(numappt, mNumber)
 
 numappt = 0
-lid = -1
-st = CLng(Date) - ActiveDBInstance.ApptBitmap_StartDate
-For cd = (ActiveDBInstance.ScheduleTemplateBreakpoint1 - ActiveDBInstance.ApptBitmap_StartDate) To (ActiveDBInstance.ScheduleTemplateBreakpoint2 - ActiveDBInstance.ApptBitmap_StartDate - 1)
+For cd = ActiveDBInstance.ScheduleTemplateBreakpoint1 To (ActiveDBInstance.ScheduleTemplateBreakpoint2 - 1)
     For ts = 0 To Appointment_NumSlotsUB
-        a = DB_GetIDAtSlot(ActiveDBInstance, ActiveDBInstance.ApptBitmap_StartDate + cd, ts)
-        If a >= 0 Then
+        ' If the schedule template says the slot is normally available, then we analyze it...
+        If ActiveDBInstance.ScheduleTemplate(DB_GetScheduleTemplateRange(ActiveDBInstance, cd), Weekday(cd, vbMonday) - 1, ts) = Slot_Available Then
             totalslots = totalslots + 1
-            usedslots = usedslots + 1
-            If a <> lid Then
-                usedclients = usedclients + 1
-                lid = a
+            ' Get the actual identifier of the item in the slot; if that's >= 0, then the slot is used (Eric says it doesn't matter client or non-client)...
+            bm = ActiveDBInstance.ApptBitmap(cd - ActiveDBInstance.ApptBitmap_StartDate, ts)
+            If bm >= 0 Then
+                usedslots = usedslots + 1
+            ElseIf bm = Slot_Available Or bm = Slot_DefaultAccordingToTemplate Then
+                If cd > today Then
+                    availslotsaftertoday = availslotsaftertoday + 1
+                End If
             End If
-        ElseIf a = Slot_Available Then
-            totalslots = totalslots + 1
-            If cd > st Then availslots = availslots + 1
-        ElseIf a = Slot_MealBreak Or a = Slot_Reserved Then
         End If
     Next ts
 Next cd
 DTOT_lblDayTotal(2).Caption = "Season " & FieldToString(ActiveDBInstance.ScheduleTemplateBreakpoint1, mDateAsLong) & " - " & FieldToString(ActiveDBInstance.ScheduleTemplateBreakpoint2 - 1, mDateAsLong)
 DTOT_lblDayTotal(3).Caption = "Total slots for season: " & FieldToString(totalslots, mNumber)
-DTOT_lblDayTotal(4).Caption = FieldToString(usedslots, mNumber) & " slots used by " & FieldToString(usedclients, mNumber) & " appointments"
-DTOT_lblDayTotal(5).Caption = FieldToString(availslots, mNumber) & " slots available after today"
+DTOT_lblDayTotal(4).Caption = "Slots used: " & FieldToString(usedslots, mNumber)
+DTOT_lblDayTotal(5).Caption = "Slots available after today: " & FieldToString(availslotsaftertoday, mNumber)
 
 Exit Sub
 ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "DayTotal_Update", Err

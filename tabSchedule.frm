@@ -1266,7 +1266,11 @@ SelectObject pctScheduleHdc, FontTimesOnSlot
 For ts = 0 To Appointment_NumSlotsUB
     ty = cy + DayFirstSlotOffsetY + (ts * DayApptSlotHeight)
 
-    b = DB_GetIDAtSlot(ActiveDBInstance, cd, ts)
+    b = ActiveDBInstance.ApptBitmap(cd - ActiveDBInstance.ApptBitmap_StartDate, ts)
+    If b = Slot_DefaultAccordingToTemplate Then
+        'If necessary, lookup the schedule template in the settings for that day and slot
+        b = ActiveDBInstance.ScheduleTemplate(DB_GetScheduleTemplateRange(ActiveDBInstance, cd), Weekday(cd, vbMonday) - 1, ts)
+    End If
     Select Case b
     Case Slot_Reserved
         pctSchedule.FillStyle = FillStyleConstants.vbDownwardDiagonal
