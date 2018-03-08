@@ -1050,10 +1050,11 @@ End If
 MouseMoveCalc X, Y, moDayIndex, moDate, moTimeSlot
 If moTimeSlot < 0 Then
     'Not over a valid time slot
+    If DEBUGMODE Then frmMain.Caption = ""
     HideShape
 Else
     ai = ActiveDBInstance.ApptBitmap(moDate - ActiveDBInstance.ApptBitmap_StartDate, moTimeSlot)
-    'frmMain.Caption = ai
+    If DEBUGMODE Then frmMain.Caption = ai
     Select Case ScheduleMode
     Case sView
         If ai < 0 Then
