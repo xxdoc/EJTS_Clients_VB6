@@ -196,7 +196,7 @@ Public Enum enumOperator
     oLike  'For string filters
     oNotLike
 End Enum
-Private Type enumFilter
+Private Type typeFilter
     Filter_OrOperator As Boolean     'And' is default
     Field As enumField
     Operator As enumOperator
@@ -207,22 +207,22 @@ Private Type enumFilter
     Value_FlagCount As Long
     ValueType As enumValueType
 End Type
-Private Type enumDefinition
+Private Type typeDefinition
     IsSimpleSearch As Boolean
     SimpleSearchStringUCase As String
     NotOperator As Boolean
-    Filters() As enumFilter
+    Filters() As typeFilter
     FilterCount As Long
 End Type
-Private Type enumSyntaxItem
+Private Type typeSyntaxItem
     Term As String
     Value As Long
 End Type
 
 Public SkipChangeEvents As Boolean
-Private CurrentSearch As enumDefinition
-Private SyntaxTable_Fields() As enumSyntaxItem
-Private SyntaxTable_Flags() As enumSyntaxItem
+Private CurrentSearch As typeDefinition
+Private SyntaxTable_Fields() As typeSyntaxItem
+Private SyntaxTable_Flags() As typeSyntaxItem
 Private mSearchCount&
 
 'EHT=None
@@ -1030,7 +1030,7 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "UpdateTabAsterisk", Err
 End Sub
 
 'EHT=Standard
-Private Function ClientMatchesFilters(cindex&, asearch As enumDefinition) As Boolean
+Private Function ClientMatchesFilters(cindex&, asearch As typeDefinition) As Boolean
 On Error GoTo ERR_HANDLER
 
 Dim findex&, filterresult As Boolean, a&
@@ -1231,7 +1231,7 @@ End Function
 Sub DoSearch()
 On Error GoTo ERR_HANDLER
 
-Dim asearch As enumDefinition, t$, estr$, a&
+Dim asearch As typeDefinition, t$, estr$, a&
 lstResults.SetRedraw False
 lstResults.Clear
 mSearchCount = 0
@@ -1279,13 +1279,13 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "IsSimpleSearchString", Err
 End Function
 
 'EHT=Standard
-Private Function ParseSearchString(ByVal s$, ByRef estr$, ByRef asearch As enumDefinition) As Boolean
+Private Function ParseSearchString(ByVal s$, ByRef estr$, ByRef asearch As typeDefinition) As Boolean
 On Error GoTo ERR_HANDLER
 
 Dim parts$(), a&, m&, b&, c$, ca&, Flags$(), flagcount&, withinquotes As Boolean
 Dim nextfilterorop As Boolean
 Dim f$, o$, v$
-Dim tempsearch As enumDefinition
+Dim tempsearch As typeDefinition
 
 If IsSimpleSearchString(s$) Then
     tempsearch.IsSimpleSearch = True

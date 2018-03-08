@@ -120,7 +120,7 @@ Begin VB.Form frmMain
    Begin VB.CommandButton btnSave 
       Caption         =   "&Save DB"
       Height          =   615
-      Left            =   18360
+      Left            =   18000
       TabIndex        =   1
       TabStop         =   0   'False
       Top             =   120
@@ -129,7 +129,7 @@ Begin VB.Form frmMain
    Begin VB.CommandButton btnNewClient 
       Caption         =   "New Client..."
       Height          =   615
-      Left            =   18120
+      Left            =   17760
       TabIndex        =   5
       TabStop         =   0   'False
       Top             =   960
@@ -148,7 +148,7 @@ Begin VB.Form frmMain
       TabStop         =   0   'False
       Top             =   360
       Visible         =   0   'False
-      Width           =   5295
+      Width           =   4935
    End
    Begin VB.ComboBox SRCH_cboSpecialSearch 
       BeginProperty Font 
@@ -161,7 +161,7 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       Height          =   405
-      Left            =   14400
+      Left            =   9480
       Style           =   2  'Dropdown List
       TabIndex        =   4
       TabStop         =   0   'False
@@ -256,7 +256,7 @@ Begin VB.Form frmMain
       ForeColor       =   &H80000008&
       Height          =   375
       Index           =   3
-      Left            =   9840
+      Left            =   13200
       TabIndex        =   22
       ToolTipText     =   "Click to recalculate"
       Top             =   480
@@ -279,7 +279,7 @@ Begin VB.Form frmMain
       ForeColor       =   &H80000008&
       Height          =   375
       Index           =   5
-      Left            =   9840
+      Left            =   13200
       TabIndex        =   21
       ToolTipText     =   "Click to recalculate"
       Top             =   1200
@@ -302,7 +302,7 @@ Begin VB.Form frmMain
       ForeColor       =   &H80000008&
       Height          =   375
       Index           =   4
-      Left            =   9840
+      Left            =   13200
       TabIndex        =   20
       ToolTipText     =   "Click to recalculate"
       Top             =   840
@@ -325,7 +325,7 @@ Begin VB.Form frmMain
       ForeColor       =   &H80000008&
       Height          =   375
       Index           =   2
-      Left            =   9840
+      Left            =   13200
       TabIndex        =   19
       ToolTipText     =   "Click to recalculate"
       Top             =   120
@@ -349,7 +349,7 @@ Begin VB.Form frmMain
       ForeColor       =   &H80000008&
       Height          =   375
       Index           =   1
-      Left            =   14400
+      Left            =   9480
       TabIndex        =   15
       ToolTipText     =   "Click to recalculate"
       Top             =   480
@@ -369,7 +369,7 @@ Begin VB.Form frmMain
       EndProperty
       ForeColor       =   &H00FF0000&
       Height          =   255
-      Left            =   16560
+      Left            =   11640
       MouseIcon       =   "frmMain.frx":57E2
       MousePointer    =   99  'Custom
       TabIndex        =   16
@@ -409,7 +409,7 @@ Begin VB.Form frmMain
          Strikethrough   =   0   'False
       EndProperty
       Height          =   255
-      Left            =   14400
+      Left            =   9480
       TabIndex        =   14
       Top             =   960
       Width           =   1695
@@ -432,7 +432,7 @@ Begin VB.Form frmMain
       ForeColor       =   &H80000008&
       Height          =   375
       Index           =   0
-      Left            =   14400
+      Left            =   9480
       TabIndex        =   13
       ToolTipText     =   "Click to recalculate"
       Top             =   120
@@ -456,7 +456,7 @@ Begin VB.Form frmMain
       TabIndex        =   10
       Top             =   60
       Visible         =   0   'False
-      Width           =   3855
+      Width           =   3495
    End
    Begin VB.Label lblTime 
       Alignment       =   2  'Center

@@ -748,7 +748,6 @@ End Function
 
 'EHT=None
 Function FormatClientName(formatoption As ClientNameFormatMode, c As Client_DBPortion) As String
-'Dim p&, lp&, t$, m As Boolean, matchingbrace$
 Dim showname1 As Boolean, showname2 As Boolean
 
 If Len(c.Person1.First) > 0 Then showname1 = True
@@ -839,99 +838,6 @@ Case fLog
     FormatClientName = "ClientID#" & c.ID & "[" & c.Person1.Last & "," & c.Person1.First & IIf(c.Person2.First <> "", "&" & c.Person2.First, "") & "]"
 End Select
 
-
-
-
-
-
-
-'Old methods..........
-'#########################################################
-'    If Flag_IsSet(c.Flags, IncPtnrTrustEstate) Then
-'        FormatClientName = c.Person1.Last & ", " & c.Person1.First
-'    Else
-'        Do
-'            p = InStr(lp + 1, c.Person1.First, " ")
-'            If p = 0 Then
-'                If lp <= Len(c.Person1.First) Then
-'                    p = Len(c.Person1.First) + 1
-'                Else
-'                    Exit Do
-'                End If
-'            End If
-'            If p = (lp + 2) Then
-'                If Mid$(c.Person1.First, p - 1, 1) = "&" Then FormatClientName = FormatClientName & "& "
-'            Else
-'                FormatClientName = FormatClientName & Mid$(c.Person1.First, lp + 1, p - lp - 1) & " "
-'            End If
-'            lp = p
-'        Loop
-'        FormatClientName = c.Person1.Last & ", " & Mid$(FormatClientName, 1, Len(FormatClientName) - 1)
-'    End If
-'#########################################################
-'    FormatClientName = c.Person1.Last & ", "
-'    If Len(c.Person1.First) > 0 Then
-'        FormatClientName = FormatClientName & c.Person1.First
-'        If Len(c.Person2.First) > 0 Then
-'            FormatClientName = FormatClientName & " & " & c.Person2.First
-'        End If
-'    Else
-'        FormatClientName = FormatClientName & c.Person2.First
-'    End If
-'#########################################################
-'    If Flag_IsSet(c.Flags, IncPtnrTrustEstate) Then
-'        FormatClientName = c.Person1.First
-'    Else
-'        'Remove parantheses and brackets
-'        m = True
-'        Do Until p > Len(c.Person1.First)
-'            If m Then
-'                p = p + 1
-'                FormatClientName = Mid$(c.Person1.First, p, 1)
-'                Select Case FormatClientName
-'                Case "("
-'                    matchingbrace$ = ")"
-'                    m = False
-'                Case "["
-'                    matchingbrace$ = "]"
-'                    m = False
-'                Case Else
-'                    t$ = t$ & FormatClientName
-'                End Select
-'            Else
-'                p = InStr(lp + 1, c.Person1.First, matchingbrace$)
-'                If p = 0 Then Exit Do
-'                m = True
-'            End If
-'            lp = p
-'        Loop
-'
-'        'Remove initials
-'        lp = 0
-'        Do
-'            'Jump by spaces
-'            p = InStr(lp + 1, t$, " ")
-'            If p = 0 Then
-'                If lp <= Len(t$) Then
-'                    p = Len(t$) + 1
-'                Else
-'                    Exit Do
-'                End If
-'            End If
-'            If p = (lp + 1) Then
-'                'Double space, don't keep the second one
-'            ElseIf p = (lp + 2) Then
-'                'Only one letter, keep only if it's '&'
-'                If Mid$(t$, p - 1, 1) = "&" Then FormatClientName = FormatClientName & "& "
-'            Else
-'                'Keep
-'                FormatClientName = FormatClientName & Mid$(t$, lp + 1, p - lp - 1) & " "
-'            End If
-'            lp = p
-'        Loop
-'        FormatClientName = Mid$(FormatClientName, 1, Len(FormatClientName) - 1)
-'    End If
-'    If formatoption = fPrintLabels Then FormatClientName = UCase$(FormatClientName)
 End Function
 
 'EHT=None
