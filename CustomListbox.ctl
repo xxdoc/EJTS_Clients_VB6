@@ -346,7 +346,7 @@ End Property
 
 
 'EHT=Standard
-Public Function AddItem(sectionnum&, cindex&, Optional septext$) As Long
+Public Function AddItem(sectionnum&, cindex&, Optional septext$, Optional st As SearchSortType) As Long
 On Error GoTo ERR_HANDLER
 
 If Not DEBUGMODE Then
@@ -361,7 +361,7 @@ If Not DEBUGMODE Then
     Else
         With ActiveDBInstance.Clients(cindex)
             .Temp_RegenerateTempData = True
-            AddItem = SendMessageByString(hListBox, LB_ADDSTRING, 0, sectionnum & " " & FormatClientName(fCustomListboxSorting, .c))
+            AddItem = SendMessageByString(hListBox, LB_ADDSTRING, 0, sectionnum & " " & FormatClientNameForSorting(st, .c))
             If AddItem <> LB_ERR Then
                 SendMessage hListBox, LB_SETITEMDATA, AddItem, .c.ID
             End If

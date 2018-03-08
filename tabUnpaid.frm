@@ -92,7 +92,7 @@ lstSort.Clear
 For cindex = 0 To ActiveDBInstance.Clients_Count - 1
     With ActiveDBInstance.Clients(cindex).c
         If .MoneyOwed <> NullLong Then
-            lstSort.AddItem FormatClientName(fCustomListboxSorting, ActiveDBInstance.Clients(cindex).c)
+            lstSort.AddItem FormatClientNameForSorting(LastFirst, ActiveDBInstance.Clients(cindex).c)
             lstSort.ItemData(lstSort.NewIndex) = cindex
         End If
     End With

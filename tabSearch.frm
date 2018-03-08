@@ -213,6 +213,7 @@ Private Type typeDefinition
     NotOperator As Boolean
     Filters() As typeFilter
     FilterCount As Long
+    SortType As SearchSortType
 End Type
 Private Type typeSyntaxItem
     Term As String
@@ -415,6 +416,8 @@ Next a
           "Number & Date operators: = <> < > <= >=" & vbCrLf & _
           "String operators: = <> ~ !~ (~ allows */? wildcards)" & vbCrLf & _
           "Flag operators: =" & vbCrLf & _
+          "Today's date: add a [today] or a [today:FORMAT] anywhere" & vbCrLf & _
+          "Sorting: add a [sort:LF], [sort:FL], [sort:CD] at the end" & vbCrLf & _
           vbCrLf & _
           "############ Field names: #############" & vbCrLf
 For a = 0 To UBound(fieldnames$)
@@ -1279,7 +1282,7 @@ ERR_HANDLER: UNHANDLEDERROR MOD_NAME, "IsSimpleSearchString", Err
 End Function
 
 'EHT=Standard
-Private Function ParseSearchString(ByVal s$, ByRef estr$, ByRef asearch As typeDefinition) As Boolean
+Private Function ParseSearchString(ByVal searchstr$, ByRef estr$, ByRef asearch As typeDefinition) As Boolean
 On Error GoTo ERR_HANDLER
 
 Dim parts$(), a&, m&, b&, c$, ca&, Flags$(), flagcount&, withinquotes As Boolean
@@ -1287,15 +1290,19 @@ Dim nextfilterorop As Boolean
 Dim f$, o$, v$
 Dim tempsearch As typeDefinition
 
-If IsSimpleSearchString(s$) Then
+searchstr$ = Trim$(searchstr$)
+
+If IsSimpleSearchString(searchstr$) Then
     tempsearch.IsSimpleSearch = True
-    tempsearch.SimpleSearchStringUCase = UCase$(s$)
+    tempsearch.SimpleSearchStringUCase = UCase$(searchstr$)
 
 Else
     'Entire search is done in LCase
-    c$ = LCase$(s$)
+    searchstr$ = Trim$(searchstr$)  'Keep this on a separate line from the LCase$ below
+    
     'Replace all [today] and [today:*] with formatted date
-    s$ = ""
+    c$ = LCase$(searchstr$)
+    searchstr$ = ""
     Do
         a = InStr(m + 1, c$, "[today")
         If a = 0 Then Exit Do
@@ -1306,16 +1313,37 @@ Else
         Else
             o$ = "m/dd/yyyy"
         End If
-        s$ = s$ & Mid$(c$, m + 1, a - m - 1) & Format$(Date, o$)
+        searchstr$ = searchstr$ & Mid$(c$, m + 1, a - m - 1) & Format$(Date, o$)
         m = b
     Loop
-    s$ = s$ & Mid$(c$, m + 1)
+    searchstr$ = searchstr$ & Mid$(c$, m + 1)
+
+    'Determine sort type
+    a = InStr(c$, "[sort:")
+    If a > 0 Then
+        b = InStr(a, c$, "]")
+        If b > 0 Then
+            o$ = Mid$(c$, a + 6, b - a - 6)
+            Select Case o$
+            Case "lf"
+                tempsearch.SortType = LastFirst
+            Case "fl"
+                tempsearch.SortType = FirstLast
+            Case "cd"
+                tempsearch.SortType = CompletionDate
+            Case Else
+                estr$ = "Unknown sort type"
+                Exit Function
+            End Select
+            searchstr$ = Trim$(Mid$(searchstr$, 1, a - 1) & Mid$(searchstr$, b + 1))
+        End If
+    End If
 
     'Custom Split routine (skips the separator if found within "")
     ReDim parts$(0)
     m = 0
-    For a = 1 To Len(s$)
-        c$ = Mid$(s$, a, 1)
+    For a = 1 To Len(searchstr$)
+        c$ = Mid$(searchstr$, a, 1)
         If c$ = """" Then withinquotes = Not withinquotes
         If withinquotes Then
             parts$(m) = parts$(m) & c$
@@ -1602,7 +1630,7 @@ Else
     mSearchCount = 0
     For a = 0 To ActiveDBInstance.Clients_Count - 1
         If ClientMatchesFilters(a, CurrentSearch) Then
-            lstResults.AddItem 0, a
+            lstResults.AddItem 0, a, , CurrentSearch.SortType
             mSearchCount = mSearchCount + 1
         End If
     Next a

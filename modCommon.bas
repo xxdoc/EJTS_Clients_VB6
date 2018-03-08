@@ -409,7 +409,6 @@ Public Enum ClientNameFormatMode
     fSchedulePct
     fPullFiles
     fLog
-    fCustomListboxSorting
     fChosenClients
     fUnpaid
 End Enum
@@ -445,6 +444,12 @@ Public Enum ScheduleShapeStyle
     Style_Copy
     Style_CopyForcedWithCtrl
     Style_ShowAppt
+End Enum
+
+Public Enum SearchSortType
+    LastFirst
+    FirstLast
+    CompletionDate
 End Enum
 
 Public Const NullLong = &H80000000      '-2147483648
@@ -766,7 +771,7 @@ End If
 
 Select Case formatoption
 'johNSon, keNNeth (kEn) A & asHLeY (aSh) C [diVEr]
-Case fSearchResults, fMailingList, fCustomListboxSorting, fChosenClients, fUnpaid, fSchedulePct
+Case fSearchResults, fMailingList, fChosenClients, fUnpaid, fSchedulePct
     FormatClientName = c.Person1.Last & ", " & FormatClientName(fExport_First, c)
 
 'keNNeth (kEn) A & asHLeY (aSh) C [diVEr]
@@ -837,7 +842,26 @@ Case fPullFiles
 Case fLog
     FormatClientName = "ClientID#" & c.ID & "[" & c.Person1.Last & "," & c.Person1.First & IIf(c.Person2.First <> "", "&" & c.Person2.First, "") & "]"
 End Select
+End Function
 
+'EHT=None
+Function FormatClientNameForSorting(st As SearchSortType, c As Client_DBPortion) As String
+Select Case st
+Case LastFirst
+    FormatClientNameForSorting = c.Person1.Last & ", " & FormatClientName(fExport_First, c)
+
+Case FirstLast
+    FormatClientNameForSorting = FormatClientName(fExport_First, c) & c.Person1.Last
+
+Case CompletionDate
+    Dim d$
+    If c.CompletionDate = NullLong Then
+        d$ = "00000000"
+    Else
+        d$ = Format(c.CompletionDate, "yyyyMMdd")
+    End If
+    FormatClientNameForSorting = d$ & c.Person1.Last & ", " & FormatClientName(fExport_First, c)
+End Select
 End Function
 
 'EHT=None
