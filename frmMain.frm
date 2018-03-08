@@ -1210,14 +1210,14 @@ today = CLng(Date)
 t$ = "*" & Format$(Date, "yyyy-mm-dd") & "????????Scheduled?appt:*"
 For a = 0 To ActiveDBInstance.Clients_Count - 1
     'Daily total
-    If ActiveDBInstance.Clients(a).c.CompletionDate = cd Then
+    If ActiveDBInstance.Clients(a).c.CompletionDate = today Then
         If ActiveDBInstance.Clients(a).c.PrepFee <> NullLong Then tot = tot + ActiveDBInstance.Clients(a).c.PrepFee
     End If
     'Num appts
     If ActiveDBInstance.Clients(a).c.OpNotes Like t$ Then numappt = numappt + 1
 Next a
 For a = 0 To ActiveDBInstance.ExtraCharges_Count - 1
-    If ActiveDBInstance.ExtraCharges(a).CompletionDate = cd Then
+    If ActiveDBInstance.ExtraCharges(a).CompletionDate = today Then
         If ActiveDBInstance.ExtraCharges(a).PrepFee <> NullLong Then tot = tot + ActiveDBInstance.ExtraCharges(a).PrepFee
     End If
 Next a
