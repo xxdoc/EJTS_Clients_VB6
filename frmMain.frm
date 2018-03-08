@@ -671,6 +671,7 @@ DB_GetSetting ActiveDBInstance, SETTING_SLOTBREAKPOINT
 
 ClearChangedIndication
 DayTotal_Update
+tabSearch.PopulateCboSpecialSearch
 HidePopupInfo
 
 'Initialize our form
