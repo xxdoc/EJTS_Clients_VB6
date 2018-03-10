@@ -1203,7 +1203,7 @@ Sub DayTotal_Update()
 On Error GoTo ERR_HANDLER
 
 Dim a&, b&, today&, tot&, numappt&, t$
-Dim totalslots&, usedslots&, availslotsaftertoday&, cd&, ts&, bm&
+Dim totalslots&, usedslots&, unusedpiorandincludingtoday&, availslotsaftertoday&, cd&, ts&, bm&
 
 today = CLng(Date)
 
@@ -1227,16 +1227,25 @@ DTOT_lblDayTotal(1).Caption = "Appts Made Today: " & FieldToString(numappt, mNum
 numappt = 0
 For cd = ActiveDBInstance.ScheduleTemplateBreakpoint1 To (ActiveDBInstance.ScheduleTemplateBreakpoint2 - 1)
     For ts = 0 To Appointment_NumSlotsUB
-        ' If the schedule template says the slot is normally available, then we analyze it...
-        If ActiveDBInstance.ScheduleTemplate(DB_GetScheduleTemplateRange(ActiveDBInstance, cd), Weekday(cd, vbMonday) - 1, ts) = Slot_Available Then
-            totalslots = totalslots + 1
-            ' Get the actual identifier of the item in the slot; if that's >= 0, then the slot is used (Eric says it doesn't matter client or non-client)...
-            bm = ActiveDBInstance.ApptBitmap(cd - ActiveDBInstance.ApptBitmap_StartDate, ts)
-            If bm >= 0 Then
-                usedslots = usedslots + 1
-            ElseIf bm = Slot_Available Or bm = Slot_DefaultAccordingToTemplate Then
+        ' Check the template for what this slot would normally look like
+        b = ActiveDBInstance.ScheduleTemplate(DB_GetScheduleTemplateRange(ActiveDBInstance, cd), Weekday(cd, vbMonday) - 1, ts)
+        ' Get the actual identifier of the item in the slot
+        bm = ActiveDBInstance.ApptBitmap(cd - ActiveDBInstance.ApptBitmap_StartDate, ts)
+
+        ' Only the slots that would *normally* have been available count toward the total
+        If b = Slot_Available Then totalslots = totalslots + 1
+
+        ' But when looking for appointments, include the entire work day, as meal breaks sometimes shift around
+        If b = Slot_Available Or b = Slot_MealBreak Then
+            ' If there's an appointment in the slot (client vs. non-client doesn't matter), it counts toward the slots used, regardless if that slot would have been white or grey
+            If bm >= 0 Then usedslots = usedslots + 1
+
+            ' If the slot is actually white (two different ways this can happen), then it counts as available
+            If bm = Slot_Available Or (bm = Slot_DefaultAccordingToTemplate And b = Slot_Available) Then
                 If cd > today Then
                     availslotsaftertoday = availslotsaftertoday + 1
+                Else
+                    unusedpiorandincludingtoday = unusedpiorandincludingtoday + 1
                 End If
             End If
         End If
@@ -1244,7 +1253,7 @@ For cd = ActiveDBInstance.ScheduleTemplateBreakpoint1 To (ActiveDBInstance.Sched
 Next cd
 DTOT_lblDayTotal(2).Caption = "Season " & FieldToString(ActiveDBInstance.ScheduleTemplateBreakpoint1, mDateAsLong) & " - " & FieldToString(ActiveDBInstance.ScheduleTemplateBreakpoint2 - 1, mDateAsLong)
 DTOT_lblDayTotal(3).Caption = "Total slots for season: " & FieldToString(totalslots, mNumber)
-DTOT_lblDayTotal(4).Caption = "Slots used: " & FieldToString(usedslots, mNumber)
+DTOT_lblDayTotal(4).Caption = "Slots used: " & FieldToString(usedslots, mNumber) & ", Unused: " & FieldToString(unusedpiorandincludingtoday&, mNumber)
 DTOT_lblDayTotal(5).Caption = "Slots available after today: " & FieldToString(availslotsaftertoday, mNumber)
 
 Exit Sub
