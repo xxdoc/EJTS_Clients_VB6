@@ -1238,14 +1238,16 @@ For cd = ActiveDBInstance.ScheduleTemplateBreakpoint1 To (ActiveDBInstance.Sched
         ' But when looking for appointments, include the entire work day, as meal breaks sometimes shift around
         If b = Slot_Available Or b = Slot_MealBreak Then
             ' If there's an appointment in the slot (client vs. non-client doesn't matter), it counts toward the slots used, regardless if that slot would have been white or grey
-            If bm >= 0 Then usedslots = usedslots + 1
-
-            ' If the slot is actually white (two different ways this can happen), then it counts as available
-            If bm = Slot_Available Or (bm = Slot_DefaultAccordingToTemplate And b = Slot_Available) Then
-                If cd > today Then
-                    availslotsaftertoday = availslotsaftertoday + 1
-                Else
-                    unusedpiorandincludingtoday = unusedpiorandincludingtoday + 1
+            If bm >= 0 Then
+                usedslots = usedslots + 1
+            Else
+                ' If the slot is not a meal break (two different ways this can happen), then it counts as available
+                If Not (bm = Slot_MealBreak Or (bm = Slot_DefaultAccordingToTemplate And b = Slot_MealBreak)) Then
+                    If cd > today Then
+                        availslotsaftertoday = availslotsaftertoday + 1
+                    Else
+                        unusedpiorandincludingtoday = unusedpiorandincludingtoday + 1
+                    End If
                 End If
             End If
         End If
